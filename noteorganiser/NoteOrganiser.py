@@ -3,26 +3,52 @@ import widgets
 import wx
 
 
-class NoteOrganiser(wx.App):
+class NoteOrganiser(wx.Frame):
 
-    def __init__(self, boolean, configuration_file, status):
-        wx.App.__init__(self, boolean)
-        self.configuration_file = configuration_file
-        self.status = status
-        self.welcome_frame = widgets.WelcomeFrame(None)
-        self.welcome()
+    def __init__(self, parent, system_id,  title):
+        wx.Frame.__init__(self, parent=parent, id=system_id,
+                          title=title)
+        self.initUI()
 
-    def welcome(self):
-        self.welcome_frame.Show()
+    def initUI(self):
 
-    def MainLoop(self):
+        self.init_menu()
+        self.init_panels()
+
+        self.Show(True)
+
+    def init_menu(self):
+
+        # Create the menu bar
+        menubar = wx.MenuBar()
+
+        # file menu
+        fileMenu = wx.Menu()
+        ## Quit
+        quit = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
+        self.Bind(wx.EVT_MENU, self.OnQuit, quit)
+        ## Add the file menu to the menu bar
+        menubar.Append(fileMenu, '&File')
+
+        # Add the menu bar to the application
+        self.SetMenuBar(menubar)
+
+    def init_panels(self):
         pass
+
+    def OnQuit(self, e):
+        self.Close()
 
 
 def main(args):
-    assert len(args) > 1, "You choose specify a configuration file"
+    if len(args) < 2:
+        print "You choose specify a configuration file"
+        return
+
     conf_file = args[1]
-    app = NoteOrganiser(False, conf_file, 'welcome')
+    print conf_file
+    app = wx.App()
+    NoteOrganiser(None, wx.ID_ANY, 'Note Organiser')
     app.MainLoop()
 
 
