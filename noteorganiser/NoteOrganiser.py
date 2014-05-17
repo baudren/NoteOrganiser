@@ -30,6 +30,15 @@ class NoteOrganiser(wx.Frame):
         ## Add the file menu to the menu bar
         menubar.Append(fileMenu, '&File')
 
+        # info menu
+        infoMenu = wx.Menu()
+        ## About
+        about = infoMenu.Append(wx.ID_ABOUT, 'About',
+                               'Information on the application')
+        self.Bind(wx.EVT_MENU, self.OnAbout, about)
+        ## Add the info menu to the menu bar
+        menubar.Append(infoMenu, '&Info')
+
         # Add the menu bar to the application
         self.SetMenuBar(menubar)
 
@@ -37,6 +46,9 @@ class NoteOrganiser(wx.Frame):
         pass
 
     def OnQuit(self, e):
+        self.Close()
+
+    def OnAbout(self, e):
         self.Close()
 
 
