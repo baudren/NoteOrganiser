@@ -54,7 +54,7 @@ class NoteOrganiser(wx.Frame):
 
 def main(args):
     if len(args) < 2:
-        print "You choose specify a configuration file"
+        print "You should specify a configuration file"
         return
 
     conf_file = args[1]
