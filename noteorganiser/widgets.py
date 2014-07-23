@@ -1,35 +1,51 @@
-import wx
+import sys
+from PySide import QtGui
 
 
-class ExampleFrame(wx.Frame):
-    def __init__(self, parent):
-        wx.Frame.__init__(self, parent)
-        panel = wx.Panel(self)
-        self.quote = wx.StaticText(panel, label="Your quote: ", pos=(20, 30))
-        self.Show()
+class Shelves(QtGui.QWidget):
+
+    def __init__(self, notebook_list):
+        QtGui.QWidget.__init__(self)
+
+        self.notebook_list = notebook_list
+        self.initUI()
+
+    def initUI(self):
+        """Create the physical shelves"""
+
+        grid = QtGui.QGridLayout()
+        grid.setSpacing(100)
+
+        notebooks = []
+        for index, notebook in enumerate(self.notebook_list):
+            button = PicButton(QtGui.QPixmap(
+                "./noteorganiser/assets/notebook-128.png"))
+            notebooks.append(button)
+            grid.addWidget(button, 0, index)
+
+        self.setLayout(grid)
 
 
-class WelcomeFrame(wx.Frame):
-    """ The notebooks will be stored and displayed there """
+class PicButton(QtGui.QAbstractButton):
+    def __init__(self, pixmap, parent=None):
+        QtGui.QAbstractButton.__init__(self, parent)
+        self.pixmap = pixmap
 
-    def __init__(self, parent):
-        """ Create the basic layout """
-        wx.Frame.__init__(self, parent)
-        self.panel = wx.Panel(self)
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        painter.drawPixmap(event.rect(), self.pixmap)
 
-    def initialise_notebooks(self, notebook_list):
-        """ Create a small icon for every notebook in the list """
-        pass
-
-
-class NotebookCover(wx.Frame):
-    """
-    Display of the notebooks as a real notebook, with a method to open it
-    """
-    pass
+    def sizeHint(self):
+        return self.pixmap.size()
 
 
 if __name__ == "__main__":
-    app = wx.App(False)
-    ExampleFrame(None)
-    app.MainLoop()
+    app = QtGui.QApplication(sys.argv)
+    window = QtGui.QWidget()
+    layout = QtGui.QHBoxLayout(window)
+
+    button = PicButton(QtGui.QPixmap("image.png"))
+    layout.addWidget(button)
+
+    window.show()
+    sys.exit(app.exec_())

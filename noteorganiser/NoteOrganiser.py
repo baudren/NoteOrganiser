@@ -1,85 +1,72 @@
 import sys
-from widgets import *
-import wx
+from PySide.QtGui import QApplication, QMainWindow
+from PySide.QtGui import QAction, QTabWidget
+from PySide.QtGui import QFrame
+from frames import Library
 
 
-class NoteOrganiser(wx.Frame):
+class NoteOrganiser(QMainWindow):
+    """TODO"""
 
     states = [
         'library',  # The starting one, displaying the notebooks
-        'previewing',
-        'editing']
+        'editing',
+        'preview']
 
-    def __init__(self, parent, system_id,  title):
-        wx.Frame.__init__(self, parent=parent, id=system_id,
-                          title=title)
-        self.state = 'library'
+    def __init__(self):
+        QMainWindow.__init__(self)
+
         self.initUI()
+        self.initLogic()
+        self.show()
 
     def initUI(self):
+        self.initMenuBar()
+        self.initStatusBar()
+        self.initWidgets()
 
-        self.init_menu()
-        self.init_panels()
+        self.setGeometry(600, 1000, 1000, 600)
+        self.setWindowTitle('Note Organiser')
 
-        self.Show(True)
+    def initMenuBar(self):
+        exitAction = QAction('&Exit', self)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('Exit application')
+        exitAction.triggered.connect(self.close)
 
-    def init_menu(self):
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAction)
 
-        # Create the menu bar
-        menubar = wx.MenuBar()
+    def initStatusBar(self):
+        self.statusBar()
 
-        # file menu
-        fileMenu = wx.Menu()
-        ## Quit
-        quit = fileMenu.Append(wx.ID_EXIT, 'Quit', 'Quit application')
-        self.Bind(wx.EVT_MENU, self.OnQuit, quit)
-        ## Add the file menu to the menu bar
-        menubar.Append(fileMenu, '&File')
+    def initWidgets(self):
+        # Creating the tabbed widget
+        tabs = QTabWidget()
 
-        # info menu
-        infoMenu = wx.Menu()
-        ## About
-        about = infoMenu.Append(wx.ID_ABOUT, 'About',
-                               'Information on the application')
-        self.Bind(wx.EVT_MENU, self.OnAbout, about)
-        ## Add the info menu to the menu bar
-        menubar.Append(infoMenu, '&Info')
+        # Creating the three tabs
+        library = Library()
+        editing = QFrame()
+        preview = QFrame()
 
-        # Add the menu bar to the application
-        self.SetMenuBar(menubar)
+        # Adding them to the tabs widget
+        tabs.addTab(library, "Library")
+        tabs.addTab(editing, "Editing")
+        tabs.addTab(preview, "Preview")
 
-    def init_panels(self, state=None):
-        if not state:
-            state = self.state
-        else:
-            if state not in self.states:
-                raise Exception(
-                    "state unknown")
-            try:
-                self.panels[self.state].TearDown()
-            except:
-                pass
-        if state not in self.panels.iterkeys():
-            exec("self.panels[state] = Panel_%s()")
+        # Set the tabs widget to be the center widget of the main window
+        self.setCentralWidget(tabs)
 
-    def OnQuit(self, e):
-        self.Close()
-
-    def OnAbout(self, e):
-        self.Close()
+    def initLogic(self):
+        self.state = 'library'
 
 
 def main(args):
-    if len(args) < 2:
-        print "You should specify a configuration file"
-        return
-
-    conf_file = args[1]
-    print conf_file
-    app = wx.App()
-    NoteOrganiser(None, wx.ID_ANY, 'Note Organiser')
-    app.MainLoop()
+    application = QApplication(args)
+    main_window = NoteOrganiser()
+    sys.exit(application.exec_())
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    main(sys.argv)
