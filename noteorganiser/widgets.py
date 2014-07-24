@@ -20,6 +20,8 @@ class Shelves(QtGui.QWidget):
         for index, notebook in enumerate(self.notebook_list):
             button = PicButton(QtGui.QPixmap(
                 "./noteorganiser/assets/notebook-128.png"))
+            button.setMinimumSize(128, 128)
+            button.setMaximumSize(128, 128)
             notebooks.append(button)
             grid.addWidget(button, 0, index)
 
@@ -44,7 +46,8 @@ if __name__ == "__main__":
     window = QtGui.QWidget()
     layout = QtGui.QHBoxLayout(window)
 
-    button = PicButton(QtGui.QPixmap("image.png"))
+    button = PicButton(QtGui.QPixmap(
+        "./noteorganiser/assets/notebook-128.png"))
     layout.addWidget(button)
 
     window.show()

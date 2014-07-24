@@ -2,7 +2,7 @@ import sys
 from PySide.QtGui import QApplication, QMainWindow
 from PySide.QtGui import QAction, QTabWidget
 from PySide.QtGui import QFrame
-from frames import Library
+from frames import Library, Editing
 
 
 class NoteOrganiser(QMainWindow):
@@ -47,7 +47,7 @@ class NoteOrganiser(QMainWindow):
 
         # Creating the three tabs
         library = Library()
-        editing = QFrame()
+        editing = Editing()
         preview = QFrame()
 
         # Adding them to the tabs widget
