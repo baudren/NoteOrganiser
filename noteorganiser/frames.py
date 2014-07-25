@@ -64,9 +64,9 @@ class Editing(QtGui.QFrame):
     |   \|_________________________|                  |
     --------------------------------------------------|
     """
-    def __init__(self):
+    def __init__(self, parent=None):
         """ Create the basic layout """
-        QtGui.QFrame.__init__(self)
+        QtGui.QFrame.__init__(self, parent)
 
         self.initUI()
 
@@ -75,15 +75,19 @@ class Editing(QtGui.QFrame):
         grid = QtGui.QGridLayout()
         grid.setSpacing(10)
 
-        newButton = QtGui.QPushButton("New entry")
-        removeButton = QtGui.QPushButton("Remove")
+        newButton = QtGui.QPushButton("New entry", self)
+        removeButton = QtGui.QPushButton("Remove", self)
 
-        tabs = QtGui.QTabWidget()
+        tabs = QtGui.QTabWidget(self)
         tabs.setTabPosition(QtGui.QTabWidget.West)
+
         for notebook in ['Research', 'Personal']:
-            tabs.addTab(QtGui.QTextEdit(), notebook)
+            text = QtGui.QTextEdit(tabs)
+            text.setTabChangesFocus(True)
+            tabs.addTab(text, notebook)
 
         vbox = QtGui.QVBoxLayout()
+
         vbox.addWidget(newButton)
         vbox.addWidget(removeButton)
 
