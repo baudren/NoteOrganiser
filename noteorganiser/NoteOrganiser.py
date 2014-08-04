@@ -2,9 +2,11 @@ import sys
 from PySide.QtGui import QApplication, QMainWindow
 from PySide.QtGui import QAction, QTabWidget
 from PySide.QtGui import QFrame
+from PySide.QtCore import Slot
 
 # Local module imports
 from frames import Library, Editing
+from widgets import NewNotebook
 from logger import create_logger
 from configuration import initialise
 
@@ -17,10 +19,15 @@ class NoteOrganiser(QMainWindow):
         'editing',
         'preview']
 
-    def __init__(self, logger):
+    def __init__(self, logger, root, notebooks):
         QMainWindow.__init__(self)
 
+        # Store references to the logger, root folder and the entire list of
+        # notebooks extracted from the configuration stage.
         self.logger = logger
+        self.root = root
+        self.notebooks = notebooks
+
         self.initUI()
         self.initLogic()
         self.show()
@@ -36,6 +43,7 @@ class NoteOrganiser(QMainWindow):
         self.setWindowTitle('Note Organiser')
 
     def initMenuBar(self):
+        self.logger.info("Creating Menu Bar")
         exitAction = QAction('&Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
@@ -46,16 +54,18 @@ class NoteOrganiser(QMainWindow):
         fileMenu.addAction(exitAction)
 
     def initStatusBar(self):
+        self.logger.info("Creating Status Bar")
         self.statusBar()
 
     def initWidgets(self):
         # Creating the tabbed widget
-        tabs = QTabWidget()
+        tabs = QTabWidget(self)
 
-        # Creating the three tabs
-        library = Library()
-        editing = Editing()
-        preview = QFrame()
+        # Creating the three tabs. Through their parent, they will recover the
+        # reference to the list of notebooks.
+        library = Library(self)
+        editing = Editing(self)
+        preview = QFrame(self)
 
         # Adding them to the tabs widget
         tabs.addTab(library, "Library")
@@ -63,20 +73,34 @@ class NoteOrganiser(QMainWindow):
         tabs.addTab(preview, "Preview")
 
         # Set the tabs widget to be the center widget of the main window
+        self.logger.info("Setting the central widget")
         self.setCentralWidget(tabs)
 
     def initLogic(self):
         self.state = 'library'
 
+    @Slot()
+    def create_notebook(self):
+        self.popup = NewNotebook(self.notebooks, self.logger)
+        self.popup.show()
+        #self.popup.raise_()
+        self.popup.activateWindow()
+        print self.popup.notebooks
+
+
 
 def main(args):
+    # Initialise the main Qt application
+    application = QApplication(args)
+
     # Define a logger
     logger = create_logger('INFO')
-
     # Recover the folder path and the notebooks
     root, notebooks = initialise(logger)
-    application = QApplication(args)
-    main_window = NoteOrganiser(logger)
+    # Define the main window
+    main_window = NoteOrganiser(logger, root, notebooks)
+
+    # Run
     sys.exit(application.exec_())
 
 
