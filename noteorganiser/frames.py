@@ -38,9 +38,9 @@ class Library(CustomFrame):
     / Library \/ Editing \/ Previewing \
     |          ----------------------------------
     |                              |            |
-    |   notebook_1     notebook_2  | [+] new    |
-    | ------------------------------ [-] delete |
-    |                              |            |
+    |   notebook_1     notebook_2  | [+] new N  |
+    | ------------------------------ [+] new F  |
+    |                              | [-] delete |
     |   notebook_3                 |            |
     --------------------------------------------|
     """
@@ -49,15 +49,19 @@ class Library(CustomFrame):
         grid = QtGui.QGridLayout()
         grid.setSpacing(10)
 
-        newButton = QtGui.QPushButton("&New Notebook")
-        newButton.clicked.connect(self.parentWidget().create_notebook)
+        newNotebookButton = QtGui.QPushButton("&New Notebook")
+        newNotebookButton.clicked.connect(self.parentWidget().create_notebook)
 
-        removeButton = QtGui.QPushButton("Remove")
+        newFolderButton = QtGui.QPushButton("New &Folder")
+        newFolderButton.clicked.connect(self.parentWidget().create_folder)
+
+        removeButton = QtGui.QPushButton("&Remove")
         shelves = Shelves(self.notebooks)
 
         grid.addWidget(shelves, 0, 0, 5, 5)
-        grid.addWidget(newButton, 1, 5)
-        grid.addWidget(removeButton, 2, 5)
+        grid.addWidget(newNotebookButton, 1, 5)
+        grid.addWidget(newFolderButton, 2, 5)
+        grid.addWidget(removeButton, 3, 5)
         self.setLayout(grid)
 
         self.logger.info("Finished UI init of %s" % self.__class__.__name__)

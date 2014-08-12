@@ -56,9 +56,9 @@ class NewNotebook(QtGui.QDialog):
 
         # Define Ctrl+W to close it, and overwrite Esc
         _ = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+W'),
-                            self, self.clean_close)
+                            self, self.clean_accept)
         _ = QtGui.QShortcut(QtGui.QKeySequence('Esc'),
-                            self, self.clean_close)
+                            self, self.clean_reject)
 
         # Define the fields:
         # Name (text field)
@@ -87,7 +87,7 @@ class NewNotebook(QtGui.QDialog):
         create = QtGui.QPushButton("&Create")
         create.clicked.connect(self.create_notebook)
         cancel = QtGui.QPushButton("C&ancel")
-        cancel.clicked.connect(self.clean_close)
+        cancel.clicked.connect(self.clean_reject)
 
         grid.addWidget(create, 2, 0)
         grid.addWidget(cancel, 2, 1)
@@ -95,10 +95,15 @@ class NewNotebook(QtGui.QDialog):
 
         self.setLayout(grid)
 
-    def clean_close(self):
+    def clean_accept(self):
         """Logging the closing of the popup"""
-        self.logger.info("Exiting notebook creation popup")
-        self.close()
+        self.logger.info("Creating a new notebook!")
+        self.accept()
+
+    def clean_reject(self):
+        """Logging the rejection of the popup"""
+        self.logger.info("Aborting notebook creation")
+        self.reject()
 
     def create_notebook(self):
         """Query the entry fields and append the notebook list"""

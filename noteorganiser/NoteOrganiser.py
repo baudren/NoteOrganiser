@@ -82,11 +82,16 @@ class NoteOrganiser(QMainWindow):
     @Slot()
     def create_notebook(self):
         self.popup = NewNotebook(self.notebooks, self.logger)
-        self.popup.show()
+        ok = self.popup.exec_()
         #self.popup.raise_()
-        self.popup.activateWindow()
+        if ok:
+            self.logger.info(self.popup.notebooks[-1]+' is the desired name')
+        #self.popup.activateWindow()
         print self.popup.notebooks
 
+    @Slot()
+    def create_folder(self):
+        pass
 
 
 def main(args):
