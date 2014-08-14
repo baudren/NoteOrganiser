@@ -1,44 +1,48 @@
 import sys
 from PySide import QtGui
+from PySide import QtCore
+from constants import EXTENSION
 
 
 class Shelves(QtGui.QWidget):
 
-    def __init__(self, notebook_list):
-        QtGui.QWidget.__init__(self)
+    def __init__(self, notebooks, parent=None):
+        QtGui.QWidget.__init__(self, parent)
 
-        self.notebook_list = notebook_list
+        self.notebooks = notebooks
         self.initUI()
 
     def initUI(self):
         """Create the physical shelves"""
-
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(100)
+        self.parentWidget().logger.info(str(self.notebooks))
+        self.grid = QtGui.QGridLayout()
+        self.grid.setSpacing(100)
 
         notebooks = []
-        for index, notebook in enumerate(self.notebook_list):
+        for index, notebook in enumerate(self.notebooks):
             button = PicButton(QtGui.QPixmap(
-                "./noteorganiser/assets/notebook-128.png"))
+                "./noteorganiser/assets/notebook-128.png"),
+                notebook.strip(EXTENSION))
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
+            button.clicked.connect(self.buttonCliked)
             notebooks.append(button)
-            grid.addWidget(button, 0, index)
+            self.grid.addWidget(button, 0, index)
 
-        self.setLayout(grid)
+        self.setLayout(self.grid)
 
+    def add_notebook(self):
+        """Add a new button"""
+        button = PicButton(QtGui.QPixmap(
+            "./noteorganiser/assets/notebook-128.png"),
+            self.notebooks[-1].strip(EXTENSION))
+        button.setMinimumSize(128, 128)
+        button.setMaximumSize(128, 128)
+        self.grid.addWidget(button, 0, len(self.notebooks)-1)
 
-class PicButton(QtGui.QAbstractButton):
-    def __init__(self, pixmap, parent=None):
-        QtGui.QAbstractButton.__init__(self, parent)
-        self.pixmap = pixmap
-
-    def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
-        painter.drawPixmap(event.rect(), self.pixmap)
-
-    def sizeHint(self):
-        return self.pixmap.size()
+    def buttonCliked(self):
+        sender = self.sender()
+        self.parentWidget().logger.info(sender.text+' button cliked')
 
 
 class NewNotebook(QtGui.QDialog):
@@ -47,6 +51,7 @@ class NewNotebook(QtGui.QDialog):
         QtGui.QDialog.__init__(self, parent)
         self.logger = logger
         self.notebooks = notebooks
+        self.names = [elem.strip(EXTENSION) for elem in notebooks]
         self.initUI()
 
     def initUI(self):
@@ -113,7 +118,7 @@ class NewNotebook(QtGui.QDialog):
             self.name_confirmation_box.setText("name too short")
             self.logger.info("name rejected: too short")
         else:
-            if desired_name in self.notebooks:
+            if desired_name in self.names:
                 self.name_confirmation_box.setText(
                     "name already used")
                 self.logger.info("name rejected: already used")
@@ -124,13 +129,34 @@ class NewNotebook(QtGui.QDialog):
                 self.accept()
 
 
+class PicButton(QtGui.QPushButton):
+    """Button with a picture"""
+    def __init__(self, pixmap, text, parent=None):
+        QtGui.QPushButton.__init__(self, parent)
+        self.text = unicode(text)
+        self.pixmap = pixmap
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        painter.drawPixmap(event.rect(), self.pixmap)
+        painter.drawText(event.rect(), self.text)
+
+    def sizeHint(self):
+        return self.pixmap.size()
+
+    def mouseReleaseEvent(self, ev):
+        """Define a behaviour under click"""
+        self.click()
+        #self.emit(QtCore.SIGNAL('clicked()'))
+
+
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = QtGui.QWidget()
     layout = QtGui.QHBoxLayout(window)
 
     button = PicButton(QtGui.QPixmap(
-        "./noteorganiser/assets/notebook-128.png"))
+        "./noteorganiser/assets/notebook-128.png"), 'something')
     layout.addWidget(button)
 
     window.show()

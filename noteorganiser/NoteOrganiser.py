@@ -1,4 +1,5 @@
 import sys
+import os
 from PySide.QtGui import QApplication, QMainWindow
 from PySide.QtGui import QAction, QTabWidget
 from PySide.QtGui import QFrame
@@ -9,6 +10,7 @@ from frames import Library, Editing
 from widgets import NewNotebook
 from logger import create_logger
 from configuration import initialise
+from constants import EXTENSION
 
 
 class NoteOrganiser(QMainWindow):
@@ -63,14 +65,14 @@ class NoteOrganiser(QMainWindow):
 
         # Creating the three tabs. Through their parent, they will recover the
         # reference to the list of notebooks.
-        library = Library(self)
-        editing = Editing(self)
-        preview = QFrame(self)
+        self.library = Library(self)
+        self.editing = Editing(self)
+        self.preview = QFrame(self)
 
         # Adding them to the tabs widget
-        tabs.addTab(library, "Library")
-        tabs.addTab(editing, "Editing")
-        tabs.addTab(preview, "Preview")
+        tabs.addTab(self.library, "Library")
+        tabs.addTab(self.editing, "Editing")
+        tabs.addTab(self.preview, "Preview")
 
         # Set the tabs widget to be the center widget of the main window
         self.logger.info("Setting the central widget")
@@ -83,11 +85,15 @@ class NoteOrganiser(QMainWindow):
     def create_notebook(self):
         self.popup = NewNotebook(self.notebooks, self.logger)
         ok = self.popup.exec_()
-        #self.popup.raise_()
         if ok:
-            self.logger.info(self.popup.notebooks[-1]+' is the desired name')
-        #self.popup.activateWindow()
-        print self.popup.notebooks
+            desired_name = self.popup.notebooks.pop()
+            self.logger.info(desired_name+' is the desired name')
+        file_name = desired_name+EXTENSION
+        # Create an empty file (open and close)
+        open(os.path.join(self.root, file_name), 'w').close()
+        # Append the file name to the list of notebooks
+        self.notebooks.append(file_name)
+        self.library.refresh()
 
     @Slot()
     def create_folder(self):

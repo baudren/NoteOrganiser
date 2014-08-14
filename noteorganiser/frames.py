@@ -56,15 +56,18 @@ class Library(CustomFrame):
         newFolderButton.clicked.connect(self.parentWidget().create_folder)
 
         removeButton = QtGui.QPushButton("&Remove")
-        shelves = Shelves(self.notebooks)
+        self.shelves = Shelves(self.notebooks, self)
 
-        grid.addWidget(shelves, 0, 0, 5, 5)
+        grid.addWidget(self.shelves, 0, 0, 5, 5)
         grid.addWidget(newNotebookButton, 1, 5)
         grid.addWidget(newFolderButton, 2, 5)
         grid.addWidget(removeButton, 3, 5)
         self.setLayout(grid)
 
         self.logger.info("Finished UI init of %s" % self.__class__.__name__)
+
+    def refresh(self):
+        self.shelves.add_notebook()
 
 
 class Editing(CustomFrame):
@@ -85,7 +88,7 @@ class Editing(CustomFrame):
     |   N|                         | [-] delete       |
     |   1|                         |                  |
     |   \|_________________________|                  |
-    --------------------------------------------------|
+    ---------------------------------------------------
     """
     def initUI(self):
         self.logger.info("Starting UI init of %s" % self.__class__.__name__)
