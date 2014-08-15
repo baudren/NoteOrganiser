@@ -14,7 +14,6 @@ class Shelves(QtGui.QWidget):
 
     def initUI(self):
         """Create the physical shelves"""
-        self.parentWidget().logger.info(str(self.notebooks))
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(100)
 
@@ -33,6 +32,9 @@ class Shelves(QtGui.QWidget):
 
     def add_notebook(self):
         """Add a new button"""
+        self.parentWidget().logger.info(
+            'adding %s to the shelves' % self.notebooks[-1].strip(
+                EXTENSION))
         button = PicButton(QtGui.QPixmap(
             "./noteorganiser/assets/notebook-128.png"),
             self.notebooks[-1].strip(EXTENSION))

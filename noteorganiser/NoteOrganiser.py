@@ -93,7 +93,9 @@ class NoteOrganiser(QMainWindow):
         open(os.path.join(self.root, file_name), 'w').close()
         # Append the file name to the list of notebooks
         self.notebooks.append(file_name)
+        # Refresh both the library and Editing tab.
         self.library.refresh()
+        self.editing.refresh()
 
     @Slot()
     def create_folder(self):

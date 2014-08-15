@@ -3,6 +3,7 @@ import os
 from PySide import QtGui
 
 from widgets import Shelves
+from constants import EXTENSION
 
 
 class ExampleFrame(QtGui.QFrame):
@@ -22,6 +23,7 @@ class CustomFrame(QtGui.QFrame):
         # CHECK THAT THIS IS PROPERLY UPDATED TODO
         self.logger = parent.logger
         self.notebooks = self.parentWidget().notebooks
+        self.root = self.parentWidget().root
 
         self.initUI()
 
@@ -92,33 +94,44 @@ class Editing(CustomFrame):
     """
     def initUI(self):
         self.logger.info("Starting UI init of %s" % self.__class__.__name__)
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
+        self.grid = QtGui.QGridLayout()
+        self.grid.setSpacing(10)
 
         newButton = QtGui.QPushButton("New entry", self)
         removeButton = QtGui.QPushButton("Remove", self)
 
-        tabs = QtGui.QTabWidget(self)
-        tabs.setTabPosition(QtGui.QTabWidget.West)
+        self.tabs = QtGui.QTabWidget(self)
+        self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
         for notebook in self.notebooks:
-            text = QtGui.QTextEdit(tabs)
-            source = open(os.path.join(
-                self.parentWidget().root, notebook)).read()
+            text = QtGui.QTextEdit(self.tabs)
+            source = open(os.path.join(self.root, notebook)).read()
             text.setText(source)
             text.setTabChangesFocus(True)
-            tabs.addTab(text, notebook)
+            self.tabs.addTab(text, notebook.strip(EXTENSION))
 
         vbox = QtGui.QVBoxLayout()
 
         vbox.addWidget(newButton)
         vbox.addWidget(removeButton)
 
-        grid.addWidget(tabs, 0, 0)
-        grid.addLayout(vbox, 0, 1)
+        self.grid.addWidget(self.tabs, 0, 0)
+        self.grid.addLayout(vbox, 0, 1)
 
-        self.setLayout(grid)
+        self.setLayout(self.grid)
         self.logger.info("Finished UI init of %s" % self.__class__.__name__)
+
+    def refresh(self):
+        """Adding files"""
+        new = self.notebooks[-1]
+        text = QtGui.QTextEdit(self.tabs)
+        source = open(os.path.join(self.root, new)).read()
+        text.setText(source)
+        text.setTabChangesFocus(True)
+        self.tabs.addTab(text, new.strip(EXTENSION))
+        self.grid.removeWidget(self.tabs)
+        self.grid.addWidget(self.tabs, 0, 0)
+
 
 if __name__ == "__main__":
     application = QtGui.QApplication(sys.argv)
