@@ -1,4 +1,5 @@
 import sys
+import os
 from PySide import QtGui
 from PySide import QtCore
 from constants import EXTENSION
@@ -10,6 +11,7 @@ class Shelves(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.parent = parent
         self.notebooks = notebooks
+        self.folders = []
         self.initUI()
 
     def initUI(self):
@@ -17,15 +19,26 @@ class Shelves(QtGui.QWidget):
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(100)
 
-        notebooks = []
         for index, notebook in enumerate(self.notebooks):
-            button = PicButton(QtGui.QPixmap(
-                "./noteorganiser/assets/notebook-128.png"),
-                notebook.strip(EXTENSION))
-            button.setMinimumSize(128, 128)
-            button.setMaximumSize(128, 128)
-            button.clicked.connect(self.notebookClicked)
-            notebooks.append(button)
+            # distinguish between a notebook and a folder, stored as a tuple.
+            # When encountering a folder, simply put a different image for the
+            # moment.
+            if isinstance(notebook, str):
+                button = PicButton(QtGui.QPixmap(
+                    "./noteorganiser/assets/notebook-128.png"),
+                    notebook.strip(EXTENSION))
+                button.setMinimumSize(128, 128)
+                button.setMaximumSize(128, 128)
+                button.clicked.connect(self.notebookClicked)
+            else:
+                folder, sub_notebooks = notebook
+                button = PicButton(QtGui.QPixmap(
+                    "./noteorganiser/assets/folder-128.png"),
+                    os.path.basename(folder))
+                button.setMinimumSize(128, 128)
+                button.setMaximumSize(128, 128)
+                button.clicked.connect(self.folderClicked)
+
             self.grid.addWidget(button, 0, index)
 
         self.setLayout(self.grid)
@@ -45,9 +58,13 @@ class Shelves(QtGui.QWidget):
 
     def notebookClicked(self):
         sender = self.sender()
-        self.parent.logger.info(sender.text+' button cliked')
+        self.parent.logger.info('notebook '+sender.text+' button cliked')
         # Connect this to the switch tab focus to Editing
         self.parent.parent.switchTab('editing', sender.text)
+
+    def folderClicked(self):
+        sender = self.sender()
+        self.parent.logger.info('folder '+sender.text+' button cliked')
 
 
 class NewNotebook(QtGui.QDialog):

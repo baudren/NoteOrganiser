@@ -104,11 +104,12 @@ class Editing(CustomFrame):
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
         for notebook in self.notebooks:
-            text = QtGui.QTextEdit(self.tabs)
-            source = open(os.path.join(self.root, notebook)).read()
-            text.setText(source)
-            text.setTabChangesFocus(True)
-            self.tabs.addTab(text, notebook.strip(EXTENSION))
+            if isinstance(notebook, str):
+                text = QtGui.QTextEdit(self.tabs)
+                source = open(os.path.join(self.root, notebook)).read()
+                text.setText(source)
+                text.setTabChangesFocus(True)
+                self.tabs.addTab(text, notebook.strip(EXTENSION))
 
         vbox = QtGui.QVBoxLayout()
 
