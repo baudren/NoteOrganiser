@@ -8,7 +8,7 @@ class Shelves(QtGui.QWidget):
 
     def __init__(self, notebooks, parent=None):
         QtGui.QWidget.__init__(self, parent)
-
+        self.parent = parent
         self.notebooks = notebooks
         self.initUI()
 
@@ -24,7 +24,7 @@ class Shelves(QtGui.QWidget):
                 notebook.strip(EXTENSION))
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
-            button.clicked.connect(self.buttonCliked)
+            button.clicked.connect(self.notebookClicked)
             notebooks.append(button)
             self.grid.addWidget(button, 0, index)
 
@@ -32,7 +32,7 @@ class Shelves(QtGui.QWidget):
 
     def add_notebook(self):
         """Add a new button"""
-        self.parentWidget().logger.info(
+        self.parent.logger.info(
             'adding %s to the shelves' % self.notebooks[-1].strip(
                 EXTENSION))
         button = PicButton(QtGui.QPixmap(
@@ -40,18 +40,22 @@ class Shelves(QtGui.QWidget):
             self.notebooks[-1].strip(EXTENSION))
         button.setMinimumSize(128, 128)
         button.setMaximumSize(128, 128)
+        button.clicked.connect(self.notebookClicked)
         self.grid.addWidget(button, 0, len(self.notebooks)-1)
 
-    def buttonCliked(self):
+    def notebookClicked(self):
         sender = self.sender()
-        self.parentWidget().logger.info(sender.text+' button cliked')
+        self.parent.logger.info(sender.text+' button cliked')
+        # Connect this to the switch tab focus to Editing
+        self.parent.parent.switchTab('editing', sender.text)
 
 
 class NewNotebook(QtGui.QDialog):
 
-    def __init__(self, notebooks, logger, parent=None):
+    def __init__(self, notebooks, parent=None):
         QtGui.QDialog.__init__(self, parent)
-        self.logger = logger
+        self.parent = parent
+        self.logger = parent.logger
         self.notebooks = notebooks
         self.names = [elem.strip(EXTENSION) for elem in notebooks]
         self.initUI()

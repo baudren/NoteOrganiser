@@ -20,7 +20,7 @@ class CustomFrame(QtGui.QFrame):
         """ Create the basic layout """
         QtGui.QFrame.__init__(self, parent)
         # Create a shortcut notation for the list of notebooks
-        # CHECK THAT THIS IS PROPERLY UPDATED TODO
+        self.parent = parent
         self.logger = parent.logger
         self.notebooks = self.parentWidget().notebooks
         self.root = self.parentWidget().root
@@ -131,6 +131,12 @@ class Editing(CustomFrame):
         self.tabs.addTab(text, new.strip(EXTENSION))
         self.grid.removeWidget(self.tabs)
         self.grid.addWidget(self.tabs, 0, 0)
+
+    def switchNotebook(self, notebook):
+        """switching tab to desired notebook"""
+        self.parent.logger.info("switching to "+notebook)
+        index = self.notebooks.index(notebook+EXTENSION)
+        self.tabs.setCurrentIndex(index)
 
 
 if __name__ == "__main__":

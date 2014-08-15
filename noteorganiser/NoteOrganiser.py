@@ -61,7 +61,7 @@ class NoteOrganiser(QMainWindow):
 
     def initWidgets(self):
         # Creating the tabbed widget
-        tabs = QTabWidget(self)
+        self.tabs = QTabWidget(self)
 
         # Creating the three tabs. Through their parent, they will recover the
         # reference to the list of notebooks.
@@ -70,32 +70,37 @@ class NoteOrganiser(QMainWindow):
         self.preview = QFrame(self)
 
         # Adding them to the tabs widget
-        tabs.addTab(self.library, "Library")
-        tabs.addTab(self.editing, "Editing")
-        tabs.addTab(self.preview, "Preview")
+        self.tabs.addTab(self.library, "Library")
+        self.tabs.addTab(self.editing, "Editing")
+        self.tabs.addTab(self.preview, "Preview")
 
         # Set the tabs widget to be the center widget of the main window
         self.logger.info("Setting the central widget")
-        self.setCentralWidget(tabs)
+        self.setCentralWidget(self.tabs)
 
     def initLogic(self):
         self.state = 'library'
 
+    def switchTab(self, tab, notebook):
+        self.tabs.setCurrentIndex(self.states.index(tab))
+        if tab == 'editing':
+            self.editing.switchNotebook(notebook)
+
     @Slot()
     def create_notebook(self):
-        self.popup = NewNotebook(self.notebooks, self.logger)
+        self.popup = NewNotebook(self.notebooks, self)
         ok = self.popup.exec_()
         if ok:
             desired_name = self.popup.notebooks.pop()
             self.logger.info(desired_name+' is the desired name')
-        file_name = desired_name+EXTENSION
-        # Create an empty file (open and close)
-        open(os.path.join(self.root, file_name), 'w').close()
-        # Append the file name to the list of notebooks
-        self.notebooks.append(file_name)
-        # Refresh both the library and Editing tab.
-        self.library.refresh()
-        self.editing.refresh()
+            file_name = desired_name+EXTENSION
+            # Create an empty file (open and close)
+            open(os.path.join(self.root, file_name), 'w').close()
+            # Append the file name to the list of notebooks
+            self.notebooks.append(file_name)
+            # Refresh both the library and Editing tab.
+            self.library.refresh()
+            self.editing.refresh()
 
     @Slot()
     def create_folder(self):
