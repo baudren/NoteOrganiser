@@ -23,6 +23,7 @@ class CustomFrame(QtGui.QFrame):
         self.parent = parent
         self.logger = parent.logger
         self.notebooks = self.parentWidget().notebooks
+        self.folders = self.parentWidget().folders
         self.root = self.parentWidget().root
 
         self.initUI()
@@ -58,7 +59,7 @@ class Library(CustomFrame):
         newFolderButton.clicked.connect(self.parentWidget().create_folder)
 
         removeButton = QtGui.QPushButton("&Remove")
-        self.shelves = Shelves(self.notebooks, self)
+        self.shelves = Shelves(self.notebooks, self.folders, self)
 
         grid.addWidget(self.shelves, 0, 0, 5, 5)
         grid.addWidget(newNotebookButton, 1, 5)
@@ -104,12 +105,11 @@ class Editing(CustomFrame):
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
         for notebook in self.notebooks:
-            if isinstance(notebook, str):
-                text = QtGui.QTextEdit(self.tabs)
-                source = open(os.path.join(self.root, notebook)).read()
-                text.setText(source)
-                text.setTabChangesFocus(True)
-                self.tabs.addTab(text, notebook.strip(EXTENSION))
+            text = QtGui.QTextEdit(self.tabs)
+            source = open(os.path.join(self.root, notebook)).read()
+            text.setText(source)
+            text.setTabChangesFocus(True)
+            self.tabs.addTab(text, notebook.strip(EXTENSION))
 
         vbox = QtGui.QVBoxLayout()
 

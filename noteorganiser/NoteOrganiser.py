@@ -21,7 +21,7 @@ class NoteOrganiser(QMainWindow):
         'editing',
         'preview']
 
-    def __init__(self, logger, root, notebooks):
+    def __init__(self, logger, root, notebooks, folders):
         QMainWindow.__init__(self)
 
         # Store references to the logger, root folder and the entire list of
@@ -29,6 +29,7 @@ class NoteOrganiser(QMainWindow):
         self.logger = logger
         self.root = root
         self.notebooks = notebooks
+        self.folders = folders
 
         self.initUI()
         self.initLogic()
@@ -114,9 +115,9 @@ def main(args):
     # Define a logger
     logger = create_logger('INFO')
     # Recover the folder path and the notebooks
-    root, notebooks = initialise(logger)
+    root, notebooks, folders = initialise(logger)
     # Define the main window
-    main_window = NoteOrganiser(logger, root, notebooks)
+    main_window = NoteOrganiser(logger, root, notebooks, folders)
 
     # Run
     sys.exit(application.exec_())

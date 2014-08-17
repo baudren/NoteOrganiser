@@ -21,33 +21,38 @@ def initialise(logger):
     # Recursively search the main folder for notebooks or folders of notebooks
     # It also checks if the folder ".noteorganiser" exists, and creates it
     # otherwise.
-    notebooks = search_folder_recursively(logger, main)
+    # folders will contain all the non-empty folders in the main. The method
+    # search_folder_recursively will be called again when the user wants to
+    # explore also the contents of this folder
+    notebooks, folders = search_folder_recursively(logger, main)
 
     # Return both the path to the folder where it is stored, and the list of
     # notebooks
-    return main, notebooks
+    return main, notebooks, folders
 
 
 def search_folder_recursively(logger, main):
-    notebooks = []
+    notebooks, folders = [], []
     if os.path.isdir(main):
         logger.info("Main folder existed already")
         # If yes, check if there are already some notebooks
         for elem in os.listdir(main):
             if os.path.isfile(os.path.join(main, elem)):
+                # If it is a valid file, append it to notebooks
                 if elem.find(EXTENSION) != -1:
                     logger.info("Found the file %s as a valid notebook" % elem)
                     notebooks.append(elem)
             elif os.path.isdir(os.path.join(main, elem)):
-                temp = search_folder_recursively(
+                # Otherwise, check the folder for valid files, and append it to
+                # folders in case there are some inside.
+                temp, sub_folders = search_folder_recursively(
                     logger, os.path.join(main, elem))
                 if temp:
-                    notebooks.append((
-                        os.path.join(main, elem), temp))
+                    folders.append(os.path.join(main, elem))
     else:
         logger.info("Main folder non-existant: creating it now")
         os.mkdir(main)
-    return notebooks
+    return notebooks, folders
 
 
 if __name__ == "__main__":
