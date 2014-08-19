@@ -69,13 +69,8 @@ class Shelves(QtGui.QWidget):
         self.parent.logger.info(
             'adding %s to the shelves' % self.notebooks[-1].strip(
                 EXTENSION))
-        button = PicButton(QtGui.QPixmap(
-            "./noteorganiser/assets/notebook-128.png"),
-            self.notebooks[-1].strip(EXTENSION))
-        button.setMinimumSize(128, 128)
-        button.setMaximumSize(128, 128)
-        button.clicked.connect(self.notebookClicked)
-        self.grid.addWidget(button, 0, len(self.notebooks)-1)
+        self.clearUI()
+        self.initUI()
 
     def notebookClicked(self):
         sender = self.sender()
