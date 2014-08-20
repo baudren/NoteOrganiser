@@ -3,7 +3,7 @@ Roadmap for 0.1
 
 # Library
 o remake icons (with a zone for text?)
-o allow for folders
+x allow for folders
 o allow for removing notebook (with confirmation if not empty), with button and
   right click
 o variable number of columns/line on the shelves
