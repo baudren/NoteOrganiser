@@ -1,9 +1,17 @@
 Roadmap for 0.1
 ===============
 
+# General
+
+[ ] create a configuration class, holding all the necessary information, shared
+    among every frame or widget.
+
 # Library
-[x] remake icons (with a zone for text)
+[~] remake icons
+    [x] use own icons
+    [ ] write the names in the transparent zone
 [x] allow for folders
+[ ] navigation options (back (i.e. up)), toolbar maybe?
 [ ] allow for removing notebook (with confirmation if not empty), with button
     and right click
 [ ] variable number of columns/line on the shelves

@@ -1,8 +1,11 @@
 import sys
 import os
 from PySide import QtGui
+from PySide import QtCore
+from PySide import QtWebKit
 
 from widgets import Shelves
+from text_processing import from_notes_to_markdown
 from constants import EXTENSION
 
 
@@ -26,6 +29,9 @@ class CustomFrame(QtGui.QFrame):
         self.folders = self.parentWidget().folders
         self.root = self.parentWidget().root
 
+        if hasattr(self, 'initLogic'):
+            self.initLogic()
+
         self.initUI()
 
     def initUI(self):
@@ -37,8 +43,8 @@ class Library(CustomFrame):
     The notebooks will be stored and displayed there
 
     Should ressemble something like this:
-     _________  _________  ____________
-    / Library \/ Editing \/ Previewing \
+     _________  _________  _________
+    / Library \/ Editing \/ Preview \
     |          ----------------------------------
     |                              |            |
     |   notebook_1     notebook_2  | [+] new N  |
@@ -83,8 +89,8 @@ class Editing(CustomFrame):
     Contrary to the Library tab, this one will have an additional state, the
     active state, which will dictate on which file the window is open.
 
-     _________  _________  ____________
-    / Library \/ Editing \/ Previewing \
+     _________  _________  _________
+    / Library \/ Editing \/ Preview \
     |----------           ----------------------------
     |    --------------------------|                  |
     |   /|                         | [+] new entry    |
@@ -140,7 +146,65 @@ class Editing(CustomFrame):
         self.tabs.setCurrentIndex(index)
 
 
+class Preview(CustomFrame):
+    """
+    Preview of the markdown in html, with tag selection
+
+    The left hand side will be an html window, displaying the whole notebook.
+    On the right, a list of tags will be displayed, as well as a calendar for
+    date selection TODO
+
+
+     _________  _________  _________
+    / Library \/ Editing \/ Preview \
+    |---------------------          ------------------
+    |    --------------------------|                  |
+    |    |                         | TAG1 TAG2 tag3   |
+    |    |                         | tag4 ...         |
+    |    |                         |                  |
+    |    |_________________________| Calendar         |
+    ---------------------------------------------------
+    """
+    def __init__(self, *args):
+        CustomFrame.__init__(self, *args)
+
+    def initLogic(self):
+        self.website_root = os.path.join(self.root, 'website')
+        self.sha = []
+
+    def initUI(self):
+        self.logger.info("Starting UI init of %s" % self.__class__.__name__)
+        self.hbox = QtGui.QHBoxLayout()
+
+        # Left hand side: html window
+        self.web = QtWebKit.QWebView(self)
+        self.load_notebook("python.md")
+
+        self.hbox.addWidget(self.web)
+
+        # Right hand side: Vertical layout
+        self.vbox = QtGui.QVBoxLayout()
+        self.hbox.addLayout(self.vbox)
+
+        # Set the global layout
+        self.setLayout(self.hbox)
+        # Logging
+        self.logger.info("Finished UI init of %s" % self.__class__.__name__)
+
+    def set_webpage(self, page):
+        self.web.load(QtCore.QUrl(page))
+
+    def load_notebook(self, notebook, tags=[]):
+        # Check the SHA1 sum to see if it has been computed already TODO
+        # If not, compute it
+        markdown, extracted_tags = from_notes_to_markdown(
+            os.path.join(self.root, notebook))
+        page = os.path.join(self.website_root, notebook.replace(
+            EXTENSION, '.html'))
+        # Finally, set the url of the web viewer to the desired page
+        self.set_webpage(page)
+
 if __name__ == "__main__":
     application = QtGui.QApplication(sys.argv)
     example = ExampleFrame()
-    sys.exit(app.exec_())
+    sys.exit(application.exec_())

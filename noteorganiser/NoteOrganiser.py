@@ -2,11 +2,10 @@ import sys
 import os
 from PySide.QtGui import QApplication, QMainWindow
 from PySide.QtGui import QAction, QTabWidget
-from PySide.QtGui import QFrame
 from PySide.QtCore import Slot
 
 # Local module imports
-from frames import Library, Editing
+from frames import Library, Editing, Preview
 from widgets import NewNotebook
 from logger import create_logger
 from configuration import initialise
@@ -68,7 +67,7 @@ class NoteOrganiser(QMainWindow):
         # reference to the list of notebooks.
         self.library = Library(self)
         self.editing = Editing(self)
-        self.preview = QFrame(self)
+        self.preview = Preview(self)
 
         # Adding them to the tabs widget
         self.tabs.addTab(self.library, "Library")

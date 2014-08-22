@@ -107,6 +107,10 @@ def normalize_post(post):
     >>> normalize_post(post)
     ['Toto has a long title', '------', '# something']
     """
+    # Remove blank lines, and trailing \n
+    post = [line.strip() for line in post if line.strip()]
+
+    # Recover the dashline (title of the post)
     dashes = [e for e in post if e.find('----') != -1]
     dashline_index = post.index(dashes[0])
 
@@ -145,7 +149,6 @@ def extract_title_and_posts_from_text(text):
             title = text[index-1]
         if line.find('----') != -1 and line[0] == '-':
             post_starting_indices.append(index-1)
-    print post_starting_indices
     number_of_posts = len(post_starting_indices)
 
     # Create post_indices such that it stores all the post, so the starting and
@@ -162,7 +165,40 @@ def extract_title_and_posts_from_text(text):
         start, end = elem
         posts.append(text[start:end])
 
+    # Normalize them all
+    for index, post in enumerate(posts):
+        posts[index] = normalize_post(post)
+        assert is_valid_post(posts[index]) is True
     return title, posts
+
+
+def from_notes_to_markdown(path, tags=None):
+    """
+    From a file, given tags, produce an output markdown file.
+
+    This will then be interpreted with the pandoc library into html.
+
+    Returns
+    -------
+    markdown : list
+        entire markdown text
+    tags : list
+        list of tags extracted from the text
+    """
+    # Create the array to return
+    markdown = []
+    text = open(path, 'r').readlines()
+    title, posts = extract_title_and_posts_from_text(text)
+    extracted_tags = []
+    for post in posts:
+        name = extract_title_from_post(post)
+        edit_date = extract_date_from_post(post)
+        corpus = extract_corpus_from_post(post)
+        tags = extract_tags_from_post(post)
+        # Store the recovered tags
+        extracted_tags.extend(tags)
+
+    return markdown, extracted_tags
 
 if __name__ == "__main__":
     import doctest
