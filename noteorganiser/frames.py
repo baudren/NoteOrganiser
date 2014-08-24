@@ -178,7 +178,12 @@ class Preview(CustomFrame):
 
         # Left hand side: html window
         self.web = QtWebKit.QWebView(self)
-        self.load_notebook("python.md")
+        # Set the css file. Note that the path to the css needs to be absolute,
+        # somehow...
+        local_path = os.getcwd()
+        self.web.settings().setUserStyleSheetUrl(QtCore.QUrl.fromLocalFile(
+            os.path.join(local_path, 'noteorganiser', 'assets', 'style',
+                         'default.css')))
 
         self.hbox.addWidget(self.web)
 
@@ -196,9 +201,14 @@ class Preview(CustomFrame):
 
     def load_notebook(self, notebook, tags=[]):
         # Check the SHA1 sum to see if it has been computed already TODO
-        # If not, compute it
+        # If not, compute it, recovering the list of tags, of dates TODO, and
+        # the straight markdown file
         markdown, extracted_tags = from_notes_to_markdown(
             os.path.join(self.root, notebook))
+
+        # Store the markdown to a file
+
+        # Apply pandoc to this markdown file, and store the html
         page = os.path.join(self.website_root, notebook.replace(
             EXTENSION, '.html'))
         # Finally, set the url of the web viewer to the desired page
