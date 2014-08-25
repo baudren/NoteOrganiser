@@ -28,6 +28,6 @@ Roadmap for 0.1
 [ ] list of existing tags
 
 # Previewing
-[ ] script to convert modified md to md, then pandoc to html
-[ ] style-sheet support for web-browser
+[x] script to convert modified md to md, then pandoc to html
+[x] style-sheet support for web-browser
 [ ] list of existing tags, toggable buttons.
