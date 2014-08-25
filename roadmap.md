@@ -15,8 +15,6 @@ Roadmap for 0.1
 [ ] allow for removing notebook (with confirmation if not empty), with button
     and right click
 [ ] variable number of columns/line on the shelves
-[ ] resizing should change the number of columns/lines for the shelves
-[ ] special graphic for shelves (wood?)
 
 # Editing
 [ ] allow for folders (tabbed tabs...)
@@ -25,9 +23,19 @@ Roadmap for 0.1
 [ ] shortcut for previewing (CTRL+P)
 [ ] implement "new field"
 [ ] when opening newly created notebook, write the title on top
-[ ] list of existing tags
 
 # Previewing
 [x] script to convert modified md to md, then pandoc to html
 [x] style-sheet support for web-browser
 [ ] list of existing tags, toggable buttons.
+
+
+Future work
+===========
+
+# Library
+[ ] special graphic for shelves (wood?)
+[ ] resizing should change the number of columns/lines for the shelves
+
+# Editing
+[ ] list of existing tags when entering a new field
