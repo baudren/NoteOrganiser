@@ -6,6 +6,30 @@ from constants import EXTENSION
 from configuration import search_folder_recursively
 
 
+class Dialog(QtGui.QDialog):
+
+    def __init__(self, parent=None):
+        QtGui.QDialog.__init__(self, parent)
+        self.parent = parent
+        self.logger = parent.logger
+
+        # Define Ctrl+W to close it, and overwrite Esc
+        _ = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+W'),
+                            self, self.clean_accept)
+        _ = QtGui.QShortcut(QtGui.QKeySequence('Esc'),
+                            self, self.clean_reject)
+
+    def clean_accept(self):
+        """Logging the closing of the popup"""
+        self.logger.info("%s form suceeded!" % self.__class__.__name__)
+        self.accept()
+
+    def clean_reject(self):
+        """Logging the rejection of the popup"""
+        self.logger.info("Aborting %s form" % self.__class__.__name__)
+        self.reject()
+
+
 class Shelves(QtGui.QWidget):
 
     def __init__(self, notebooks, folders, parent=None):
@@ -91,12 +115,10 @@ class Shelves(QtGui.QWidget):
         self.initUI()
 
 
-class NewNotebook(QtGui.QDialog):
+class NewNotebook(Dialog):
 
     def __init__(self, notebooks, parent=None):
-        QtGui.QDialog.__init__(self, parent)
-        self.parent = parent
-        self.logger = parent.logger
+        Dialog.__init__(self, parent)
         self.notebooks = notebooks
         self.names = [elem.strip(EXTENSION) for elem in notebooks]
         self.initUI()
@@ -105,12 +127,6 @@ class NewNotebook(QtGui.QDialog):
         self.logger.info("Creating popup window")
 
         self.setWindowTitle("New notebook")
-
-        # Define Ctrl+W to close it, and overwrite Esc
-        _ = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+W'),
-                            self, self.clean_accept)
-        _ = QtGui.QShortcut(QtGui.QKeySequence('Esc'),
-                            self, self.clean_reject)
 
         # Define the fields:
         # Name (text field)
@@ -147,16 +163,6 @@ class NewNotebook(QtGui.QDialog):
 
         self.setLayout(grid)
 
-    def clean_accept(self):
-        """Logging the closing of the popup"""
-        self.logger.info("Creating a new notebook!")
-        self.accept()
-
-    def clean_reject(self):
-        """Logging the rejection of the popup"""
-        self.logger.info("Aborting notebook creation")
-        self.reject()
-
     def create_notebook(self):
         """Query the entry fields and append the notebook list"""
         desired_name = self.name_entry.text()
@@ -175,6 +181,51 @@ class NewNotebook(QtGui.QDialog):
                 self.name_confirmation_box.setText("Creating notebook")
                 self.accept()
 
+
+class NewEntry(Dialog):
+
+    def __init__(self, parent=None):
+        Dialog.__init__(self, parent)
+        self.initUI()
+
+    def initUI(self):
+        self.logger.info("Creating a 'New Entry' form")
+
+        self.setWindowTitle("New entry")
+
+        # Define global horizontal layout
+        hboxLayout = QtGui.QHBoxLayout()
+
+        # Define the fields: Name, tags and body
+        formLayout = QtGui.QFormLayout()
+        titleLineEdit = QtGui.QLineEdit()
+        tagsLineEdit = QtGui.QLineEdit()
+        corpusBox = QtGui.QTextEdit()
+
+        formLayout.addRow(self.tr("&Title:"), titleLineEdit)
+        formLayout.addRow(self.tr("Ta&gs:"), tagsLineEdit)
+        formLayout.addRow(self.tr("&Body:"), corpusBox)
+
+        hboxLayout.addLayout(formLayout)
+
+        # Define the RHS with Ok, Cancel and list of tags TODO)
+        vboxLayout = QtGui.QVBoxLayout()
+
+        okButton = QtGui.QPushButton("&Ok")
+        okButton.clicked.connect(self.creating_entry)
+        cancelButton = QtGui.QPushButton("&Cancel")
+        cancelButton.clicked.connect(self.clean_reject)
+
+        vboxLayout.addWidget(okButton)
+        vboxLayout.addWidget(cancelButton)
+
+        hboxLayout.addLayout(vboxLayout)
+        # Set the global layout
+        self.setLayout(hboxLayout)
+
+    def creating_entry(self):
+        #TODO
+        self.clean_accept()
 
 class PicButton(QtGui.QPushButton):
     """Button with a picture"""

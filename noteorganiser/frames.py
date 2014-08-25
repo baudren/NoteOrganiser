@@ -6,7 +6,7 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
-from widgets import Shelves
+from widgets import Shelves, NewEntry
 from text_processing import from_notes_to_markdown
 from constants import EXTENSION
 
@@ -106,8 +106,10 @@ class Editing(CustomFrame):
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(10)
 
-        newButton = QtGui.QPushButton("New entry", self)
-        removeButton = QtGui.QPushButton("Remove", self)
+        newButton = QtGui.QPushButton("&New entry", self)
+        newButton.clicked.connect(self.newEntry)
+
+        removeButton = QtGui.QPushButton("&Cancel", self)
 
         self.tabs = QtGui.QTabWidget(self)
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
@@ -146,6 +148,13 @@ class Editing(CustomFrame):
         self.parent.logger.info("switching to "+notebook)
         index = self.notebooks.index(notebook+EXTENSION)
         self.tabs.setCurrentIndex(index)
+
+    def newEntry(self):
+        """Open a form and store the results to the file"""
+        self.popup = NewEntry(self)
+        ok = self.popup.exec_()
+        if ok:
+            print self.popup
 
 
 class Preview(CustomFrame):
