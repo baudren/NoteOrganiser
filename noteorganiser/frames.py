@@ -1,5 +1,7 @@
 import sys
 import os
+import pypandoc as pa
+
 from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
@@ -185,6 +187,9 @@ class Preview(CustomFrame):
             os.path.join(local_path, 'noteorganiser', 'assets', 'style',
                          'default.css')))
 
+        # temp
+        self.load_notebook("python.md")
+
         self.hbox.addWidget(self.web)
 
         # Right hand side: Vertical layout
@@ -206,13 +211,22 @@ class Preview(CustomFrame):
         markdown, extracted_tags = from_notes_to_markdown(
             os.path.join(self.root, notebook))
 
-        # Store the markdown to a file
+        # save a temp
+        with open(os.path.join(self.website_root, notebook), 'w') as temp:
+            temp.write('\n'.join(markdown))
 
-        # Apply pandoc to this markdown file, and store the html
-        page = os.path.join(self.website_root, notebook.replace(
+        # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
+        # recover the html
+        #html = pa.convert('\n'.join(markdown), 'html', format='markdown')
+        html = pa.convert(os.path.join(self.website_root, notebook), 'html')
+
+        # Write the html to a file
+        url = os.path.join(self.website_root, notebook.replace(
             EXTENSION, '.html'))
+        with open(url, 'w') as page:
+            page.write(html)
         # Finally, set the url of the web viewer to the desired page
-        self.set_webpage(page)
+        self.set_webpage(url)
 
 if __name__ == "__main__":
     application = QtGui.QApplication(sys.argv)

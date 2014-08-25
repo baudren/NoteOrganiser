@@ -67,7 +67,7 @@ def extract_tags_from_post(post):
     if tag_line and tag_line[0] == '#':
         tags = [elem.strip() for elem in tag_line[1:].split(',')]
 
-    return tags
+    return tags, post[:2]+post[3:]
 
 
 def extract_title_from_post(post):
@@ -89,14 +89,16 @@ def extract_date_from_post(post):
     >>> extract_date_from_post(post)
     datetime.date(2012, 12, 21)
     """
-    date_line = post[3]
-    match = re.match(
-        r"\*([0-9]{2})/([0-1][1-9])/([0-9]{4})\*",
-        date_line)
-    assert len(match.groups()) == 3
-    day, month, year = match.groups()
-    extracted_date = date(int(year), int(month), int(day))
-    return extracted_date
+    for index, line in enumerate(post):
+        match = re.match(
+            r"\*([0-9]{2})/([0-1][1-9])/([0-9]{4})\*",
+            line)
+        if match:
+            assert len(match.groups()) == 3
+            day, month, year = match.groups()
+            extracted_date = date(int(year), int(month), int(day))
+            return extracted_date, post[:index]+post[index+1:]
+    raise ValueError("No date found in the post")
 
 
 def normalize_post(post):
@@ -107,8 +109,8 @@ def normalize_post(post):
     >>> normalize_post(post)
     ['Toto has a long title', '------', '# something']
     """
-    # Remove blank lines, and trailing \n
-    post = [line.strip() for line in post if line.strip()]
+    # Remove trailing \n
+    post = [line.strip() for line in post]
 
     # Recover the dashline (title of the post)
     dashes = [e for e in post if e.find('----') != -1]
@@ -126,9 +128,9 @@ def extract_corpus_from_post(post):
     Recover the whole content of a post
 
     >>> post = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*",
-    ...         "This morning I woke", "up and it was a nice weather"]
+    ...         "This morning I woke", "", "up and it was a nice weather"]
     >>> extract_corpus_from_post(post)
-    ['This morning I woke', 'up and it was a nice weather']
+    ['This morning I woke', '', 'up and it was a nice weather']
     """
     return post[4:]
 
@@ -146,7 +148,7 @@ def extract_title_and_posts_from_text(text):
         if not line:
             continue
         if line.find("====") != -1:
-            title = text[index-1]
+            title = text[index-1].strip()
         if line.find('----') != -1 and line[0] == '-':
             post_starting_indices.append(index-1)
     number_of_posts = len(post_starting_indices)
@@ -169,6 +171,7 @@ def extract_title_and_posts_from_text(text):
     for index, post in enumerate(posts):
         posts[index] = normalize_post(post)
         assert is_valid_post(posts[index]) is True
+
     return title, posts
 
 
@@ -186,17 +189,22 @@ def from_notes_to_markdown(path, tags=None):
         list of tags extracted from the text
     """
     # Create the array to return
-    markdown = []
     text = open(path, 'r').readlines()
     title, posts = extract_title_and_posts_from_text(text)
+    markdown = ["# %s" % title, ""]
     extracted_tags = []
     for post in posts:
         name = extract_title_from_post(post)
-        edit_date = extract_date_from_post(post)
+        text = ["", "## %s" % name, ""]
+
+        tags, post = extract_tags_from_post(post)
+        edit_date, post = extract_date_from_post(post)
         corpus = extract_corpus_from_post(post)
-        tags = extract_tags_from_post(post)
+        text.extend(corpus)
+        text.extend(["", ""])
         # Store the recovered tags
         extracted_tags.extend(tags)
+        markdown.extend(text)
 
     return markdown, extracted_tags
 
