@@ -33,6 +33,9 @@ Roadmap for 0.1
 Future work
 ===========
 
+# General
+[ ] Improve keyboard shortcuts
+
 # Library
 [ ] special graphic for shelves (wood?)
 [ ] resizing should change the number of columns/lines for the shelves
