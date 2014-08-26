@@ -154,7 +154,7 @@ class Editing(CustomFrame):
         self.popup = NewEntry(self)
         ok = self.popup.exec_()
         if ok:
-            print self.popup
+            pass
 
 
 class Preview(CustomFrame):

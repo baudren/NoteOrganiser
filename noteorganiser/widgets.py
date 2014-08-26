@@ -124,61 +124,58 @@ class NewNotebook(Dialog):
         self.initUI()
 
     def initUI(self):
-        self.logger.info("Creating popup window")
+        self.logger.info("Creating a 'New Notebook' form")
 
         self.setWindowTitle("New notebook")
+
+        # Define global vertical layout
+        vboxLayout = QtGui.QVBoxLayout()
 
         # Define the fields:
         # Name (text field)
         # type (so far, standard)
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
-
-        name = QtGui.QLabel("Notebook's name")
-        self.name_entry = QtGui.QLineEdit()
-        # Tick box that will be ticked when the name is long enough
-        # TODO
-        # The grid changes when some text is displayed here...
-        self.name_confirmation_box = QtGui.QLabel("")
-
+        formLayout = QtGui.QFormLayout()
+        self.nameLineEdit = QtGui.QLineEdit()
         # Query the type of notebook
-        notebook_type_text = QtGui.QLabel("Notebook's type")
-        notebook_type = QtGui.QComboBox()
-        notebook_type.addItem("Standard")
+        self.notebookType = QtGui.QComboBox()
+        self.notebookType.addItem("Standard")
 
-        grid.addWidget(name, 0, 0)
-        grid.addWidget(self.name_entry, 0, 1)
-        grid.addWidget(notebook_type_text, 1, 0)
-        grid.addWidget(notebook_type, 1, 1)
+        formLayout.addRow(self.tr("Notebook's &name:"), self.nameLineEdit)
+        formLayout.addRow(self.tr("&Notebook's &type:"), self.notebookType)
+        vboxLayout.addLayout(formLayout)
+
+        hboxLayout = QtGui.QHBoxLayout()
 
         # Add the "Create" button, as a confirmation, and the "Cancel" one
         create = QtGui.QPushButton("&Create")
         create.clicked.connect(self.create_notebook)
         cancel = QtGui.QPushButton("C&ancel")
         cancel.clicked.connect(self.clean_reject)
+        hboxLayout.addWidget(create)
+        hboxLayout.addWidget(cancel)
+        vboxLayout.addLayout(hboxLayout)
 
-        grid.addWidget(create, 2, 0)
-        grid.addWidget(cancel, 2, 1)
-        grid.addWidget(self.name_confirmation_box, 3, 0)
+        # Create a status bar
+        self.statusBar = QtGui.QStatusBar()
+        vboxLayout.addWidget(self.statusBar)
 
-        self.setLayout(grid)
+        self.setLayout(vboxLayout)
 
     def create_notebook(self):
         """Query the entry fields and append the notebook list"""
-        desired_name = self.name_entry.text()
+        desired_name = self.nameLineEdit.text()
         self.logger.info("Desired Notebook name: "+desired_name)
         if not desired_name or len(desired_name) < 2:
-            self.name_confirmation_box.setText("name too short")
+            self.statusBar.showMessage("name too short", 2000)
             self.logger.info("name rejected: too short")
         else:
             if desired_name in self.names:
-                self.name_confirmation_box.setText(
-                    "name already used")
+                self.statusBar.showMessage("name already used", 2000)
                 self.logger.info("name rejected: already used")
             else:
                 # Actually creating the notebook
                 self.notebooks.append(desired_name)
-                self.name_confirmation_box.setText("Creating notebook")
+                self.statusBar.showMessage("Creating notebook", 2000)
                 self.accept()
 
 
@@ -193,39 +190,72 @@ class NewEntry(Dialog):
 
         self.setWindowTitle("New entry")
 
-        # Define global horizontal layout
+        # Define global vertical layout
+        vboxLayout = QtGui.QVBoxLayout()
+
+        # Define the main window horizontal layout
         hboxLayout = QtGui.QHBoxLayout()
 
         # Define the fields: Name, tags and body
         formLayout = QtGui.QFormLayout()
-        titleLineEdit = QtGui.QLineEdit()
-        tagsLineEdit = QtGui.QLineEdit()
-        corpusBox = QtGui.QTextEdit()
+        self.titleLineEdit = QtGui.QLineEdit()
+        self.tagsLineEdit = QtGui.QLineEdit()
+        self.corpusBox = QtGui.QTextEdit()
 
-        formLayout.addRow(self.tr("&Title:"), titleLineEdit)
-        formLayout.addRow(self.tr("Ta&gs:"), tagsLineEdit)
-        formLayout.addRow(self.tr("&Body:"), corpusBox)
+        formLayout.addRow(self.tr("&Title:"), self.titleLineEdit)
+        formLayout.addRow(self.tr("Ta&gs:"), self.tagsLineEdit)
+        formLayout.addRow(self.tr("&Body:"), self.corpusBox)
 
         hboxLayout.addLayout(formLayout)
 
         # Define the RHS with Ok, Cancel and list of tags TODO)
-        vboxLayout = QtGui.QVBoxLayout()
+        buttonLayout = QtGui.QVBoxLayout()
 
-        okButton = QtGui.QPushButton("&Ok")
+        okButton = QtGui.QPushButton("Ok")
         okButton.clicked.connect(self.creating_entry)
+        acceptShortcut = QtGui.QShortcut(
+            QtGui.QKeySequence(self.tr("Shift+Enter")), self.corpusBox)
+        acceptShortcut.activated.connect(self.creating_entry)
+
         cancelButton = QtGui.QPushButton("&Cancel")
         cancelButton.clicked.connect(self.clean_reject)
 
-        vboxLayout.addWidget(okButton)
-        vboxLayout.addWidget(cancelButton)
+        buttonLayout.addWidget(okButton)
+        buttonLayout.addWidget(cancelButton)
 
-        hboxLayout.addLayout(vboxLayout)
+        hboxLayout.addLayout(buttonLayout)
+        # Create the status bar
+        self.statusBar = QtGui.QStatusBar(self)
+        # Create a permanent widget displaying what we are doing
+        statusWidget = QtGui.QLabel("Creating new entry")
+        self.statusBar.addPermanentWidget(statusWidget)
+
+        vboxLayout.addLayout(hboxLayout)
+        vboxLayout.addWidget(self.statusBar)
+
         # Set the global layout
-        self.setLayout(hboxLayout)
+        self.setLayout(vboxLayout)
 
     def creating_entry(self):
-        #TODO
+        # Check if title is valid (non-empty)
+        title = self.titleLineEdit.text()
+        if not title or len(title) < 2:
+            self.statusBar.showMessage(self.tr("Invalid title"), 2000)
+            return
+        tags = self.tagsLineEdit.text()
+        if not tags or len(tags) < 2:
+            self.statusBar.showMessage(self.tr("Invalid tags"), 2000)
+            return
+        corpus = self.corpusBox.toPlainText()
+        if not corpus or len(corpus) < 2:
+            self.statusBar.showMessage(self.tr("Empty entry"), 2000)
+            return
+        # Storing the variables to be recovered afterwards
+        self.title = title
+        self.tags = tags
+        self.corpus = corpus
         self.clean_accept()
+
 
 class PicButton(QtGui.QPushButton):
     """Button with a picture"""
