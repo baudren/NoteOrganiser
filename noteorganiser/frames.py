@@ -57,6 +57,11 @@ class Library(CustomFrame):
     """
     def initUI(self):
         self.logger.info("Starting UI init of %s" % self.__class__.__name__)
+
+        # global Layout (vertical)
+        vboxLayout = QtGui.QVBoxLayout()
+
+        # Grid Layout
         grid = QtGui.QGridLayout()
         grid.setSpacing(10)
 
@@ -73,7 +78,9 @@ class Library(CustomFrame):
         grid.addWidget(newNotebookButton, 1, 5)
         grid.addWidget(newFolderButton, 2, 5)
         grid.addWidget(removeButton, 3, 5)
-        self.setLayout(grid)
+
+        vboxLayout.addLayout(grid)
+        self.setLayout(vboxLayout)
 
         self.logger.info("Finished UI init of %s" % self.__class__.__name__)
 
@@ -199,7 +206,9 @@ class Preview(CustomFrame):
         CustomFrame.__init__(self, *args)
 
     def initLogic(self):
-        self.website_root = os.path.join(self.root, 'website')
+        self.website_root = os.path.join(self.root, '.website')
+        if not os.path.isdir(self.website_root):
+            os.mkdir(self.website_root)
         self.sha = []
 
     def initUI(self):
@@ -214,9 +223,6 @@ class Preview(CustomFrame):
         self.web.settings().setUserStyleSheetUrl(QtCore.QUrl.fromLocalFile(
             os.path.join(local_path, 'noteorganiser', 'assets', 'style',
                          'default.css')))
-
-        # temp
-        self.load_notebook("python.md")
 
         self.hbox.addWidget(self.web)
 
