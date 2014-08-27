@@ -45,10 +45,13 @@ def search_folder_recursively(logger, main):
             elif os.path.isdir(os.path.join(main, elem)):
                 # Otherwise, check the folder for valid files, and append it to
                 # folders in case there are some inside.
-                temp, sub_folders = search_folder_recursively(
-                    logger, os.path.join(main, elem))
-                if temp:
-                    folders.append(os.path.join(main, elem))
+                # If the folder is hidden (linux convention, with a leading
+                # dot), ignore
+                if elem[0] != '.':
+                    temp, _ = search_folder_recursively(
+                        logger, os.path.join(main, elem))
+                    if temp:
+                        folders.append(os.path.join(main, elem))
     else:
         logger.info("Main folder non-existant: creating it now")
         os.mkdir(main)
