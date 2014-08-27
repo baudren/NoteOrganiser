@@ -30,10 +30,10 @@ class Dialog(QtGui.QDialog):
         self.reject()
 
 
-class Shelves(QtGui.QWidget):
+class Shelves(QtGui.QFrame):
 
     def __init__(self, notebooks, folders, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtGui.QFrame.__init__(self, parent)
         self.parent = parent
         self.notebooks = notebooks
         self.folders = folders
@@ -46,6 +46,7 @@ class Shelves(QtGui.QWidget):
 
     def initUI(self):
         """Create the physical shelves"""
+        self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
         grid = QtGui.QGridLayout()
         grid.setSpacing(100)
 
@@ -73,10 +74,24 @@ class Shelves(QtGui.QWidget):
 
         self.layout().insertLayout(0, grid)
 
+        # Create the navigation symbols
+        hboxLayout = QtGui.QHBoxLayout()
+
+        previousButton = QtGui.QPushButton("&Previous")
+        previousButton.clicked.connect(self.previousFolder)
+        nextButton = QtGui.QPushButton("Ne&xt")
+        nextButton.clicked.connect(self.nextFolder)
+
+        hboxLayout.addWidget(previousButton)
+        hboxLayout.addWidget(nextButton)
+
+        self.layout().insertLayout(1, hboxLayout)
+
     def clearUI(self):
-        layout = self.layout().takeAt(0)
-        self.clearLayout(layout)
-        layout.deleteLater()
+        for _ in range(2):
+            layout = self.layout().takeAt(0)
+            self.clearLayout(layout)
+            layout.deleteLater()
 
     def clearLayout(self, layout):
         if layout is not None:
@@ -113,6 +128,22 @@ class Shelves(QtGui.QWidget):
         self.level = folder_path
         self.clearUI()
         self.initUI()
+
+    def previousFolder(self):
+        if self.level == self.parent.root:
+            return
+        else:
+            folder_path = os.path.dirname(self.level)
+            self.notebooks, self.folders = search_folder_recursively(
+                self.parent.logger, folder_path)
+        # Update the current level as the folder_path, and refresh the content
+        # of the window
+        self.level = folder_path
+        self.clearUI()
+        self.initUI()
+
+    def nextFolder(self):
+        pass
 
 
 class NewNotebook(Dialog):
