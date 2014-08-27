@@ -20,8 +20,10 @@ Roadmap for 0.1
 [ ] allow for folders (tabbed tabs...)
 [ ] reload from disk externally modified files
 [ ] save modified files (CTRL+S)
-[ ] shortcut for previewing (CTRL+P)
-[ ] implement "new field"
+[x] shortcut for previewing (CTRL+P)
+[~] implement "new field"
+    [x] form created
+    [ ] update the file
 [ ] when opening newly created notebook, write the title on top
 
 # Previewing
