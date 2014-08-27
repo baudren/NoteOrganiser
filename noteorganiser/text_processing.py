@@ -91,7 +91,7 @@ def extract_date_from_post(post):
     """
     for index, line in enumerate(post):
         match = re.match(
-            r"\*([0-9]{2})/([0-1][1-9])/([0-9]{4})\*",
+            r"\*([0-9]{2})/([0-1][0-9])/([0-9]{4})\*",
             line)
         if match:
             assert len(match.groups()) == 3
