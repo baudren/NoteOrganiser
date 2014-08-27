@@ -56,7 +56,7 @@ class Shelves(QtGui.QFrame):
             # moment.
             button = PicButton(QtGui.QPixmap(
                 "./noteorganiser/assets/notebook-128.png"),
-                notebook.strip(EXTENSION))
+                notebook.strip(EXTENSION), 'notebook')
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
             button.clicked.connect(self.notebookClicked)
@@ -65,7 +65,7 @@ class Shelves(QtGui.QFrame):
         for index, folder in enumerate(self.folders):
             button = PicButton(QtGui.QPixmap(
                 "./noteorganiser/assets/folder-128.png"),
-                os.path.basename(folder))
+                os.path.basename(folder), 'folder')
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
             button.clicked.connect(self.folderClicked)
@@ -284,14 +284,21 @@ class NewEntry(Dialog):
 
 class PicButton(QtGui.QPushButton):
     """Button with a picture"""
-    def __init__(self, pixmap, text, parent=None):
+    def __init__(self, pixmap, text, style, parent=None):
         QtGui.QPushButton.__init__(self, parent)
         self.text = unicode(text)
         self.pixmap = pixmap
+        self.style = style
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
         painter.drawPixmap(event.rect(), self.pixmap)
+        if self.style == 'notebook':
+            painter.translate(42, 90)
+            painter.rotate(-90)
+        elif self.style == 'folder':
+            painter.translate(20, 110)
+        painter.setFont(QtGui.QFont('unicode', 12))
         painter.drawText(event.rect(), self.text)
 
     def sizeHint(self):
@@ -309,7 +316,7 @@ if __name__ == "__main__":
     layout = QtGui.QHBoxLayout(window)
 
     button = PicButton(QtGui.QPixmap(
-        "./noteorganiser/assets/notebook-128.png"), 'something')
+        "./noteorganiser/assets/notebook-128.png"), 'something', 'notebook')
     layout.addWidget(button)
 
     window.show()
