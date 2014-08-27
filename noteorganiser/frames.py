@@ -96,8 +96,8 @@ class Editing(CustomFrame):
     |----------           ----------------------------
     |    --------------------------|                  |
     |   /|                         | [+] new entry    |
-    |   N|                         | [-] delete       |
-    |   1|                         |                  |
+    |   N|                         | [ ] save document|
+    |   1|                         | [ ] preview      |
     |   \|_________________________|                  |
     ---------------------------------------------------
     """
@@ -109,8 +109,17 @@ class Editing(CustomFrame):
         newButton = QtGui.QPushButton("&New entry", self)
         newButton.clicked.connect(self.newEntry)
 
-        removeButton = QtGui.QPushButton("&Cancel", self)
+        # This also should be in a toolbar
+        saveButton = QtGui.QPushButton("&Save notebook", self)
 
+        # Edit in an exterior editor
+        editButton = QtGui.QPushButton("&Edit (exterior editor)", self)
+
+        # Launch the previewing
+        previewButton = QtGui.QPushButton("&Preview notebook", self)
+        previewButton.clicked.connect(self.preview)
+
+        # Create the tabbed widgets
         self.tabs = QtGui.QTabWidget(self)
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
@@ -124,7 +133,9 @@ class Editing(CustomFrame):
         vbox = QtGui.QVBoxLayout()
 
         vbox.addWidget(newButton)
-        vbox.addWidget(removeButton)
+        vbox.addWidget(saveButton)
+        vbox.addWidget(editButton)
+        vbox.addWidget(previewButton)
 
         self.grid.addWidget(self.tabs, 0, 0)
         self.grid.addLayout(vbox, 0, 1)
@@ -155,6 +166,14 @@ class Editing(CustomFrame):
         ok = self.popup.exec_()
         if ok:
             pass
+
+    def preview(self):
+        """Launch the previewing of the current notebook"""
+        index = self.tabs.currentIndex()
+        notebook = self.notebooks[index]
+        self.logger.info('ask to preview notebook %s' % notebook)
+        self.parent.preview.load_notebook(notebook)
+        self.parent.switchTab('preview', notebook)
 
 
 class Preview(CustomFrame):
