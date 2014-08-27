@@ -77,13 +77,10 @@ class Shelves(QtGui.QFrame):
         # Create the navigation symbols
         hboxLayout = QtGui.QHBoxLayout()
 
-        previousButton = QtGui.QPushButton("&Previous")
-        previousButton.clicked.connect(self.previousFolder)
-        nextButton = QtGui.QPushButton("Ne&xt")
-        nextButton.clicked.connect(self.nextFolder)
+        upButton = QtGui.QPushButton("&Up")
+        upButton.clicked.connect(self.upFolder)
 
-        hboxLayout.addWidget(previousButton)
-        hboxLayout.addWidget(nextButton)
+        hboxLayout.addWidget(upButton)
 
         self.layout().insertLayout(1, hboxLayout)
 
@@ -129,7 +126,7 @@ class Shelves(QtGui.QFrame):
         self.clearUI()
         self.initUI()
 
-    def previousFolder(self):
+    def upFolder(self):
         if self.level == self.parent.root:
             return
         else:
@@ -141,9 +138,6 @@ class Shelves(QtGui.QFrame):
         self.level = folder_path
         self.clearUI()
         self.initUI()
-
-    def nextFolder(self):
-        pass
 
 
 class NewNotebook(Dialog):

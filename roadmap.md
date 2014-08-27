@@ -11,7 +11,7 @@ Roadmap for 0.1
     [x] use own icons
     [ ] write the names in the transparent zone
 [x] allow for folders
-[ ] navigation options (back (i.e. up)), toolbar maybe?
+[x] navigation options (back (i.e. up)), toolbar maybe?
 [ ] allow for removing notebook (with confirmation if not empty), with button
     and right click
 [ ] variable number of columns/line on the shelves
