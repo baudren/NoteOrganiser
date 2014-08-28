@@ -56,7 +56,7 @@ class Shelves(QtGui.QFrame):
             # moment.
             button = PicButton(QtGui.QPixmap(
                 "./noteorganiser/assets/notebook-128.png"),
-                notebook.strip(EXTENSION), 'notebook')
+                notebook.strip(EXTENSION), 'notebook', self)
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
             button.clicked.connect(self.notebookClicked)
@@ -65,7 +65,7 @@ class Shelves(QtGui.QFrame):
         for index, folder in enumerate(self.folders):
             button = PicButton(QtGui.QPixmap(
                 "./noteorganiser/assets/folder-128.png"),
-                os.path.basename(folder), 'folder')
+                os.path.basename(folder), 'folder', self)
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
             button.clicked.connect(self.folderClicked)
@@ -81,14 +81,17 @@ class Shelves(QtGui.QFrame):
         upButton.clicked.connect(self.upFolder)
 
         hboxLayout.addWidget(upButton)
+        hboxLayout.addStretch(1)
 
-        self.layout().insertLayout(1, hboxLayout)
+        self.layout().addStretch(1)
+        self.layout().insertLayout(2, hboxLayout)
 
     def clearUI(self):
-        for _ in range(2):
+        for _ in range(3):
             layout = self.layout().takeAt(0)
-            self.clearLayout(layout)
-            layout.deleteLater()
+            if isinstance(layout, QtGui.QLayout):
+                self.clearLayout(layout)
+                layout.deleteLater()
 
     def clearLayout(self, layout):
         if layout is not None:
@@ -100,11 +103,24 @@ class Shelves(QtGui.QFrame):
                 else:
                     self.clearLayout(item.layout())
 
-    def add_notebook(self):
+    def addNotebook(self):
         """Add a new button"""
         self.parent.logger.info(
             'adding %s to the shelves' % self.notebooks[-1].strip(
                 EXTENSION))
+        self.clearUI()
+        self.initUI()
+
+    def removeNotebook(self, notebook):
+        """
+        Remove the notebook
+
+        TODO: add a confirmation for non-empty notebooks
+        """
+        self.parent.logger.info(
+            'deleting %s from the shelves' % notebook)
+        index = self.notebooks.index(notebook+EXTENSION)
+        self.notebooks.pop(index)
         self.clearUI()
         self.initUI()
 
@@ -286,9 +302,17 @@ class PicButton(QtGui.QPushButton):
     """Button with a picture"""
     def __init__(self, pixmap, text, style, parent=None):
         QtGui.QPushButton.__init__(self, parent)
+        self.parent = parent
         self.text = unicode(text)
         self.pixmap = pixmap
         self.style = style
+
+        # Define behaviour under right click
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        delete = QtGui.QAction(self)
+        delete.setText("delete")
+        delete.triggered.connect(self.removeButton)
+        self.addAction(delete)
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
@@ -307,7 +331,10 @@ class PicButton(QtGui.QPushButton):
     def mouseReleaseEvent(self, ev):
         """Define a behaviour under click"""
         self.click()
-        #self.emit(QtCore.SIGNAL('clicked()'))
+
+    def removeButton(self):
+        """Delegate to the parent to deal with the situation"""
+        self.parent.removeNotebook(self.text)
 
 
 if __name__ == "__main__":

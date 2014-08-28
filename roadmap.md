@@ -7,14 +7,14 @@ Roadmap for 0.1
     among every frame or widget.
 
 # Library
-[~] remake icons
+[x] remake icons
     [x] use own icons
-    [ ] write the names in the transparent zone
+    [x] write the names in the transparent zone
 [x] allow for folders
 [x] navigation options (back (i.e. up)), toolbar maybe?
-[ ] allow for removing notebook (with confirmation if not empty), with button
-    and right click
-[ ] variable number of columns/line on the shelves
+[~] allow for removing notebook with right click
+    [x] removing with right click
+    [ ] confirmation if non empty
 
 # Editing
 [ ] allow for folders (tabbed tabs...)
@@ -40,6 +40,7 @@ Future work
 
 # Library
 [ ] special graphic for shelves (wood?)
+[ ] variable number of columns/line on the shelves
 [ ] resizing should change the number of columns/lines for the shelves
 
 # Editing

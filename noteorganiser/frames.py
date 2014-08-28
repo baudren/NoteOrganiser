@@ -85,7 +85,7 @@ class Library(CustomFrame):
         self.logger.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
-        self.shelves.add_notebook()
+        self.shelves.addNotebook()
 
 
 class Editing(CustomFrame):
