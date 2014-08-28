@@ -11,7 +11,8 @@ Status
 ------
 
 Early development, should reach 0.1 in September. See the roadmap for detailed
-plans, and feel free to suggest any thing I missed in the issues.
+plans (browse the raw format, as Github does not apply the Github flavored
+syntax to files), and feel free to suggest any thing I missed in the issues.
 
 Minimal Features (for 0.1)
 --------------------------
