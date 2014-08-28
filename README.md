@@ -7,8 +7,14 @@ Objective
 Provide scientists, IT professionals but also normal people, with a solid
 note-taking GUI.
 
-Features
---------
+Status
+------
+
+Early development, should reach 0.1 in September. See the roadmap for detailed
+plans, and feel free to suggest any thing I missed in the issues.
+
+Minimal Features (for 0.1)
+--------------------------
 
 - Markdown syntax for a clear source file, readable without the software.
 - Tag system for entries for classification
@@ -17,4 +23,5 @@ Features
 License
 -------
 
-MIT, see LICENSE.txt
+The code is published under the MIT license, please see LICENSE.txt for the
+complete notice.
