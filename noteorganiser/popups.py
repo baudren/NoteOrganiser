@@ -12,7 +12,8 @@ class Dialog(QtGui.QDialog):
         """Define the shortcuts"""
         QtGui.QDialog.__init__(self, parent)
         self.parent = parent
-        self.logger = parent.logger
+        self.info = parent.info
+        self.log = parent.log
 
         # Define Ctrl+W to close it, and overwrite Esc
         _ = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+W'),
@@ -22,25 +23,24 @@ class Dialog(QtGui.QDialog):
 
     def clean_accept(self):
         """Logging the closing of the popup"""
-        self.logger.info("%s form suceeded!" % self.__class__.__name__)
+        self.log.info("%s form suceeded!" % self.__class__.__name__)
         self.accept()
 
     def clean_reject(self):
         """Logging the rejection of the popup"""
-        self.logger.info("Aborting %s form" % self.__class__.__name__)
+        self.log.info("Aborting %s form" % self.__class__.__name__)
         self.reject()
 
 
 class NewNotebook(Dialog):
 
-    def __init__(self, notebooks, parent=None):
+    def __init__(self, parent=None):
         Dialog.__init__(self, parent)
-        self.notebooks = notebooks
-        self.names = [elem.strip(EXTENSION) for elem in notebooks]
+        self.names = [elem.strip(EXTENSION) for elem in self.info.notebooks]
         self.initUI()
 
     def initUI(self):
-        self.logger.info("Creating a 'New Notebook' form")
+        self.log.info("Creating a 'New Notebook' form")
 
         self.setWindowTitle("New notebook")
 
@@ -80,17 +80,17 @@ class NewNotebook(Dialog):
     def create_notebook(self):
         """Query the entry fields and append the notebook list"""
         desired_name = self.nameLineEdit.text()
-        self.logger.info("Desired Notebook name: "+desired_name)
+        self.log.info("Desired Notebook name: "+desired_name)
         if not desired_name or len(desired_name) < 2:
             self.statusBar.showMessage("name too short", 2000)
-            self.logger.info("name rejected: too short")
+            self.log.info("name rejected: too short")
         else:
             if desired_name in self.names:
                 self.statusBar.showMessage("name already used", 2000)
-                self.logger.info("name rejected: already used")
+                self.log.info("name rejected: already used")
             else:
                 # Actually creating the notebook
-                self.notebooks.append(desired_name)
+                self.info.notebooks.append(desired_name)
                 self.statusBar.showMessage("Creating notebook", 2000)
                 self.accept()
 
@@ -102,7 +102,7 @@ class NewEntry(Dialog):
         self.initUI()
 
     def initUI(self):
-        self.logger.info("Creating a 'New Entry' form")
+        self.log.info("Creating a 'New Entry' form")
 
         self.setWindowTitle("New entry")
 

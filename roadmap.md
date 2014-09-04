@@ -3,7 +3,7 @@ Roadmap for 0.1
 
 # General
 
-[ ] create a configuration class, holding all the necessary information, shared
+[x] create an Information class, holding all the necessary information, shared
     among every frame or widget.
 
 # Library
@@ -14,7 +14,7 @@ Roadmap for 0.1
 [x] navigation options (back (i.e. up)), toolbar maybe?
 [~] allow for removing notebook with right click
     [x] removing with right click
-    [ ] confirmation if non empty
+    [~] confirmation if non empty
 
 # Editing
 [ ] allow for folders (tabbed tabs...)

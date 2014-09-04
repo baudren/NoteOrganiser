@@ -58,7 +58,18 @@ def search_folder_recursively(logger, main):
     return notebooks, folders
 
 
+class Information(object):
+    """storage of information across the application"""
+
+    def __init__(self, logger, root, notebooks, folders):
+        # Store the main variables
+        self.logger = logger
+        self.root = root
+        self.notebooks = notebooks
+        self.folders = folders
+
+
 if __name__ == "__main__":
     from logger import create_logger
-    logger = create_logger()
-    print(initialise(logger))
+    LOGGER = create_logger()
+    print(initialise(LOGGER))

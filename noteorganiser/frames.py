@@ -25,12 +25,10 @@ class CustomFrame(QtGui.QFrame):
     def __init__(self, parent=None):
         """ Create the basic layout """
         QtGui.QFrame.__init__(self, parent)
-        # Create a shortcut notation for the list of notebooks
+        # Create a shortcut notation for the main information
         self.parent = parent
-        self.logger = parent.logger
-        self.notebooks = self.parentWidget().notebooks
-        self.folders = self.parentWidget().folders
-        self.root = self.parentWidget().root
+        self.info = parent.info
+        self.log = parent.log
 
         if hasattr(self, 'initLogic'):
             self.initLogic()
@@ -42,7 +40,7 @@ class CustomFrame(QtGui.QFrame):
 
 
 class Library(CustomFrame):
-    """
+    r"""
     The notebooks will be stored and displayed there
 
     Should ressemble something like this:
@@ -57,7 +55,7 @@ class Library(CustomFrame):
     --------------------------------------------|
     """
     def initUI(self):
-        self.logger.info("Starting UI init of %s" % self.__class__.__name__)
+        self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
         # global Layout (vertical)
         vboxLayout = QtGui.QVBoxLayout()
@@ -73,7 +71,9 @@ class Library(CustomFrame):
         newFolderButton.clicked.connect(self.parentWidget().create_folder)
 
         removeButton = QtGui.QPushButton("&Remove")
-        self.shelves = Shelves(self.notebooks, self.folders, self)
+
+        # Create the shelves object
+        self.shelves = Shelves(self)
 
         grid.addWidget(self.shelves, 0, 0, 5, 5)
         grid.addWidget(newNotebookButton, 1, 5)
@@ -83,14 +83,14 @@ class Library(CustomFrame):
         vboxLayout.addLayout(grid)
         self.setLayout(vboxLayout)
 
-        self.logger.info("Finished UI init of %s" % self.__class__.__name__)
+        self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
         self.shelves.addNotebook()
 
 
 class Editing(CustomFrame):
-    """
+    r"""
     Direct access to the markup files will be there
 
     The left hand side will be the text within a tab widget, named as the
@@ -110,7 +110,7 @@ class Editing(CustomFrame):
     ---------------------------------------------------
     """
     def initUI(self):
-        self.logger.info("Starting UI init of %s" % self.__class__.__name__)
+        self.log.info("Starting UI init of %s" % self.__class__.__name__)
         self.grid = QtGui.QGridLayout()
         self.grid.setSpacing(10)
 
@@ -131,9 +131,9 @@ class Editing(CustomFrame):
         self.tabs = QtGui.QTabWidget(self)
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
-        for notebook in self.notebooks:
+        for notebook in self.info.notebooks:
             text = QtGui.QTextEdit(self.tabs)
-            source = open(os.path.join(self.root, notebook)).read()
+            source = open(os.path.join(self.info.root, notebook)).read()
             text.setText(source)
             text.setTabChangesFocus(True)
             self.tabs.addTab(text, notebook.strip(EXTENSION))
@@ -149,13 +149,13 @@ class Editing(CustomFrame):
         self.grid.addLayout(vbox, 0, 1)
 
         self.setLayout(self.grid)
-        self.logger.info("Finished UI init of %s" % self.__class__.__name__)
+        self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
         """Adding files"""
-        new = self.notebooks[-1]
+        new = self.info.notebooks[-1]
         text = QtGui.QTextEdit(self.tabs)
-        source = open(os.path.join(self.root, new)).read()
+        source = open(os.path.join(self.info.root, new)).read()
         text.setText(source)
         text.setTabChangesFocus(True)
         self.tabs.addTab(text, new.strip(EXTENSION))
@@ -164,8 +164,8 @@ class Editing(CustomFrame):
 
     def switchNotebook(self, notebook):
         """switching tab to desired notebook"""
-        self.parent.logger.info("switching to "+notebook)
-        index = self.notebooks.index(notebook+EXTENSION)
+        self.parent.log.info("switching to "+notebook)
+        index = self.info.notebooks.index(notebook+EXTENSION)
         self.tabs.setCurrentIndex(index)
 
     def newEntry(self):
@@ -178,14 +178,14 @@ class Editing(CustomFrame):
     def preview(self):
         """Launch the previewing of the current notebook"""
         index = self.tabs.currentIndex()
-        notebook = self.notebooks[index]
-        self.logger.info('ask to preview notebook %s' % notebook)
+        notebook = self.info.notebooks[index]
+        self.log.info('ask to preview notebook %s' % notebook)
         self.parent.preview.load_notebook(notebook)
         self.parent.switchTab('preview', notebook)
 
 
 class Preview(CustomFrame):
-    """
+    r"""
     Preview of the markdown in html, with tag selection
 
     The left hand side will be an html window, displaying the whole notebook.
@@ -207,13 +207,13 @@ class Preview(CustomFrame):
         CustomFrame.__init__(self, *args)
 
     def initLogic(self):
-        self.website_root = os.path.join(self.root, '.website')
+        self.website_root = os.path.join(self.info.root, '.website')
         if not os.path.isdir(self.website_root):
             os.mkdir(self.website_root)
         self.sha = []
 
     def initUI(self):
-        self.logger.info("Starting UI init of %s" % self.__class__.__name__)
+        self.log.info("Starting UI init of %s" % self.__class__.__name__)
         self.hbox = QtGui.QHBoxLayout()
 
         # Left hand side: html window
@@ -234,7 +234,7 @@ class Preview(CustomFrame):
         # Set the global layout
         self.setLayout(self.hbox)
         # Logging
-        self.logger.info("Finished UI init of %s" % self.__class__.__name__)
+        self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def set_webpage(self, page):
         self.web.load(QtCore.QUrl(page))
@@ -244,7 +244,7 @@ class Preview(CustomFrame):
         # If not, compute it, recovering the list of tags, of dates TODO, and
         # the straight markdown file
         markdown, extracted_tags = from_notes_to_markdown(
-            os.path.join(self.root, notebook))
+            os.path.join(self.info.root, notebook))
 
         # save a temp
         with open(os.path.join(self.website_root, notebook), 'w') as temp:
@@ -252,7 +252,6 @@ class Preview(CustomFrame):
 
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
-        #html = pa.convert('\n'.join(markdown), 'html', format='markdown')
         html = pa.convert(os.path.join(self.website_root, notebook), 'html')
 
         # Write the html to a file

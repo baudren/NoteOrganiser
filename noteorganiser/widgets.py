@@ -10,17 +10,14 @@ from configuration import search_folder_recursively
 
 class Shelves(QtGui.QFrame):
 
-    def __init__(self, notebooks, folders, parent=None):
+    def __init__(self, parent=None):
         QtGui.QFrame.__init__(self, parent)
         self.parent = parent
-        self.notebooks = notebooks
-        self.folders = folders
+        self.info = parent.info
+        self.log = parent.log
+
         self.setLayout(QtGui.QVBoxLayout())
         self.initUI()
-
-        # Store the level of exploration (the current folder). Initially, it is
-        # the root folder
-        self.level = self.parent.parent.root
 
     def initUI(self):
         """Create the physical shelves"""
@@ -28,7 +25,7 @@ class Shelves(QtGui.QFrame):
         grid = QtGui.QGridLayout()
         grid.setSpacing(100)
 
-        for index, notebook in enumerate(self.notebooks):
+        for index, notebook in enumerate(self.info.notebooks):
             # distinguish between a notebook and a folder, stored as a tuple.
             # When encountering a folder, simply put a different image for the
             # moment.
@@ -40,7 +37,7 @@ class Shelves(QtGui.QFrame):
             button.clicked.connect(self.notebookClicked)
             grid.addWidget(button, 0, index)
 
-        for index, folder in enumerate(self.folders):
+        for index, folder in enumerate(self.info.folders):
             button = PicButton(QtGui.QPixmap(
                 "./noteorganiser/assets/folder-128.png"),
                 os.path.basename(folder), 'folder', self)
@@ -83,8 +80,8 @@ class Shelves(QtGui.QFrame):
 
     def addNotebook(self):
         """Add a new button"""
-        self.parent.logger.info(
-            'adding %s to the shelves' % self.notebooks[-1].strip(
+        self.log.info(
+            'adding %s to the shelves' % self.info.notebooks[-1].strip(
                 EXTENSION))
         self.clearUI()
         self.initUI()
@@ -95,9 +92,9 @@ class Shelves(QtGui.QFrame):
 
         TODO: add a confirmation for non-empty notebooks
         """
-        self.parent.logger.info(
+        self.log.info(
             'deleting %s from the shelves' % notebook)
-        path = os.path.join(self.level, notebook+EXTENSION)
+        path = os.path.join(self.info.level, notebook+EXTENSION)
         if os.stat(path).st_size != 0:
             print('Are you sure?')
 
@@ -105,8 +102,8 @@ class Shelves(QtGui.QFrame):
         os.remove(path)
 
         # Delete the reference to the notebook
-        index = self.notebooks.index(notebook+EXTENSION)
-        self.notebooks.pop(index)
+        index = self.info.notebooks.index(notebook+EXTENSION)
+        self.info.notebooks.pop(index)
 
         # Redraw the graphical interface.
         self.clearUI()
@@ -114,32 +111,32 @@ class Shelves(QtGui.QFrame):
 
     def notebookClicked(self):
         sender = self.sender()
-        self.parent.logger.info('notebook '+sender.text+' button cliked')
+        self.log.info('notebook '+sender.text+' button cliked')
         # Connect this to the switch tab focus to Editing
         self.parent.parent.switchTab('editing', sender.text)
 
     def folderClicked(self):
         sender = self.sender()
-        self.parent.logger.info('folder '+sender.text+' button cliked')
-        folder_path = os.path.join(self.parent.parent.root, sender.text)
-        self.notebooks, self.folders = search_folder_recursively(
-            self.parent.logger, folder_path)
+        self.log.info('folder '+sender.text+' button cliked')
+        folder_path = os.path.join(self.info.root, sender.text)
+        self.info.notebooks, self.info.folders = search_folder_recursively(
+            self.log, folder_path)
         # Update the current level as the folder_path, and refresh the content
         # of the window
-        self.level = folder_path
+        self.info.level = folder_path
         self.clearUI()
         self.initUI()
 
     def upFolder(self):
-        if self.level == self.parent.root:
+        if self.info.level == self.info.root:
             return
         else:
-            folder_path = os.path.dirname(self.level)
-            self.notebooks, self.folders = search_folder_recursively(
-                self.parent.logger, folder_path)
+            folder_path = os.path.dirname(self.info.level)
+            self.info.notebooks, self.info.folders = search_folder_recursively(
+                self.log, folder_path)
         # Update the current level as the folder_path, and refresh the content
         # of the window
-        self.level = folder_path
+        self.info.level = folder_path
         self.clearUI()
         self.initUI()
 

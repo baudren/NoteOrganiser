@@ -8,7 +8,7 @@ from PySide.QtCore import Slot
 from frames import Library, Editing, Preview
 from popups import NewNotebook
 from logger import create_logger
-from configuration import initialise
+import configuration as conf
 from constants import EXTENSION
 
 
@@ -20,32 +20,30 @@ class NoteOrganiser(QMainWindow):
         'editing',
         'preview']
 
-    def __init__(self, logger, root, notebooks, folders):
+    def __init__(self, info):
         QMainWindow.__init__(self)
 
-        # Store references to the logger, root folder and the entire list of
-        # notebooks extracted from the configuration stage.
-        self.logger = logger
-        self.root = root
-        self.notebooks = notebooks
-        self.folders = folders
+        # Store reference to the info class
+        self.info = info
+        # Shortcut for the logger
+        self.log = self.info.logger
 
         self.initUI()
         self.initLogic()
         self.show()
 
     def initUI(self):
-        self.logger.info("Starting UI init of %s" % self.__class__.__name__)
+        self.log.info("Starting UI init of %s" % self.__class__.__name__)
         self.initMenuBar()
         self.initStatusBar()
         self.initWidgets()
-        self.logger.info("Finished UI init of %s" % self.__class__.__name__)
+        self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
         self.setGeometry(600, 1000, 1000, 600)
         self.setWindowTitle('Note Organiser')
 
     def initMenuBar(self):
-        self.logger.info("Creating Menu Bar")
+        self.log.info("Creating Menu Bar")
         exitAction = QAction('&Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
@@ -56,7 +54,7 @@ class NoteOrganiser(QMainWindow):
         fileMenu.addAction(exitAction)
 
     def initStatusBar(self):
-        self.logger.info("Creating Status Bar")
+        self.log.info("Creating Status Bar")
         self.statusBar()
 
     def initWidgets(self):
@@ -75,7 +73,7 @@ class NoteOrganiser(QMainWindow):
         self.tabs.addTab(self.preview, "Preview")
 
         # Set the tabs widget to be the center widget of the main window
-        self.logger.info("Setting the central widget")
+        self.log.info("Setting the central widget")
         self.setCentralWidget(self.tabs)
 
     def initLogic(self):
@@ -88,16 +86,16 @@ class NoteOrganiser(QMainWindow):
 
     @Slot()
     def create_notebook(self):
-        self.popup = NewNotebook(self.notebooks, self)
+        self.popup = NewNotebook(self.info.notebooks, self)
         ok = self.popup.exec_()
         if ok:
             desired_name = self.popup.notebooks.pop()
-            self.logger.info(desired_name+' is the desired name')
+            self.log.info(desired_name+' is the desired name')
             file_name = desired_name+EXTENSION
             # Create an empty file (open and close)
-            open(os.path.join(self.root, file_name), 'w').close()
+            open(os.path.join(self.info.root, file_name), 'w').close()
             # Append the file name to the list of notebooks
-            self.notebooks.append(file_name)
+            self.info.notebooks.append(file_name)
             # Refresh both the library and Editing tab.
             self.library.refresh()
             self.editing.refresh()
@@ -114,9 +112,13 @@ def main(args):
     # Define a logger
     logger = create_logger('INFO')
     # Recover the folder path and the notebooks
-    root, notebooks, folders = initialise(logger)
+    root, notebooks, folders = conf.initialise(logger)
+
+    # Create an instance of the Information class to store all this.
+    info = conf.Information(logger, root, notebooks, folders)
+
     # Define the main window
-    main_window = NoteOrganiser(logger, root, notebooks, folders)
+    main_window = NoteOrganiser(info)
 
     # Run
     sys.exit(application.exec_())
