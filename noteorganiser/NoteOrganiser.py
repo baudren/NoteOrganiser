@@ -6,7 +6,7 @@ from PySide.QtCore import Slot
 
 # Local module imports
 from frames import Library, Editing, Preview
-from widgets import NewNotebook
+from popups import NewNotebook
 from logger import create_logger
 from configuration import initialise
 from constants import EXTENSION

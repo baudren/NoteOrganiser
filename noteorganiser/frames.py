@@ -6,7 +6,8 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
-from widgets import Shelves, NewEntry
+from widgets import Shelves
+from popups import NewEntry
 from text_processing import from_notes_to_markdown
 from constants import EXTENSION
 
