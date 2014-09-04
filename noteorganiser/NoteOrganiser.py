@@ -86,16 +86,14 @@ class NoteOrganiser(QMainWindow):
 
     @Slot()
     def create_notebook(self):
-        self.popup = NewNotebook(self.info.notebooks, self)
+        self.popup = NewNotebook(self)
         ok = self.popup.exec_()
         if ok:
-            desired_name = self.popup.notebooks.pop()
+            desired_name = self.info.notebooks[-1]
             self.log.info(desired_name+' is the desired name')
             file_name = desired_name+EXTENSION
             # Create an empty file (open and close)
             open(os.path.join(self.info.root, file_name), 'w').close()
-            # Append the file name to the list of notebooks
-            self.info.notebooks.append(file_name)
             # Refresh both the library and Editing tab.
             self.library.refresh()
             self.editing.refresh()

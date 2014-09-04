@@ -45,6 +45,7 @@ Future work
 
 # Editing
 [ ] list of existing tags when entering a new field
+[ ] Use syntax highlighting (QSyntaxHighlighter), margins
 
 # Preview
 [ ] allow for zooming in (ctrl +)

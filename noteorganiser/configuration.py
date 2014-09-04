@@ -68,6 +68,9 @@ class Information(object):
         self.notebooks = notebooks
         self.folders = folders
 
+        # Initialisation
+        self.level = root
+
 
 if __name__ == "__main__":
     from logger import create_logger

@@ -141,6 +141,44 @@ class Shelves(QtGui.QFrame):
         self.initUI()
 
 
+class TextEditor(QtGui.QFrame):
+    """Custom text editor"""
+    def __init__(self, parent=None):
+        QtGui.QFrame.__init__(self, parent)
+        self.parent = parent
+        self.info = parent.info
+        self.log = parent.log
+        self.initUI()
+
+    def initUI(self):
+        """top menu bar and the text area"""
+        vbox = QtGui.QVBoxLayout()
+
+        # Menu bar
+        menuBar = QtGui.QHBoxLayout()
+
+        saveButton = QtGui.QPushButton("&Save", self)
+        saveButton.clicked.connect(self.saveText)
+        menuBar.addWidget(saveButton)
+
+        vbox.addLayout(menuBar)
+
+        # Text
+        self.text = QtGui.QTextEdit()
+        self.text.setTabChangesFocus(True)
+
+        vbox.addWidget(self.text)
+
+        self.setLayout(vbox)
+
+    def setSource(self, source):
+        text = open(source).read()
+        self.text.setText(text)
+
+    def saveText(self):
+        pass
+
+
 class PicButton(QtGui.QPushButton):
     """Button with a picture"""
     def __init__(self, pixmap, text, style, parent=None):

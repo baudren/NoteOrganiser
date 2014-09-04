@@ -6,7 +6,7 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
-from widgets import Shelves
+from widgets import Shelves, TextEditor
 from popups import NewEntry
 from text_processing import from_notes_to_markdown
 from constants import EXTENSION
@@ -117,9 +117,6 @@ class Editing(CustomFrame):
         newButton = QtGui.QPushButton("&New entry", self)
         newButton.clicked.connect(self.newEntry)
 
-        # This also should be in a toolbar
-        saveButton = QtGui.QPushButton("&Save notebook", self)
-
         # Edit in an exterior editor
         editButton = QtGui.QPushButton("&Edit (exterior editor)", self)
 
@@ -131,17 +128,16 @@ class Editing(CustomFrame):
         self.tabs = QtGui.QTabWidget(self)
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
+        QtGui.QTextDocument
         for notebook in self.info.notebooks:
-            text = QtGui.QTextEdit(self.tabs)
-            source = open(os.path.join(self.info.root, notebook)).read()
-            text.setText(source)
-            text.setTabChangesFocus(True)
-            self.tabs.addTab(text, notebook.strip(EXTENSION))
+            editor = TextEditor(self)
+            editor.setSource(os.path.join(self.info.root, notebook))
+
+            self.tabs.addTab(editor, notebook.strip(EXTENSION))
 
         vbox = QtGui.QVBoxLayout()
 
         vbox.addWidget(newButton)
-        vbox.addWidget(saveButton)
         vbox.addWidget(editButton)
         vbox.addWidget(previewButton)
 
@@ -154,11 +150,10 @@ class Editing(CustomFrame):
     def refresh(self):
         """Adding files"""
         new = self.info.notebooks[-1]
-        text = QtGui.QTextEdit(self.tabs)
-        source = open(os.path.join(self.info.root, new)).read()
-        text.setText(source)
-        text.setTabChangesFocus(True)
-        self.tabs.addTab(text, new.strip(EXTENSION))
+        editor = TextEditor(self)
+        editor.setSource(os.path.join(self.info.level, new))
+
+        self.tabs.addTab(editor, new.strip(EXTENSION))
         self.grid.removeWidget(self.tabs)
         self.grid.addWidget(self.tabs, 0, 0)
 
