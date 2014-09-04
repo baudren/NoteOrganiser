@@ -45,3 +45,6 @@ Future work
 
 # Editing
 [ ] list of existing tags when entering a new field
+
+# Preview
+[ ] allow for zooming in (ctrl +)

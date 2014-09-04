@@ -1,7 +1,9 @@
 import sys
 import os
+
 from PySide import QtGui
 from PySide import QtCore
+
 from constants import EXTENSION
 from configuration import search_folder_recursively
 
@@ -119,8 +121,18 @@ class Shelves(QtGui.QFrame):
         """
         self.parent.logger.info(
             'deleting %s from the shelves' % notebook)
+        path = os.path.join(self.level, notebook+EXTENSION)
+        if os.stat(path).st_size != 0:
+            print('Are you sure?')
+
+        # Delete the file on the disk
+        os.remove(path)
+
+        # Delete the reference to the notebook
         index = self.notebooks.index(notebook+EXTENSION)
         self.notebooks.pop(index)
+
+        # Redraw the graphical interface.
         self.clearUI()
         self.initUI()
 
