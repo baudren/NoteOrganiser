@@ -170,6 +170,7 @@ class TextEditor(QtGui.QFrame):
 
         menuBar.addWidget(saveButton)
         menuBar.addWidget(readButton)
+        menuBar.addStretch(1)
 
         vbox.addLayout(menuBar)
 
