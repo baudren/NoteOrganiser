@@ -148,6 +148,8 @@ class TextEditor(QtGui.QFrame):
         self.parent = parent
         self.info = parent.info
         self.log = parent.log
+
+        self.source = ''
         self.initUI()
 
     def initUI(self):
@@ -159,7 +161,12 @@ class TextEditor(QtGui.QFrame):
 
         saveButton = QtGui.QPushButton("&Save", self)
         saveButton.clicked.connect(self.saveText)
+
+        readButton = QtGui.QPushButton("&Reload", self)
+        readButton.clicked.connect(self.loadText)
+
         menuBar.addWidget(saveButton)
+        menuBar.addWidget(readButton)
 
         vbox.addLayout(menuBar)
 
@@ -172,11 +179,20 @@ class TextEditor(QtGui.QFrame):
         self.setLayout(vbox)
 
     def setSource(self, source):
-        text = open(source).read()
-        self.text.setText(text)
+        self.log.info("Reading %s" % source)
+        self.source = source
+        self.loadText()
+
+    def loadText(self):
+        if self.source:
+            text = open(self.source).read()
+            self.text.setText(text)
 
     def saveText(self):
-        pass
+        self.log.info("Writing modifications to %s" % self.source)
+        text = self.text.toPlainText()
+        with open(self.source, 'w') as file_handle:
+            file_handle.write(text)
 
 
 class PicButton(QtGui.QPushButton):

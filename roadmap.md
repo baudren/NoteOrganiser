@@ -18,9 +18,9 @@ Roadmap for 0.1
 
 # Editing
 [ ] allow for folders (tabbed tabs...)
-[ ] reload from disk externally modified files
-[ ] save modified files (CTRL+S)
-[x] shortcut for previewing (CTRL+P)
+[x] reload from disk externally modified files
+[x] save modified files
+[x] shortcut for previewing
 [~] implement "new field"
     [x] form created
     [ ] update the file
