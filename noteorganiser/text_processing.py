@@ -185,8 +185,8 @@ def from_notes_to_markdown(path, tags=None):
     -------
     markdown : list
         entire markdown text
-    tags : list
-        list of tags extracted from the text
+    tags : list of tuples
+        list of tags extracted from the text, with their importance
     """
     # Create the array to return
     text = open(path, 'r').readlines()
@@ -203,10 +203,38 @@ def from_notes_to_markdown(path, tags=None):
         text.extend(corpus)
         text.extend(["", ""])
         # Store the recovered tags
-        extracted_tags.extend(tags)
+        extracted_tags = extend_tags(extracted_tags, tags)
+        #extracted_tags.extend(tags)
         markdown.extend(text)
 
+    cleaned_tags = sort_tags(extracted_tags)
     return markdown, extracted_tags
+
+
+def extend_tags(source, new):
+    """
+    source = [('toto', 1), ('titi', 1)]
+    new = ['toto']
+    return [('toto', 2), ('titi', 1)]
+    """
+    output = []
+    existing = []
+    for key, value in source:
+        if key in new:
+            value += 1
+            existing.append(key)
+        output.append((key, value))
+    for key in new:
+        if key not in existing:
+            output.append((key, 1))
+    return output
+
+
+def sort_tags(source):
+    """
+    return a sorted version of source, with the biggests tags first
+    """
+    return source
 
 
 def create_post_from_entry(title, tags, corpus):

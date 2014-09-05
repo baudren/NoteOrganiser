@@ -28,6 +28,8 @@ Roadmap for 0.1
 [x] script to convert modified md to md, then pandoc to html
 [x] style-sheet support for web-browser
 [~] list of existing tags, toggable buttons.
+    [x] list appear
+    [ ] toggling buttons reduce the posts
 
 
 Future work
@@ -35,6 +37,7 @@ Future work
 
 # General
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc)
+[ ] Ensure proper resizing
 
 # Library
 [ ] vector icons?

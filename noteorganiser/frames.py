@@ -224,6 +224,7 @@ class Preview(CustomFrame):
         if not os.path.isdir(self.website_root):
             os.mkdir(self.website_root)
         self.sha = []
+        self.extracted_tags = []
 
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
@@ -242,11 +243,12 @@ class Preview(CustomFrame):
 
         # Right hand side: Vertical layout for the tags
         vbox = QtGui.QVBoxLayout()
-        dummyTagButton = QtGui.QPushButton("dummy")
-        dummyTagButton.setCheckable(True)
-        dummyTagButton.setFixedWidth(100)
-
-        vbox.addWidget(dummyTagButton)
+        if self.extracted_tags:
+            for key, value in self.extracted_tags:
+                tag = QtGui.QPushButton(key)
+                tag.setMinimumSize(100, 40+5*value)
+                tag.setCheckable(True)
+                vbox.addWidget(tag)
 
         self.layout().addLayout(vbox)
 
@@ -262,9 +264,10 @@ class Preview(CustomFrame):
         # the straight markdown file
         self.initLogic()
         self.log.info("Extracting markdown from %s" % notebook)
-        markdown, extracted_tags = tp.from_notes_to_markdown(
+        markdown, tags = tp.from_notes_to_markdown(
             os.path.join(self.info.level, notebook))
 
+        self.extracted_tags = tags
         # save a temp
         with open(os.path.join(self.website_root, notebook), 'w') as temp:
             temp.write('\n'.join(markdown))
@@ -279,6 +282,8 @@ class Preview(CustomFrame):
         with open(url, 'w') as page:
             page.write(html)
         # Finally, set the url of the web viewer to the desired page
+        self.clearUI(2)
+        self.initUI()
         self.set_webpage(url)
 
 if __name__ == "__main__":
