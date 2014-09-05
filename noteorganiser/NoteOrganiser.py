@@ -91,7 +91,7 @@ class NoteOrganiser(QMainWindow):
         if ok:
             desired_name = self.info.notebooks[-1]
             self.log.info(desired_name+' is the desired name')
-            file_name = desired_name+EXTENSION
+            file_name = desired_name
             # Create an empty file (open and close)
             open(os.path.join(self.info.root, file_name), 'w').close()
             # Refresh both the library and Editing tab.

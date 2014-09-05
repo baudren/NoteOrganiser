@@ -109,6 +109,9 @@ class Shelves(QtGui.QFrame):
         self.clearUI()
         self.initUI()
 
+        # Ask to do the same for the editing panel
+        self.parent.parent.editing.refresh()
+
     def notebookClicked(self):
         sender = self.sender()
         self.log.info('notebook '+sender.text+' button cliked')

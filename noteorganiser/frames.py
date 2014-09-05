@@ -30,6 +30,9 @@ class CustomFrame(QtGui.QFrame):
         self.info = parent.info
         self.log = parent.log
 
+        # Create the main layout
+        self.setLayout(QtGui.QVBoxLayout())
+
         if hasattr(self, 'initLogic'):
             self.initLogic()
 
@@ -37,6 +40,23 @@ class CustomFrame(QtGui.QFrame):
 
     def initUI(self):
         raise NotImplementedError
+
+    def clearUI(self, number):
+        for _ in range(number):
+            layout = self.layout().takeAt(0)
+            if isinstance(layout, QtGui.QLayout):
+                self.clearLayout(layout)
+                layout.deleteLater()
+
+    def clearLayout(self, layout):
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()
+                else:
+                    self.clearLayout(item.layout())
 
 
 class Library(CustomFrame):
@@ -56,9 +76,6 @@ class Library(CustomFrame):
     """
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
-
-        # global Layout (vertical)
-        vboxLayout = QtGui.QVBoxLayout()
 
         # Grid Layout
         grid = QtGui.QGridLayout()
@@ -80,8 +97,7 @@ class Library(CustomFrame):
         grid.addWidget(newFolderButton, 2, 5)
         grid.addWidget(removeButton, 3, 5)
 
-        vboxLayout.addLayout(grid)
-        self.setLayout(vboxLayout)
+        self.layout().addLayout(grid)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
@@ -111,8 +127,8 @@ class Editing(CustomFrame):
     """
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
-        self.grid = QtGui.QGridLayout()
-        self.grid.setSpacing(10)
+        grid = QtGui.QGridLayout()
+        grid.setSpacing(10)
 
         newButton = QtGui.QPushButton("&New entry", self)
         newButton.clicked.connect(self.newEntry)
@@ -141,21 +157,17 @@ class Editing(CustomFrame):
         vbox.addWidget(editButton)
         vbox.addWidget(previewButton)
 
-        self.grid.addWidget(self.tabs, 0, 0)
-        self.grid.addLayout(vbox, 0, 1)
+        grid.addWidget(self.tabs, 0, 0)
+        grid.addLayout(vbox, 0, 1)
 
-        self.setLayout(self.grid)
+        self.layout().addLayout(grid)
+
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
-        """Adding files"""
-        new = self.info.notebooks[-1]
-        editor = TextEditor(self)
-        editor.setSource(os.path.join(self.info.level, new))
-
-        self.tabs.addTab(editor, new.strip(EXTENSION))
-        self.grid.removeWidget(self.tabs)
-        self.grid.addWidget(self.tabs, 0, 0)
+        """Redraw (time consuming...)"""
+        self.clearUI(2)
+        self.initUI()
 
     def switchNotebook(self, notebook):
         """switching tab to desired notebook"""
@@ -184,7 +196,7 @@ class Editing(CustomFrame):
         index = self.tabs.currentIndex()
         notebook = self.info.notebooks[index]
         self.log.info('ask to preview notebook %s' % notebook)
-        self.parent.preview.load_notebook(notebook)
+        self.parent.preview.loadNotebook(notebook)
         self.parent.switchTab('preview', notebook)
 
 
@@ -207,9 +219,6 @@ class Preview(CustomFrame):
     |    |_________________________| Calendar         |
     ---------------------------------------------------
     """
-    def __init__(self, *args):
-        CustomFrame.__init__(self, *args)
-
     def initLogic(self):
         self.website_root = os.path.join(self.info.root, '.website')
         if not os.path.isdir(self.website_root):
@@ -218,7 +227,7 @@ class Preview(CustomFrame):
 
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
-        self.hbox = QtGui.QHBoxLayout()
+        self.layout().setDirection(QtGui.QBoxLayout.LeftToRight)
 
         # Left hand side: html window
         self.web = QtWebKit.QWebView(self)
@@ -229,24 +238,29 @@ class Preview(CustomFrame):
             os.path.join(local_path, 'noteorganiser', 'assets', 'style',
                          'default.css')))
 
-        self.hbox.addWidget(self.web)
+        self.layout().addWidget(self.web)
 
-        # Right hand side: Vertical layout
-        self.vbox = QtGui.QVBoxLayout()
-        self.hbox.addLayout(self.vbox)
+        # Right hand side: Vertical layout for the tags
+        vbox = QtGui.QVBoxLayout()
+        dummyTagButton = QtGui.QPushButton("dummy")
+        dummyTagButton.setCheckable(True)
+        dummyTagButton.setFixedWidth(100)
 
-        # Set the global layout
-        self.setLayout(self.hbox)
+        vbox.addWidget(dummyTagButton)
+
+        self.layout().addLayout(vbox)
+
         # Logging
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def set_webpage(self, page):
         self.web.load(QtCore.QUrl(page))
 
-    def load_notebook(self, notebook, tags=[]):
+    def loadNotebook(self, notebook, tags=[]):
         # Check the SHA1 sum to see if it has been computed already TODO
         # If not, compute it, recovering the list of tags, of dates TODO, and
         # the straight markdown file
+        self.log.info("Extracting markdown from %s" % notebook)
         markdown, extracted_tags = tp.from_notes_to_markdown(
             os.path.join(self.info.root, notebook))
 

@@ -90,7 +90,7 @@ class NewNotebook(Dialog):
                 self.log.info("name rejected: already used")
             else:
                 # Actually creating the notebook
-                self.info.notebooks.append(desired_name)
+                self.info.notebooks.append(desired_name+EXTENSION)
                 self.statusBar.showMessage("Creating notebook", 2000)
                 self.accept()
 
