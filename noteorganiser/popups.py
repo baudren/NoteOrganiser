@@ -162,6 +162,7 @@ class NewEntry(Dialog):
         if not tags or len(tags) < 2:
             self.statusBar.showMessage(self.tr("Invalid tags"), 2000)
             return
+        tags = [tag.strip() for tag in tags.split(',')]
         corpus = self.corpusBox.toPlainText()
         if not corpus or len(corpus) < 2:
             self.statusBar.showMessage(self.tr("Empty entry"), 2000)

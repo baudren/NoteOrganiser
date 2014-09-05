@@ -208,6 +208,17 @@ def from_notes_to_markdown(path, tags=None):
 
     return markdown, extracted_tags
 
+
+def create_post_from_entry(title, tags, corpus):
+    """TODO"""
+    text = title
+    text += '\n%s\n' % ''.join(['-' for _ in range(len(title))])
+    text += '# %s\n' % ', '.join(tags)
+    text += '\n*%s*\n\n' % date.today().strftime("%d/%m/%Y")
+    text += corpus+'\n'
+    return text
+
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

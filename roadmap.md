@@ -21,9 +21,9 @@ Roadmap for 0.1
 [x] reload from disk externally modified files
 [x] save modified files
 [x] shortcut for previewing
-[~] implement "new field"
+[x] implement "new field"
     [x] form created
-    [ ] update the file
+    [x] update the file
 [ ] when opening newly created notebook, write the title on top
 
 # Previewing
@@ -36,15 +36,18 @@ Future work
 ===========
 
 # General
-[ ] Improve keyboard shortcuts
+[ ] Improve keyboard shortcuts (ctrl instead of alt, etc)
 
 # Library
+[ ] vector icons?
 [ ] special graphic for shelves (wood?)
 [ ] variable number of columns/line on the shelves
 [ ] resizing should change the number of columns/lines for the shelves
 
 # Editing
 [ ] list of existing tags when entering a new field
+[ ] keep cursor position on reload
+[ ] Use a monospaced font
 [ ] Use syntax highlighting (QSyntaxHighlighter), margins
 
 # Preview

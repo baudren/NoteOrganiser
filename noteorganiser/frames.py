@@ -8,7 +8,7 @@ from PySide import QtWebKit
 
 from widgets import Shelves, TextEditor
 from popups import NewEntry
-from text_processing import from_notes_to_markdown
+import text_processing as tp
 from constants import EXTENSION
 
 
@@ -168,7 +168,16 @@ class Editing(CustomFrame):
         self.popup = NewEntry(self)
         ok = self.popup.exec_()
         if ok:
-            pass
+            title = self.popup.title
+            tags = self.popup.tags
+            corpus = self.popup.corpus
+
+            # Create the post
+            post = tp.create_post_from_entry(title, tags, corpus)
+            # recover the current editor
+            editor = self.tabs.currentWidget()
+            # Append the text
+            editor.appendText(post)
 
     def preview(self):
         """Launch the previewing of the current notebook"""
@@ -238,7 +247,7 @@ class Preview(CustomFrame):
         # Check the SHA1 sum to see if it has been computed already TODO
         # If not, compute it, recovering the list of tags, of dates TODO, and
         # the straight markdown file
-        markdown, extracted_tags = from_notes_to_markdown(
+        markdown, extracted_tags = tp.from_notes_to_markdown(
             os.path.join(self.info.root, notebook))
 
         # save a temp

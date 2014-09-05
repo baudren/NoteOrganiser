@@ -185,14 +185,24 @@ class TextEditor(QtGui.QFrame):
 
     def loadText(self):
         if self.source:
+            # Store the last cursor position
+            oldCursor = self.text.textCursor()
             text = open(self.source).read()
             self.text.setText(text)
+            #cursor = QtGui.QTextCursor(self.text.document())
+            self.text.setTextCursor(oldCursor)
+            #self.text.textCursor().setPosition(position)
+            self.text.ensureCursorVisible()
 
     def saveText(self):
         self.log.info("Writing modifications to %s" % self.source)
         text = self.text.toPlainText()
         with open(self.source, 'w') as file_handle:
             file_handle.write(text)
+
+    def appendText(self, text):
+        self.text.append('\n'+text)
+        self.saveText()
 
 
 class PicButton(QtGui.QPushButton):
