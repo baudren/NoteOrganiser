@@ -147,7 +147,7 @@ class Editing(CustomFrame):
         QtGui.QTextDocument
         for notebook in self.info.notebooks:
             editor = TextEditor(self)
-            editor.setSource(os.path.join(self.info.root, notebook))
+            editor.setSource(os.path.join(self.info.level, notebook))
 
             self.tabs.addTab(editor, notebook.strip(EXTENSION))
 

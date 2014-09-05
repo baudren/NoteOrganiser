@@ -16,7 +16,7 @@ Roadmap for 0.1
     [~] confirmation if non empty
 
 # Editing
-[ ] allow for folders (tabbed tabs?)
+[x] allow for folders
 [x] reload from disk externally modified files
 [x] save modified files
 [x] shortcut for previewing

@@ -83,8 +83,15 @@ class Shelves(QtGui.QFrame):
         self.log.info(
             'adding %s to the shelves' % self.info.notebooks[-1].strip(
                 EXTENSION))
+        self.refresh()
+
+    def refresh(self):
+        # Redraw the graphical interface.
         self.clearUI()
         self.initUI()
+
+        # Ask to do the same for the editing panel
+        self.parent.parent.editing.refresh()
 
     def removeNotebook(self, notebook):
         """
@@ -105,12 +112,7 @@ class Shelves(QtGui.QFrame):
         index = self.info.notebooks.index(notebook+EXTENSION)
         self.info.notebooks.pop(index)
 
-        # Redraw the graphical interface.
-        self.clearUI()
-        self.initUI()
-
-        # Ask to do the same for the editing panel
-        self.parent.parent.editing.refresh()
+        self.refresh()
 
     def notebookClicked(self):
         sender = self.sender()
@@ -127,8 +129,7 @@ class Shelves(QtGui.QFrame):
         # Update the current level as the folder_path, and refresh the content
         # of the window
         self.info.level = folder_path
-        self.clearUI()
-        self.initUI()
+        self.refresh()
 
     def upFolder(self):
         if self.info.level == self.info.root:
@@ -140,8 +141,7 @@ class Shelves(QtGui.QFrame):
         # Update the current level as the folder_path, and refresh the content
         # of the window
         self.info.level = folder_path
-        self.clearUI()
-        self.initUI()
+        self.refresh()
 
 
 class TextEditor(QtGui.QFrame):
