@@ -220,7 +220,7 @@ class Preview(CustomFrame):
     ---------------------------------------------------
     """
     def initLogic(self):
-        self.website_root = os.path.join(self.info.root, '.website')
+        self.website_root = os.path.join(self.info.level, '.website')
         if not os.path.isdir(self.website_root):
             os.mkdir(self.website_root)
         self.sha = []
@@ -260,9 +260,10 @@ class Preview(CustomFrame):
         # Check the SHA1 sum to see if it has been computed already TODO
         # If not, compute it, recovering the list of tags, of dates TODO, and
         # the straight markdown file
+        self.initLogic()
         self.log.info("Extracting markdown from %s" % notebook)
         markdown, extracted_tags = tp.from_notes_to_markdown(
-            os.path.join(self.info.root, notebook))
+            os.path.join(self.info.level, notebook))
 
         # save a temp
         with open(os.path.join(self.website_root, notebook), 'w') as temp:
