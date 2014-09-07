@@ -27,9 +27,9 @@ Roadmap for 0.1
 # Previewing
 [x] script to convert modified md to md, then pandoc to html
 [x] style-sheet support for web-browser
-[~] list of existing tags, toggable buttons.
+[x] list of existing tags, toggable buttons.
     [x] list appear
-    [ ] toggling buttons reduce the posts
+    [x] toggling buttons reduce the posts
 
 
 Future work
@@ -54,3 +54,4 @@ Future work
 
 # Preview
 [ ] allow for zooming in (ctrl +)
+[ ] too many buttons seems to break the resizing. It should not.

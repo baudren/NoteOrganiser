@@ -177,7 +177,7 @@ def extract_title_and_posts_from_text(text):
     return title, posts
 
 
-def from_notes_to_markdown(path, tags=None):
+def from_notes_to_markdown(path, input_tags=None):
     """
     From a file, given tags, produce an output markdown file.
 
@@ -200,6 +200,13 @@ def from_notes_to_markdown(path, tags=None):
         text = ["", "## %s" % name, ""]
 
         tags, post = extract_tags_from_post(post)
+        if input_tags:
+            relevance = 0
+            for tag in tags:
+                if tag in input_tags:
+                    relevance += 1
+            if relevance < len(input_tags):
+                continue
         edit_date, post = extract_date_from_post(post)
         corpus = extract_corpus_from_post(post)
         text.extend(corpus)

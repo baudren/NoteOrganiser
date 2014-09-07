@@ -222,8 +222,10 @@ class Preview(CustomFrame):
     """
     def initLogic(self):
         self.website_root = os.path.join(self.info.level, '.website')
-        if not os.path.isdir(self.website_root):
-            os.mkdir(self.website_root)
+        self.temp_root = os.path.join(self.info.level, '.temp')
+        for path in (self.website_root, self.temp_root):
+            if not os.path.isdir(path):
+                os.mkdir(path)
         self.current_notebook = ''
         self.sha = []
         self.extracted_tags = od()
@@ -246,6 +248,7 @@ class Preview(CustomFrame):
 
         # Right hand side: Vertical layout for the tags
         vbox = QtGui.QVBoxLayout()
+        self.tagButtons = []
         # Note that for some reason, too many buttons will break the
         # functionality of resizing the window
         # FIXME
@@ -261,6 +264,7 @@ class Preview(CustomFrame):
                 if key in self.filters:
                     tag.setChecked(True)
                 tag.clicked.connect(self.addFilter)
+                self.tagButtons.append([key, tag])
                 vbox.addWidget(tag)
                 index += 1
 
@@ -271,10 +275,24 @@ class Preview(CustomFrame):
 
     def addFilter(self):
         sender = self.sender()
-        self.log.info('tag '+sender.text()+' added to the filter')
-        self.filters.append(sender.text())
+        if sender.isChecked():
+            self.log.info('tag '+sender.text()+' added to the filter')
+            self.filters.append(sender.text())
+        else:
+            self.log.info('tag '+sender.text()+' removed from the filter')
+            self.filters.pop(self.filters.index(sender.text()))
 
-        self.loadNotebook(self.current_notebook, self.filters)
+        self.log.info("filter %s out of %s" % (
+            ', '.join(self.filters), self.current_notebook))
+        url, remaining_tags = self.convert(
+            os.path.join(self.info.level, self.current_notebook), self.filters)
+        # Grey out not useful buttons
+        for key, button in self.tagButtons:
+            if key in remaining_tags:
+                button.setEnabled(True)
+            else:
+                button.setDisabled(True)
+        self.setWebpage(url)
 
     def setWebpage(self, page):
         self.web.load(QtCore.QUrl(page))
@@ -286,27 +304,39 @@ class Preview(CustomFrame):
         self.initLogic()
         self.current_notebook = notebook
         self.log.info("Extracting markdown from %s" % notebook)
-        markdown, tags = tp.from_notes_to_markdown(
-            os.path.join(self.info.level, notebook), tags=tags)
+
+        url, tags = self.convert(
+            os.path.join(self.info.level, notebook), tags)
 
         self.extracted_tags = tags
-        # save a temp
-        with open(os.path.join(self.website_root, notebook), 'w') as temp:
-            temp.write('\n'.join(markdown))
-
-        # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
-        # recover the html
-        html = pa.convert(os.path.join(self.website_root, notebook), 'html')
-
-        # Write the html to a file
-        url = os.path.join(self.website_root, notebook.replace(
-            EXTENSION, '.html'))
-        with open(url, 'w') as page:
-            page.write(html)
         # Finally, set the url of the web viewer to the desired page
         self.clearUI(2)
         self.initUI()
         self.setWebpage(url)
+
+    def convert(self, path, tags):
+        markdown, remaining_tags = tp.from_notes_to_markdown(path, input_tags=tags)
+
+        # save a temp. The basename will be modified to reflect the selection
+        # of tags.
+        base = os.path.basename(path)[:-len(EXTENSION)]
+        if tags:
+            base += '_'+'_'.join(tags)
+        temp_path = os.path.join(self.temp_root, base+EXTENSION)
+        self.log.debug('Creating temp file %s' % temp_path)
+        with open(temp_path, 'w') as temp:
+            temp.write('\n'.join(markdown))
+
+        # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
+        # recover the html
+        html = pa.convert(temp_path, 'html')
+
+        # Write the html to a file
+        url = os.path.join(self.website_root, base+'.html')
+        with open(url, 'w') as page:
+            page.write(html)
+
+        return url, remaining_tags
 
 if __name__ == "__main__":
     application = QtGui.QApplication(sys.argv)
