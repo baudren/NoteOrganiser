@@ -1,5 +1,6 @@
 import sys
 import os
+from collections import OrderedDict as od
 import pypandoc as pa
 
 from PySide import QtGui
@@ -223,8 +224,10 @@ class Preview(CustomFrame):
         self.website_root = os.path.join(self.info.level, '.website')
         if not os.path.isdir(self.website_root):
             os.mkdir(self.website_root)
+        self.current_notebook = ''
         self.sha = []
-        self.extracted_tags = []
+        self.extracted_tags = od()
+        self.filters = []
 
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
@@ -243,19 +246,37 @@ class Preview(CustomFrame):
 
         # Right hand side: Vertical layout for the tags
         vbox = QtGui.QVBoxLayout()
+        # Note that for some reason, too many buttons will break the
+        # functionality of resizing the window
+        # FIXME
+        max_index = 10
         if self.extracted_tags:
-            for key, value in self.extracted_tags:
+            index = 0
+            for key, value in self.extracted_tags.iteritems():
+                if index == max_index:
+                    break
                 tag = QtGui.QPushButton(key)
                 tag.setMinimumSize(100, 40+5*value)
                 tag.setCheckable(True)
+                if key in self.filters:
+                    tag.setChecked(True)
+                tag.clicked.connect(self.addFilter)
                 vbox.addWidget(tag)
+                index += 1
 
         self.layout().addLayout(vbox)
 
         # Logging
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
-    def set_webpage(self, page):
+    def addFilter(self):
+        sender = self.sender()
+        self.log.info('tag '+sender.text()+' added to the filter')
+        self.filters.append(sender.text())
+
+        self.loadNotebook(self.current_notebook, self.filters)
+
+    def setWebpage(self, page):
         self.web.load(QtCore.QUrl(page))
 
     def loadNotebook(self, notebook, tags=[]):
@@ -263,9 +284,10 @@ class Preview(CustomFrame):
         # If not, compute it, recovering the list of tags, of dates TODO, and
         # the straight markdown file
         self.initLogic()
+        self.current_notebook = notebook
         self.log.info("Extracting markdown from %s" % notebook)
         markdown, tags = tp.from_notes_to_markdown(
-            os.path.join(self.info.level, notebook))
+            os.path.join(self.info.level, notebook), tags=tags)
 
         self.extracted_tags = tags
         # save a temp
@@ -284,7 +306,7 @@ class Preview(CustomFrame):
         # Finally, set the url of the web viewer to the desired page
         self.clearUI(2)
         self.initUI()
-        self.set_webpage(url)
+        self.setWebpage(url)
 
 if __name__ == "__main__":
     application = QtGui.QApplication(sys.argv)
