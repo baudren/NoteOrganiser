@@ -221,13 +221,19 @@ class Preview(CustomFrame):
     ---------------------------------------------------
     """
     def initLogic(self):
+        """
+        Create variables for storing local information
+
+        """
+        # Where to store the produced html pages
         self.website_root = os.path.join(self.info.level, '.website')
+        # Where to store the temporary markdown files (maybe this step is not
+        # necessary with pypandoc?)
         self.temp_root = os.path.join(self.info.level, '.temp')
+        # Create the two folders if they do not already exist
         for path in (self.website_root, self.temp_root):
             if not os.path.isdir(path):
                 os.mkdir(path)
-        self.current_notebook = ''
-        self.sha = []
         self.extracted_tags = od()
         self.filters = []
 
@@ -283,9 +289,10 @@ class Preview(CustomFrame):
             self.filters.pop(self.filters.index(sender.text()))
 
         self.log.info("filter %s out of %s" % (
-            ', '.join(self.filters), self.current_notebook))
+            ', '.join(self.filters), self.info.current_notebook))
         url, remaining_tags = self.convert(
-            os.path.join(self.info.level, self.current_notebook), self.filters)
+            os.path.join(self.info.level, self.info.current_notebook),
+            self.filters)
         # Grey out not useful buttons
         for key, button in self.tagButtons:
             if key in remaining_tags:
@@ -302,7 +309,7 @@ class Preview(CustomFrame):
         # If not, compute it, recovering the list of tags, of dates TODO, and
         # the straight markdown file
         self.initLogic()
-        self.current_notebook = notebook
+        self.info.current_notebook = notebook
         self.log.info("Extracting markdown from %s" % notebook)
 
         url, tags = self.convert(
@@ -315,7 +322,19 @@ class Preview(CustomFrame):
         self.setWebpage(url)
 
     def convert(self, path, tags):
-        markdown, remaining_tags = tp.from_notes_to_markdown(path, input_tags=tags)
+        """
+        Convert a notebook to html, with entries corresponding to the tags
+
+        Returns
+        -------
+        url : string
+            path to the html page
+        remaining_tags : OrderedDict
+            dictionary of the remaining tags (the ones appearing in posts where
+            all the selected tags where appearing, for further refinment)
+        """
+        markdown, remaining_tags = tp.from_notes_to_markdown(
+            path, input_tags=tags)
 
         # save a temp. The basename will be modified to reflect the selection
         # of tags.

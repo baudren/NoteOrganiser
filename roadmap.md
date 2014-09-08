@@ -4,6 +4,9 @@ Roadmap for 0.1
 # General
 [x] create an Information class, holding all the necessary information, shared
     among every frame or widget.
+[ ] Include a setup.py script, with installation.
+[ ] include an example notebook, for the syntax (and a link to the modified
+    markdown syntax).
 
 # Library
 [x] remake icons
@@ -30,7 +33,7 @@ Roadmap for 0.1
 [~] list of existing tags, toggable buttons.
     [x] list appear
     [x] toggling buttons reduce the posts
-    [ ] full list, scrolling, fix the display (background color)
+    [ ] full list, scrolling, fix the display (background color), resizing
 
 
 Future work
@@ -38,7 +41,7 @@ Future work
 
 # General
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc)
-[ ] Ensure proper resizing
+[ ] Ensure proper resizing at all times
 
 # Library
 [ ] vector icons?
@@ -55,4 +58,5 @@ Future work
 
 # Preview
 [ ] allow for zooming in (ctrl +)
-[ ] too many buttons seems to break the resizing. It should not.
+[ ] have a "global" page, storing all notebooks, filter added with the
+    notebooks' name as a tag

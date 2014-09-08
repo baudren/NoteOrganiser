@@ -71,6 +71,9 @@ class Information(object):
         # Initialisation
         self.level = root
 
+        self.current_notebook = ''
+        self.sha = {}
+
 
 if __name__ == "__main__":
     from logger import create_logger
