@@ -39,6 +39,7 @@ Roadmap for 0.1
     [x] full list of tags, with scrolling
     [x] fix the display (background color) (widgets not properly removed)
     [x] scrolling when a button is checked should work
+    [x] fix the width of the tag column
 
 
 Future work

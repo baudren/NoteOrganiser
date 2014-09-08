@@ -248,6 +248,7 @@ class Preview(CustomFrame):
 
         # Left hand side: html window
         self.web = QtWebKit.QWebView(self)
+
         # Set the css file. Note that the path to the css needs to be absolute,
         # somehow...
         local_path = os.getcwd()
@@ -255,7 +256,9 @@ class Preview(CustomFrame):
             os.path.join(local_path, 'noteorganiser', 'assets', 'style',
                          'default.css')))
 
-        self.layout().addWidget(self.web)
+        # The 1 stands for a stretch factor, set to 0 by default (seems to be
+        # only for QWebView, though...
+        self.layout().addWidget(self.web, 1)
 
         # Right hand side: Vertical layout for the tags inside a QScrollArea
         scrollArea = QtGui.QScrollArea()
@@ -265,6 +268,8 @@ class Preview(CustomFrame):
         # Need to create a dummy Widget, because QScrollArea can not accept a
         # layout, only a Widget
         dummy = QtGui.QWidget()
+        # Limit its width
+        dummy.setFixedWidth(200)
 
         vbox = QtGui.QVBoxLayout()
         self.tagButtons = []
@@ -273,6 +278,7 @@ class Preview(CustomFrame):
                 tag = QtGui.QPushButton(key)
                 tag.setFlat(False)
                 tag.setMinimumSize(100, 40+5*value)
+                tag.setMaximumWidth(165)
                 tag.setCheckable(True)
                 if key in self.filters:
                     tag.setChecked(True)
