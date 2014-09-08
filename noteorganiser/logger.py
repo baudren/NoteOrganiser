@@ -1,7 +1,7 @@
 import logging
 
 
-def create_logger(level='DEBUG'):
+def create_logger(level='DEBUG', handler_type='stream'):
     """Defines a logger with optional level"""
 
     # Recover the associate value to the specified level
@@ -14,9 +14,15 @@ def create_logger(level='DEBUG'):
     logger.name = "_name_"
     logger.setLevel(level_value)
 
-    # create console handler and set level to debug
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(level_value)
+    # create the handler depengin on the desired type
+    if handler_type == 'stream':
+        handler = logging.StreamHandler()
+    elif handler_type == 'file':
+        handler = logging.FileHandler('log', mode='w')
+    else:
+        handler = logging.NullHandler()
+
+    handler.setLevel(level_value)
 
     # create formatter
     formatter = logging.Formatter(
@@ -25,10 +31,10 @@ def create_logger(level='DEBUG'):
         #"%(asctime)s %(module)s: L%(lineno) 4s %(funcName) 25s"
         #" | %(levelname) -10s  --> %(message)s")
 
-    # add formatter to ch
-    console_handler.setFormatter(formatter)
+    # add formatter to the console handler
+    handler.setFormatter(formatter)
 
-    # add ch to logger
-    logger.addHandler(console_handler)
+    # add the console handler to logger
+    logger.addHandler(handler)
 
     return logger

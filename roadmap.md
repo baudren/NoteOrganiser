@@ -9,7 +9,7 @@ Roadmap for 0.1
 [x] Include a setup.py script, with installation
 [ ] Create the folder .noteorganiser, copy there pyside.md if not present.
 [ ] Use Travis
-[ ] Send the logger to a file
+[x] Send the logger to a file
 
 # Library
 [x] remake icons

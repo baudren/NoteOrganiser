@@ -108,7 +108,7 @@ def main(args):
     application = QApplication(args)
 
     # Define a logger
-    logger = create_logger('INFO')
+    logger = create_logger('INFO', 'file')
     # Recover the folder path and the notebooks
     root, notebooks, folders = conf.initialise(logger)
 
