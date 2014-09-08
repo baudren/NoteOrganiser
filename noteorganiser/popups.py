@@ -64,7 +64,7 @@ class NewNotebook(Dialog):
 
         # Add the "Create" button, as a confirmation, and the "Cancel" one
         create = QtGui.QPushButton("&Create")
-        create.clicked.connect(self.create_notebook)
+        create.clicked.connect(self.createNotebook)
         cancel = QtGui.QPushButton("C&ancel")
         cancel.clicked.connect(self.clean_reject)
         hboxLayout.addWidget(create)
@@ -77,7 +77,7 @@ class NewNotebook(Dialog):
 
         self.setLayout(vboxLayout)
 
-    def create_notebook(self):
+    def createNotebook(self):
         """Query the entry fields and append the notebook list"""
         desired_name = self.nameLineEdit.text()
         self.log.info("Desired Notebook name: "+desired_name)

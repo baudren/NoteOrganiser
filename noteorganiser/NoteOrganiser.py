@@ -85,7 +85,7 @@ class NoteOrganiser(QMainWindow):
             self.editing.switchNotebook(notebook)
 
     @Slot()
-    def create_notebook(self):
+    def createNotebook(self):
         self.popup = NewNotebook(self)
         ok = self.popup.exec_()
         if ok:
@@ -99,7 +99,7 @@ class NoteOrganiser(QMainWindow):
             self.editing.refresh()
 
     @Slot()
-    def create_folder(self):
+    def createFolder(self):
         pass
 
 

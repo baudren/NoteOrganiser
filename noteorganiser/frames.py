@@ -83,10 +83,10 @@ class Library(CustomFrame):
         grid.setSpacing(10)
 
         newNotebookButton = QtGui.QPushButton("&New Notebook")
-        newNotebookButton.clicked.connect(self.parentWidget().create_notebook)
+        newNotebookButton.clicked.connect(self.parentWidget().createNotebook)
 
         newFolderButton = QtGui.QPushButton("New &Folder")
-        newFolderButton.clicked.connect(self.parentWidget().create_folder)
+        newFolderButton.clicked.connect(self.parentWidget().createFolder)
 
         removeButton = QtGui.QPushButton("&Remove")
 

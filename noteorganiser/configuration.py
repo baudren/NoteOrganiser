@@ -32,6 +32,13 @@ def initialise(logger):
 
 
 def search_folder_recursively(logger, main):
+    """
+    Search the main folder for notebooks and folders with notebooks
+
+    Note that the returned notebooks and folders are flat (that is, folders is
+    not a list that then contains all the subnotebooks. They are discarded, and
+    only loaded if the folder is then clicked on).
+    """
     notebooks, folders = [], []
     if os.path.isdir(main):
         logger.info("Main folder existed already")
@@ -63,15 +70,26 @@ class Information(object):
 
     def __init__(self, logger, root, notebooks, folders):
         # Store the main variables
+        # This is a reference to the global logger
         self.logger = logger
+        # root stores the absolute path to the noteorganiser folder. It should
+        # point to ~/.noteorganiser on a Unix type machine, and I don't know
+        # where on a Windows.
         self.root = root
+        # level stores the current path in the root folder (still in absolute
+        # path, though)
+        self.level = root
+
+        # notebooks is the list of notebooks files (ending with EXTENSION),
+        # found in "level". Folders contains the list of non-empty, non-hidden
+        # folders in this directory.
         self.notebooks = notebooks
         self.folders = folders
 
-        # Initialisation
-        self.level = root
-
+        # Reference towards the currently edited/previewed notebook
         self.current_notebook = ''
+        # Stores the SHA sum for every notebook, in order to avoid re-analyzing
+        # the entire file for each filtering TODO
         self.sha = {}
 
 
