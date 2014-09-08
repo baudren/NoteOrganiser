@@ -5,8 +5,8 @@ Roadmap for 0.1
 [x] create an Information class, holding all the necessary information, shared
     among every frame or widget.
 [ ] Include a setup.py script, with installation.
-[ ] include an example notebook, for the syntax (and a link to the modified
-    markdown syntax).
+[x] include an example notebook, for the syntax.
+[ ] add a link to the modified markdown syntax in the README.
 
 # Library
 [x] remake icons
