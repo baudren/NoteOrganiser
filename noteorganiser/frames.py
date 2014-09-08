@@ -252,18 +252,17 @@ class Preview(CustomFrame):
 
         self.layout().addWidget(self.web)
 
-        # Right hand side: Vertical layout for the tags
+        # Right hand side: Vertical layout for the tags inside a QScrollArea
+        scrollArea = QtGui.QScrollArea()
+
+        # Need to create a dummy Widget, because QScrollArea can not accept a
+        # layout, only a Widget
+        dummy = QtGui.QWidget()
+
         vbox = QtGui.QVBoxLayout()
         self.tagButtons = []
-        # Note that for some reason, too many buttons will break the
-        # functionality of resizing the window
-        # FIXME
-        max_index = 10
         if self.extracted_tags:
-            index = 0
             for key, value in self.extracted_tags.iteritems():
-                if index == max_index:
-                    break
                 tag = QtGui.QPushButton(key)
                 tag.setMinimumSize(100, 40+5*value)
                 tag.setCheckable(True)
@@ -272,9 +271,11 @@ class Preview(CustomFrame):
                 tag.clicked.connect(self.addFilter)
                 self.tagButtons.append([key, tag])
                 vbox.addWidget(tag)
-                index += 1
+        # Adding everything to the scroll area
+        dummy.setLayout(vbox)
+        scrollArea.setWidget(dummy)
 
-        self.layout().addLayout(vbox)
+        self.layout().addWidget(scrollArea)
 
         # Logging
         self.log.info("Finished UI init of %s" % self.__class__.__name__)

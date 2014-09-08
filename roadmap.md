@@ -33,7 +33,9 @@ Roadmap for 0.1
 [~] list of existing tags, toggable buttons.
     [x] list appear
     [x] toggling buttons reduce the posts
-    [ ] full list, scrolling, fix the display (background color), resizing
+    [ ] full list of tags, with scrolling
+    [ ] fix the display (background color) (widgets not properly removed)
+    [ ] scrolling when a button is checked should work
 
 
 Future work
