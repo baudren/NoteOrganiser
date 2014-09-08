@@ -44,10 +44,14 @@ class CustomFrame(QtGui.QFrame):
 
     def clearUI(self, number):
         for _ in range(number):
-            layout = self.layout().takeAt(0)
-            if isinstance(layout, QtGui.QLayout):
-                self.clearLayout(layout)
-                layout.deleteLater()
+            item = self.layout().takeAt(0)
+            if isinstance(item, QtGui.QLayout):
+                self.clearLayout(item)
+                item.deleteLater()
+            else:
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()
 
     def clearLayout(self, layout):
         if layout is not None:
@@ -271,6 +275,7 @@ class Preview(CustomFrame):
                 tag.clicked.connect(self.addFilter)
                 self.tagButtons.append([key, tag])
                 vbox.addWidget(tag)
+        scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         # Adding everything to the scroll area
         dummy.setLayout(vbox)
         scrollArea.setWidget(dummy)
