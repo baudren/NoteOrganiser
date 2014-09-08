@@ -5,11 +5,11 @@ from PySide.QtGui import QAction, QTabWidget
 from PySide.QtCore import Slot
 
 # Local module imports
-from frames import Library, Editing, Preview
-from popups import NewNotebook
-from logger import create_logger
-import configuration as conf
-from constants import EXTENSION
+from noteorganiser.frames import Library, Editing, Preview
+from noteorganiser.popups import NewNotebook
+from noteorganiser.logger import create_logger
+import noteorganiser.configuration as conf
+from noteorganiser.constants import EXTENSION
 
 
 class NoteOrganiser(QMainWindow):

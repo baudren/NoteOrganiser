@@ -7,10 +7,10 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
-from widgets import Shelves, TextEditor
-from popups import NewEntry
-import text_processing as tp
-from constants import EXTENSION
+from noteorganiser.widgets import Shelves, TextEditor
+from noteorganiser.popups import NewEntry
+import noteorganiser.text_processing as tp
+from noteorganiser.constants import EXTENSION
 
 
 class ExampleFrame(QtGui.QFrame):

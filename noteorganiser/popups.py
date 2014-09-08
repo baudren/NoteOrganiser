@@ -1,6 +1,6 @@
 from PySide import QtGui
 
-from constants import EXTENSION
+from noteorganiser.constants import EXTENSION
 
 
 class Dialog(QtGui.QDialog):

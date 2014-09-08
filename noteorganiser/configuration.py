@@ -5,7 +5,7 @@
 .. moduleauthor:: Benjamin Audren <benjamin.audren@gmail.com>
 """
 import os
-from constants import EXTENSION
+from noteorganiser.constants import EXTENSION
 
 
 def initialise(logger):

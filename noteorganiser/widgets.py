@@ -4,8 +4,8 @@ import os
 from PySide import QtGui
 from PySide import QtCore
 
-from constants import EXTENSION
-from configuration import search_folder_recursively
+from noteorganiser.constants import EXTENSION
+from noteorganiser.configuration import search_folder_recursively
 
 
 class Shelves(QtGui.QFrame):

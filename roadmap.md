@@ -4,9 +4,12 @@ Roadmap for 0.1
 # General
 [x] create an Information class, holding all the necessary information, shared
     among every frame or widget.
-[ ] Include a setup.py script, with installation.
 [x] include an example notebook, for the syntax.
-[ ] add a link to the modified markdown syntax in the README.
+[x] add a link to the modified markdown syntax in the README.
+[x] Include a setup.py script, with installation
+[ ] Create the folder .noteorganiser, copy there pyside.md if not present.
+[ ] Use Travis
+[ ] Send the logger to a file
 
 # Library
 [x] remake icons
