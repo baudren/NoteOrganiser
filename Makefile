@@ -1,5 +1,5 @@
 all:
-	python noteorganiser/NoteOrganiser.py
+	python -m noteorganiser/NoteOrganiser
 
 test:
-	python noteorganiser/text_processing.py -v
+	python -m noteorganiser/text_processing -v
