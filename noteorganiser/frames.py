@@ -91,8 +91,7 @@ class Library(CustomFrame):
 
         newFolderButton = QtGui.QPushButton("New &Folder")
         newFolderButton.clicked.connect(self.parentWidget().createFolder)
-
-        removeButton = QtGui.QPushButton("&Remove")
+        newFolderButton.setDisabled(True)
 
         # Create the shelves object
         self.shelves = Shelves(self)
@@ -100,7 +99,6 @@ class Library(CustomFrame):
         grid.addWidget(self.shelves, 0, 0, 5, 5)
         grid.addWidget(newNotebookButton, 1, 5)
         grid.addWidget(newFolderButton, 2, 5)
-        grid.addWidget(removeButton, 3, 5)
 
         self.layout().addLayout(grid)
 
@@ -258,6 +256,8 @@ class Preview(CustomFrame):
 
         # Right hand side: Vertical layout for the tags inside a QScrollArea
         scrollArea = QtGui.QScrollArea()
+        scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        scrollArea.verticalScrollBar().setFocusPolicy(QtCore.Qt.StrongFocus)
 
         # Need to create a dummy Widget, because QScrollArea can not accept a
         # layout, only a Widget
@@ -268,6 +268,7 @@ class Preview(CustomFrame):
         if self.extracted_tags:
             for key, value in self.extracted_tags.iteritems():
                 tag = QtGui.QPushButton(key)
+                tag.setFlat(False)
                 tag.setMinimumSize(100, 40+5*value)
                 tag.setCheckable(True)
                 if key in self.filters:
@@ -275,7 +276,6 @@ class Preview(CustomFrame):
                 tag.clicked.connect(self.addFilter)
                 self.tagButtons.append([key, tag])
                 vbox.addWidget(tag)
-        scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         # Adding everything to the scroll area
         dummy.setLayout(vbox)
         scrollArea.setWidget(dummy)
@@ -287,25 +287,26 @@ class Preview(CustomFrame):
 
     def addFilter(self):
         sender = self.sender()
-        if sender.isChecked():
-            self.log.info('tag '+sender.text()+' added to the filter')
-            self.filters.append(sender.text())
-        else:
-            self.log.info('tag '+sender.text()+' removed from the filter')
-            self.filters.pop(self.filters.index(sender.text()))
-
-        self.log.info("filter %s out of %s" % (
-            ', '.join(self.filters), self.info.current_notebook))
-        url, remaining_tags = self.convert(
-            os.path.join(self.info.level, self.info.current_notebook),
-            self.filters)
-        # Grey out not useful buttons
-        for key, button in self.tagButtons:
-            if key in remaining_tags:
-                button.setEnabled(True)
+        if not sender.isFlat():
+            if sender.isChecked():
+                self.log.info('tag '+sender.text()+' added to the filter')
+                self.filters.append(sender.text())
             else:
-                button.setDisabled(True)
-        self.setWebpage(url)
+                self.log.info('tag '+sender.text()+' removed from the filter')
+                self.filters.pop(self.filters.index(sender.text()))
+
+            self.log.info("filter %s out of %s" % (
+                ', '.join(self.filters), self.info.current_notebook))
+            url, remaining_tags = self.convert(
+                os.path.join(self.info.level, self.info.current_notebook),
+                self.filters)
+            # Grey out not useful buttons
+            for key, button in self.tagButtons:
+                if key in remaining_tags:
+                    self.enableButton(button)
+                else:
+                    self.disableButton(button)
+            self.setWebpage(url)
 
     def setWebpage(self, page):
         self.web.load(QtCore.QUrl(page))
@@ -362,6 +363,15 @@ class Preview(CustomFrame):
             page.write(html)
 
         return url, remaining_tags
+
+    def disableButton(self, button):
+        button.setFlat(True)
+        button.setCheckable(False)
+
+    def enableButton(self, button):
+        button.setFlat(False)
+        button.setCheckable(True)
+
 
 if __name__ == "__main__":
     application = QtGui.QApplication(sys.argv)

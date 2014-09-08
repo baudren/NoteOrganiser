@@ -30,12 +30,12 @@ Roadmap for 0.1
 # Previewing
 [x] script to convert modified md to md, then pandoc to html
 [x] style-sheet support for web-browser
-[~] list of existing tags, toggable buttons.
+[x] list of existing tags, toggable buttons.
     [x] list appear
     [x] toggling buttons reduce the posts
     [x] full list of tags, with scrolling
     [x] fix the display (background color) (widgets not properly removed)
-    [ ] scrolling when a button is checked should work
+    [x] scrolling when a button is checked should work
 
 
 Future work
@@ -60,5 +60,7 @@ Future work
 
 # Preview
 [ ] allow for zooming in (ctrl +)
+[ ] change the graphics of setFlat to match the disabled look, without the
+    drawback of preventing scrolling.
 [ ] have a "global" page, storing all notebooks, filter added with the
     notebooks' name as a tag
