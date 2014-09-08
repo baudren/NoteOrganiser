@@ -11,9 +11,9 @@ Roadmap for 0.1
     [x] write the names in the transparent zone
 [x] allow for folders
 [x] navigation options (back (i.e. up)), toolbar maybe?
-[~] allow for removing notebook with right click
+[x] allow for removing notebook with right click
     [x] removing with right click
-    [~] confirmation if non empty
+    [x] confirmation if non empty
 
 # Editing
 [x] allow for folders
@@ -27,9 +27,10 @@ Roadmap for 0.1
 # Previewing
 [x] script to convert modified md to md, then pandoc to html
 [x] style-sheet support for web-browser
-[x] list of existing tags, toggable buttons.
+[~] list of existing tags, toggable buttons.
     [x] list appear
     [x] toggling buttons reduce the posts
+    [ ] full list, scrolling, fix the display (background color)
 
 
 Future work

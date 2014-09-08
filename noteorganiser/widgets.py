@@ -102,17 +102,28 @@ class Shelves(QtGui.QFrame):
         self.log.info(
             'deleting %s from the shelves' % notebook)
         path = os.path.join(self.info.level, notebook+EXTENSION)
+
+        # Assert that the file is empty, or ask for confirmation
         if os.stat(path).st_size != 0:
-            print('Are you sure?')
+            reply = QtGui.QMessageBox.question(
+                self, 'Message',
+                "Are you sure you want to delete %s?" % notebook,
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                QtGui.QMessageBox.No)
+        else:
+            reply = QtGui.QMessageBox.Yes
 
-        # Delete the file on the disk
-        os.remove(path)
+        if reply == QtGui.QMessageBox.Yes:
+            os.remove(path)
+            # Delete the reference to the notebook
+            index = self.info.notebooks.index(notebook+EXTENSION)
+            self.info.notebooks.pop(index)
 
-        # Delete the reference to the notebook
-        index = self.info.notebooks.index(notebook+EXTENSION)
-        self.info.notebooks.pop(index)
+            # Refresh the display
+            self.refresh()
 
-        self.refresh()
+        else:
+            self.log.info("Aborting")
 
     def notebookClicked(self):
         sender = self.sender()
