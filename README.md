@@ -4,22 +4,24 @@ Note Organiser for scientists
 Objective
 ---------
 
-Provide scientists, IT professionals but also normal people, with a solid
-note-taking GUI.
+Provide scientists, IT professionals but also normal people, with a solid,
+lightweight note-taking GUI, with math support, tag browsing and a clear
+interface.
 
-Status
-------
+Usage
+-----
 
-Early development, should reach 0.1 in September. See the roadmap for detailed
-plans (browse the raw format, as Github does not apply the Github flavored
-syntax to files), and feel free to suggest any thing I missed in the issues.
 
-Minimal Features (for 0.1)
---------------------------
+Current Features
+----------------
 
 - Markdown syntax for a clear source file, readable without the software.
 - Tag system for entries for classification
-- Html previewing of the note file, with tag and date sorting
+- Html previewing of the note file, with tag sorting
+
+see the roadmap (display in raw format, since Github does not apply the Github
+flavored syntax to files) for coming features, and make use of the issues page
+to propose improvements.
 
 License
 -------

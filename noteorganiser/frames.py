@@ -42,16 +42,19 @@ class CustomFrame(QtGui.QFrame):
     def initUI(self):
         raise NotImplementedError
 
-    def clearUI(self, number):
-        for _ in range(number):
+    def clearUI(self):
+        while self.layout().count():
             item = self.layout().takeAt(0)
             if isinstance(item, QtGui.QLayout):
                 self.clearLayout(item)
                 item.deleteLater()
             else:
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
+                try:
+                    widget = item.widget()
+                    if widget is not None:
+                        widget.deleteLater()
+                except AttributeError:
+                    pass
 
     def clearLayout(self, layout):
         if layout is not None:
@@ -169,7 +172,7 @@ class Editing(CustomFrame):
 
     def refresh(self):
         """Redraw (time consuming...)"""
-        self.clearUI(2)
+        self.clearUI()
         self.initUI()
 
     def switchNotebook(self, notebook):
@@ -324,7 +327,7 @@ class Preview(CustomFrame):
 
         self.extracted_tags = tags
         # Finally, set the url of the web viewer to the desired page
-        self.clearUI(2)
+        self.clearUI()
         self.initUI()
         self.setWebpage(url)
 
