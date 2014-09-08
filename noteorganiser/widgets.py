@@ -78,13 +78,6 @@ class Shelves(QtGui.QFrame):
                 else:
                     self.clearLayout(item.layout())
 
-    def addNotebook(self):
-        """Add a new button"""
-        self.log.info(
-            'adding %s to the shelves' % self.info.notebooks[-1].strip(
-                EXTENSION))
-        self.refresh()
-
     def refresh(self):
         # Redraw the graphical interface.
         self.clearUI()
