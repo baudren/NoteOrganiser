@@ -1,0 +1,153 @@
+body{
+  font-famliy: Arial, sans-serif;
+  width: 80%;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;   
+  margin-top: 1em;
+  /*background-color: #fdf6e3;*/
+  background-color: #fef9ea;
+  color: #657b83;
+}
+
+em, i {
+  font-family: Times New Roman, Times, serif;
+}
+
+a, a.active, a.visited { color: #b58900; }
+a.hover { color: #036; }
+
+p {
+  padding-left: 2em;
+}
+
+/*ordered, unordered and definition lists*/
+ol, ul, dl {
+  margin-left: 0em;
+}
+
+/*title for definition lists*/
+dt {
+  /*background-color: #93a1a1;*/
+  background-color: #eee8d5;
+  color: #586e75;
+  margin-left: 2em;
+}
+
+/*description for definition lists*/
+dd {
+  margin-left: 1em;
+  margin-top: -0.5em;
+}
+
+p.first{
+  padding-top: 0;
+  margin-top: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Helvetica, Arial, sans-serif;
+  /*border: thin solid black;*/
+  /*This makes the borders rounded on Mozilla, which pleases me*/
+  /*-moz-border-radius: 8px;*/
+  /*padding-top: 4px;*/
+  /*margin-top: 50px;*/
+  /*font-size: 150%;*/
+}
+
+h1 {
+  text-align: center;
+  /*background-color: #444499;*/
+  background-color: #002b36;
+  /*color: #eeeeee;*/
+  /*color: #839496;*/
+  color: #cb4b16;
+  /*color: #dc322f; */
+  border: thick solid black;
+  -moz-border-radius: 20px;
+  margin-bottom: 20px;
+  padding-top: 4px;
+  margin-top: 50px;
+  font-size: 200%;
+}
+
+h2 {
+  font-size: 130%;
+  text-align: left;
+  color: #dc322f;
+}
+
+h3 {
+  font-size: 110%;
+  text-align: left;
+  padding-left: 1em;
+  color: #6c71c4;
+}
+
+table.docutils {
+  margin-left: 4em;
+}
+
+/*pre.code, pre.math {*/
+  /*padding-left: 4em;*/
+/*}*/
+
+pre {
+  padding-left: 4em;
+}
+
+pre.warning, pre.definition, pre.information {
+  background-color: #eee8d5;
+  padding: 1em 1em 1em 4em;
+  margin-left: 0em;
+  font-family: sans-serif;
+  display: block;
+}
+
+pre.warning {
+  border-left: 12px solid #dc322f;
+  color: #dc322f;
+}
+
+pre.definition {
+  border-left: 12px solid #859900;
+  color: #859900;
+}
+
+pre.information {
+  border-left: 12px solid #268bd2;
+  color: #268bd2;
+}
+
+pre.sourceCode.python {
+  background-color: #eee8d5;
+  padding-left: 2em;
+  margin-left: 2em;
+}
+
+td.field-body {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+div.admonition p.admonition-title {
+  text-align: center;
+  background-color: #999999;
+  display: block;
+  /*margin-left: 2em;*/
+}
+
+div.warning p.admonition-title {
+  color: #cc0000;
+  font-family: sans-serif;
+  text-align: center;
+  background-color: #999999;
+  display: block;
+  /*margin-left: 2em;*/
+}
+
+div.warning {
+  background-color: #cccccc;
+  /*padding-left: 2em;*/
+  margin-left: 2em;
+}
