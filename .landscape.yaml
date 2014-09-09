@@ -1,0 +1,5 @@
+doc-warnings: true
+test-warnings: false
+strictness: high
+uses:
+    - PySide
