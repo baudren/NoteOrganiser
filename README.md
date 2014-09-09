@@ -1,6 +1,7 @@
 Note Organiser for scientists
 =============================
 
+[![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
 
 Objective
 ---------
