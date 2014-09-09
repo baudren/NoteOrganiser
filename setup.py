@@ -1,18 +1,28 @@
 from distutils.core import setup
 from setuptools import find_packages
 
+import os
+
 # Recover version from VERSION file
 with open('VERSION', 'r') as version_file:
     VERSION = version_file.readline()
 
+# Find all packages
 PACKAGES = find_packages()
 
-# Recover assets
+# Platform independent recovery of the home directory. It is always put as
+# a hidden folder, '.noteorganiser', in the unix tradition.
+MAIN = os.path.join(os.path.expanduser("~"), '.noteorganiser')
+
+# Recover the data files, and place them
 ASSETS = [('', ['VERSION']),
-          ('', ['example/pyside.md']),
-          ('', ['noteorganiser/assets/notebook-128.png',
-                'noteorganiser/assets/folder-128.png']),
-          ('', ['noteorganiser/assets/style/default.css']), ]
+          (MAIN,
+           ['example/example.md']),
+          ('noteorganiser/assets/',
+           ['noteorganiser/assets/notebook-128.png',
+            'noteorganiser/assets/folder-128.png']),
+          ('noteorganiser/assets/style',
+           ['noteorganiser/assets/style/default.css']), ]
 
 setup(name='NoteOrganiser',
       version=VERSION,

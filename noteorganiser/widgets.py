@@ -24,13 +24,14 @@ class Shelves(QtGui.QFrame):
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
         grid = QtGui.QGridLayout()
         grid.setSpacing(100)
+        path = os.path.dirname(__file__)
 
         for index, notebook in enumerate(self.info.notebooks):
             # distinguish between a notebook and a folder, stored as a tuple.
             # When encountering a folder, simply put a different image for the
             # moment.
             button = PicButton(QtGui.QPixmap(
-                "./noteorganiser/assets/notebook-128.png"),
+                os.path.join(path, 'assets', 'notebook-128.png')),
                 notebook.strip(EXTENSION), 'notebook', self)
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
@@ -39,7 +40,7 @@ class Shelves(QtGui.QFrame):
 
         for index, folder in enumerate(self.info.folders):
             button = PicButton(QtGui.QPixmap(
-                "./noteorganiser/assets/folder-128.png"),
+                os.path.join(path, 'assets', 'folder-128.png')),
                 os.path.basename(folder), 'folder', self)
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)

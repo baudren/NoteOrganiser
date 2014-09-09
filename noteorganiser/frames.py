@@ -251,10 +251,9 @@ class Preview(CustomFrame):
 
         # Set the css file. Note that the path to the css needs to be absolute,
         # somehow...
-        local_path = os.getcwd()
+        path = os.path.abspath(os.path.dirname(__file__))
         self.web.settings().setUserStyleSheetUrl(QtCore.QUrl.fromLocalFile(
-            os.path.join(local_path, 'noteorganiser', 'assets', 'style',
-                         'default.css')))
+            os.path.join(path, 'assets', 'style', 'default.css')))
 
         # The 1 stands for a stretch factor, set to 0 by default (seems to be
         # only for QWebView, though...

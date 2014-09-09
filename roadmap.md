@@ -7,7 +7,8 @@ Roadmap for 0.1
 [x] include an example notebook, for the syntax.
 [x] add a link to the modified markdown syntax in the README.
 [x] Include a setup.py script, with installation
-[ ] Create the folder .noteorganiser, copy there pyside.md if not present.
+[x] Create the folder ~/.noteorganiser, copy there example.md if not present,
+    from the installation script
 [ ] Use Travis
 [x] Send the logger to a file
 
@@ -46,8 +47,9 @@ Future work
 ===========
 
 # General
-[ ] Improve keyboard shortcuts (ctrl instead of alt, etc)
-[ ] Ensure proper resizing at all times
+[ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
+[ ] Ensure proper resizing at all times.
+[ ] Use QTest module to test the individual functionalities.
 
 # Library
 [ ] vector icons?
