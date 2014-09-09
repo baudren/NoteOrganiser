@@ -16,39 +16,56 @@ def is_valid_post(post):
     """
     Check that it has all the required arguments
 
+    If the post is valid, the function returns True. Otherwise, an ValueError
+    is raised with a description of the problem.
+
     >>> good = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*"]
-    >>> bad = ["Toto", "-------", "*21/12/2012*"]
-    >>> wrong_date = ["Toto", "-----", "# something", "12/12/042*"]
     >>> is_valid_post(good)
     True
-    >>> is_valid_post(bad)
-    False
-    >>> is_valid_post(wrong_date)
-    False
+
+    >>> is_valid_post(["Toto", "-------", "*21/12/2012*"])
+    Traceback (most recent call last):
+        ...
+    ValueError: Post contains under four lines
+    >>> is_valid_post(["Toto", "-----", "# something", "12/12/042*"])
+    Traceback (most recent call last):
+        ...
+    ValueError: The date could not be read
+    >>> is_valid_post(['Toto', '=======', '# something', '*21/12/2012*'])
+    Traceback (most recent call last):
+        ...
+    ValueError: Post does not contain dashes
+    >>> is_valid_post(['', '-------', '# non-linear, pk', '*21/12/2012*'])
+    Traceback (most recent call last):
+        ...
+    ValueError: Post title is empty
+    >>> is_valid_post(['Toto', '-------', '*21/12/2012*', 'something'])
+    Traceback (most recent call last):
+        ...
+    ValueError: Tags were not found after the dashes
     """
-    is_valid = True
     if len(post) < 4:
-        is_valid = False
+        raise ValueError("Post contains under four lines")
     else:
         # Recover the index of the line of dashes, in case of long titles
         index = 0
         dashes = [e for e in post if e.find('----') != -1]
         try:
             index = post.index(dashes[0])
-        except ValueError:
-            is_valid = False
+        except IndexError:
+            raise ValueError("Post does not contain dashes")
         if index:
             if not post[0]:
-                is_valid = False
+                raise ValueError("Post title is empty")
             if post[index+1] and post[index+1].find('#') == -1:
-                is_valid = False
+                raise ValueError("Tags were not found after the dashes")
             if post[index+2]:
                 match = re.match(
                     r"\*[0-9]{2}/[0-1][1-9]/[0-9]{4}\*",
                     post[index+2])
                 if match is None:
-                    is_valid = False
-    return is_valid
+                    raise ValueError("The date could not be read")
+    return True
 
 
 def extract_tags_from_post(post):
@@ -63,7 +80,7 @@ def extract_tags_from_post(post):
 
     >>> post = ["Toto", "-------", " # non-linear, pk", "*21/12/2012*"]
     >>> extract_tags_from_post(post)
-    ['non-linear', 'pk']
+    (['non-linear', 'pk'], ['Toto', '-------', '*21/12/2012*'])
     """
     tag_line = post[2].strip()
     if tag_line and tag_line[0] == '#':
@@ -85,11 +102,15 @@ def extract_title_from_post(post):
 
 def extract_date_from_post(post):
     """
-    Recover the date from an extracted post
+    Recover the date from an extracted post, and return the correct post
 
-    >>> post = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*"]
+    >>> post = ["Toto", "-------", "*21/12/2012*", "Something something"]
     >>> extract_date_from_post(post)
-    datetime.date(2012, 12, 21)
+    (datetime.date(2012, 12, 21), ['Toto', '-------', 'Something something'])
+    >>> extract_date_from_post(["Toto", "---------", "meh"])
+    Traceback (most recent call last):
+        ...
+    ValueError: No date found in the post
     """
     for index, line in enumerate(post):
         match = re.match(
@@ -107,9 +128,11 @@ def normalize_post(post):
     """
     If a title has several lines, merge them
 
-    >>> post = ["Toto", "has a long title", "------", "# something", ]
+    >>> post = ['Toto', 'has a long title', '-------', '# bla', '*08/11/2010*']
     >>> normalize_post(post)
-    ['Toto has a long title', '------', '# something']
+    ['Toto has a long title', '-------', '# bla', '*08/11/2010*']
+    >>> is_valid_post(_)
+    True
     """
     # Remove trailing \n
     post = [line.strip() for line in post]
@@ -183,6 +206,10 @@ def from_notes_to_markdown(path, input_tags=None):
 
     This will then be interpreted with the pandoc library into html.
 
+    ..note::
+
+        so far the date is ignored.
+
     Returns
     -------
     markdown : list
@@ -200,13 +227,8 @@ def from_notes_to_markdown(path, input_tags=None):
         text = ["", "## %s" % name, ""]
 
         tags, post = extract_tags_from_post(post)
-        if input_tags:
-            relevance = 0
-            for tag in tags:
-                if tag in input_tags:
-                    relevance += 1
-            if relevance < len(input_tags):
-                continue
+        if not all([tag in tags for tag in input_tags]):
+            continue
         edit_date, post = extract_date_from_post(post)
         corpus = extract_corpus_from_post(post)
         text.extend(corpus)
@@ -230,13 +252,16 @@ def sort_tags(source):
 
 
 def create_post_from_entry(title, tags, corpus):
-    """TODO"""
-    text = title
-    text += '\n%s\n' % ''.join(['-' for _ in range(len(title))])
-    text += '# %s\n' % ', '.join(tags)
-    text += '\n*%s*\n\n' % date.today().strftime("%d/%m/%Y")
-    text += corpus+'\n'
-    return text
+    """
+    Create a string containing the post given user's input
+
+    """
+    text = [title]
+    text.append('\n%s\n' % ''.join(['-' for _ in range(len(title))]))
+    text.append('# %s\n' % ', '.join(tags))
+    text.append('\n*%s*\n\n' % date.today().strftime("%d/%m/%Y"))
+    text.append(corpus+'\n')
+    return ''.join(text)
 
 
 if __name__ == "__main__":
