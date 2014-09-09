@@ -1,5 +1,5 @@
 doc-warnings: true
 test-warnings: false
-strictness: high
-uses:
-    - PySide
+strictness: medium
+max-line-length: 80
+autodetect: true
