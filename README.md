@@ -1,7 +1,7 @@
 Note Organiser for scientists
 =============================
 
-[![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
+[![Build Status](https://travis-ci.org/baudren/NoteOrganiser.svg?branch=devel)](https://travis-ci.org/baudren/NoteOrganiser)
 
 Objective
 ---------
@@ -71,3 +71,9 @@ License
 
 The code is published under the MIT license, please see LICENSE.txt for the
 complete notice.
+
+Health
+------
+
+According to Landscape (does not recognise PySide members so far...)
+[![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
