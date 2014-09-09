@@ -9,7 +9,6 @@ from noteorganiser.frames import Library, Editing, Preview
 from noteorganiser.popups import NewNotebook
 from noteorganiser.logger import create_logger
 import noteorganiser.configuration as conf
-from noteorganiser.constants import EXTENSION
 
 
 class NoteOrganiser(QMainWindow):

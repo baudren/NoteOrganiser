@@ -150,7 +150,6 @@ class Editing(CustomFrame):
         self.tabs = QtGui.QTabWidget(self)
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
-        QtGui.QTextDocument
         for notebook in self.info.notebooks:
             editor = TextEditor(self)
             editor.setSource(os.path.join(self.info.level, notebook))

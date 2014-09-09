@@ -1,0 +1,6 @@
+language: python
+python:
+  - "3.3"
+  - "2.7"
+install: python setup.py install --user
+script: python -m noteorganiser/text_processing

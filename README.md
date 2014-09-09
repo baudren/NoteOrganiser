@@ -26,13 +26,11 @@ issue:
 
     python setup.py install --user
 
-when in the main directory. It requires PySide, and pypandoc, which you can
-install with pip. **Be warned, PySide is a huge install**.
+when in the main directory. It requires PySide, and pypandoc, which will be
+installed if not present. **Be warned, PySide is a huge install**. Go walk
+outside for a bit.
 
-    pip install pypandoc --user
-    pip install PySide --user
-
-To get you started, look at the file `example/pyside.md`.
+To get you started, look at the file `example/example.md`.
 
 Usage
 -----
