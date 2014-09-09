@@ -2,5 +2,9 @@ language: python
 python:
   - "3.3"
   - "2.7"
-install: python setup.py install
+install:
+  - pip install coveralls
+  - python setup.py install
 script: make test
+after_success:
+  coveralls
