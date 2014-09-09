@@ -9,7 +9,7 @@ Roadmap for 0.1
 [x] Include a setup.py script, with installation
 [x] Create the folder ~/.noteorganiser, copy there example.md if not present,
     from the installation script
-[ ] Use Travis
+[x] Use Travis
 [x] Send the logger to a file
 
 # Library
