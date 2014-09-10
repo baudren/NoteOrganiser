@@ -115,7 +115,7 @@ def main(args):
     info = conf.Information(logger, root, notebooks, folders)
 
     # Define the main window
-    main_window = NoteOrganiser(info)
+    NoteOrganiser(info)
 
     # Run
     sys.exit(application.exec_())

@@ -36,6 +36,9 @@ To get you started, look at the file `example/example.md`.
 Usage
 -----
 
+Simply run, from anywhere, `NoteOrganiser.py`. Create notebooks, add entries
+with the `New Entry` button in the Editing panel, and preview them. On the
+`Preview` panel, you can filter entries with tags.
 
 Markdown
 --------
