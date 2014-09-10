@@ -15,6 +15,7 @@ Roadmap for 0.2
 [ ] resizing should change the number of columns/lines for the shelves
 
 # Editing
+[ ] allow for zooming
 [ ] when opening newly created notebook, write the title on top
 [ ] list of existing tags when entering a new field
 [ ] keep cursor position on reload
@@ -23,8 +24,9 @@ Roadmap for 0.2
 
 # Preview
 [ ] allow for zooming in (ctrl +)
-[ ] better css style for python (bootstrap?)
-[ ] keep indentation!
+[ ] better overall style (bootstrap?)
+[x] better css style for python (pygments)
+[x] keep indentation for code
 [ ] change the graphics of setFlat to match the disabled look, without the
     drawback of preventing scrolling.
 [ ] have a "global" page, storing all notebooks, filter added with the

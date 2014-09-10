@@ -16,29 +16,29 @@ add things. You will then be deleting layouts and widgets out of this global
 layout, with the following two methods:
 
 ~~~ python
-    def clearUI(self):
-        while self.layout().count():
-            item = self.layout().takeAt(0)
-            if isinstance(item, QtGui.QLayout):
-                self.clearLayout(item)
-                item.deleteLater()
-            else:
-                try:
-                    widget = item.widget()
-                    if widget is not None:
-                        widget.deleteLater()
-                except AttributeError:
-                    pass
-
-    def clearLayout(self, layout):
-        if layout is not None:
-            while layout.count():
-                item = layout.takeAt(0)
+def clearUI(self):
+    while self.layout().count():
+        item = self.layout().takeAt(0)
+        if isinstance(item, QtGui.QLayout):
+            self.clearLayout(item)
+            item.deleteLater()
+        else:
+            try:
                 widget = item.widget()
                 if widget is not None:
                     widget.deleteLater()
-                else:
-                    self.clearLayout(item.layout())
+            except AttributeError:
+                pass
+
+def clearLayout(self, layout):
+    if layout is not None:
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+            else:
+                self.clearLayout(item.layout())
 ~~~
 
 There are perharps more efficient ways to go, but this one works well. To
