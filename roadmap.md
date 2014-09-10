@@ -4,7 +4,9 @@ Roadmap for 0.2
 # General
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
 [ ] Ensure proper resizing at all times.
-[ ] Use QTest module to test the individual functionalities.
+[ ] Use py.test and qtbot module to test the individual functionalities.
+    [~] replace calls to parent's methods by proper use of signal/slot
+    [ ] ensuring proper relative import for tests
 
 # Library
 [ ] vector icons?
@@ -21,7 +23,8 @@ Roadmap for 0.2
 
 # Preview
 [ ] allow for zooming in (ctrl +)
-[ ] better css style for python, keep indentation! (bootstrap?)
+[ ] better css style for python (bootstrap?)
+[ ] keep indentation!
 [ ] change the graphics of setFlat to match the disabled look, without the
     drawback of preventing scrolling.
 [ ] have a "global" page, storing all notebooks, filter added with the

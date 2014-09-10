@@ -1,8 +1,7 @@
 import sys
 import os
-from PySide.QtGui import QApplication, QMainWindow
-from PySide.QtGui import QAction, QTabWidget
-from PySide.QtCore import Slot
+from PySide import QtGui
+from PySide import QtCore
 
 # Local module imports
 from noteorganiser.frames import Library, Editing, Preview
@@ -11,7 +10,7 @@ from noteorganiser.logger import create_logger
 import noteorganiser.configuration as conf
 
 
-class NoteOrganiser(QMainWindow):
+class NoteOrganiser(QtGui.QMainWindow):
     """TODO"""
 
     states = [
@@ -20,7 +19,7 @@ class NoteOrganiser(QMainWindow):
         'preview']
 
     def __init__(self, info):
-        QMainWindow.__init__(self)
+        QtGui.QMainWindow.__init__(self)
 
         # Store reference to the info class
         self.info = info
@@ -43,7 +42,7 @@ class NoteOrganiser(QMainWindow):
 
     def initMenuBar(self):
         self.log.info("Creating Menu Bar")
-        exitAction = QAction('&Exit', self)
+        exitAction = QtGui.QAction('&Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.close)
@@ -58,7 +57,7 @@ class NoteOrganiser(QMainWindow):
 
     def initWidgets(self):
         # Creating the tabbed widget
-        self.tabs = QTabWidget(self)
+        self.tabs = QtGui.QTabWidget(self)
 
         # Creating the three tabs. Through their parent, they will recover the
         # reference to the list of notebooks.
@@ -77,13 +76,17 @@ class NoteOrganiser(QMainWindow):
 
     def initLogic(self):
         self.state = 'library'
+        # Connect slots to signal
+        # * Connect the shelves refresh to the editing refresh
+        self.library.shelves.refreshSignal.connect(self.editing.refresh)
+        self.library.shelves.switchTabSignal.connect(self.switchTab)
 
+    @QtCore.Slot(str, str)
     def switchTab(self, tab, notebook):
         self.tabs.setCurrentIndex(self.states.index(tab))
         if tab == 'editing':
             self.editing.switchNotebook(notebook)
 
-    @Slot()
     def createNotebook(self):
         self.popup = NewNotebook(self)
         ok = self.popup.exec_()
@@ -97,14 +100,13 @@ class NoteOrganiser(QMainWindow):
             self.library.refresh()
             self.editing.refresh()
 
-    @Slot()
     def createFolder(self):
         pass
 
 
 def main(args):
     # Initialise the main Qt application
-    application = QApplication(args)
+    application = QtGui.QApplication(args)
 
     # Define a logger
     logger = create_logger('INFO', 'file')

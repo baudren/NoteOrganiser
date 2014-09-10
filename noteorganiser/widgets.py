@@ -9,6 +9,8 @@ from noteorganiser.configuration import search_folder_recursively
 
 
 class Shelves(QtGui.QFrame):
+    refreshSignal = QtCore.Signal()
+    switchTabSignal = QtCore.Signal(str, str)
 
     def __init__(self, parent=None):
         QtGui.QFrame.__init__(self, parent)
@@ -25,6 +27,7 @@ class Shelves(QtGui.QFrame):
         grid = QtGui.QGridLayout()
         grid.setSpacing(100)
         path = os.path.dirname(__file__)
+        self.buttons = []
 
         for index, notebook in enumerate(self.info.notebooks):
             # distinguish between a notebook and a folder, stored as a tuple.
@@ -36,6 +39,9 @@ class Shelves(QtGui.QFrame):
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
             button.clicked.connect(self.notebookClicked)
+            button.deleteNotebook.connect(self.removeNotebook)
+            self.buttons.append(button)
+
             grid.addWidget(button, 0, index)
 
         for index, folder in enumerate(self.info.folders):
@@ -45,6 +51,7 @@ class Shelves(QtGui.QFrame):
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
             button.clicked.connect(self.folderClicked)
+            self.buttons.append(button)
 
             grid.addWidget(button, 1, index)
 
@@ -53,21 +60,25 @@ class Shelves(QtGui.QFrame):
         # Create the navigation symbols
         hboxLayout = QtGui.QHBoxLayout()
 
-        upButton = QtGui.QPushButton("&Up")
-        upButton.clicked.connect(self.upFolder)
+        self.upButton = QtGui.QPushButton("&Up")
+        self.upButton.clicked.connect(self.upFolder)
+        if self.info.level == self.info.root:
+            self.upButton.setDisabled(True)
 
-        hboxLayout.addWidget(upButton)
+        hboxLayout.addWidget(self.upButton)
         hboxLayout.addStretch(1)
 
         self.layout().addStretch(1)
         self.layout().insertLayout(2, hboxLayout)
 
     def clearUI(self):
-        for _ in range(3):
+        while self.layout().count():
             layout = self.layout().takeAt(0)
             if isinstance(layout, QtGui.QLayout):
                 self.clearLayout(layout)
                 layout.deleteLater()
+        del self.buttons
+        del self.upButton
 
     def clearLayout(self, layout):
         if layout is not None:
@@ -84,14 +95,13 @@ class Shelves(QtGui.QFrame):
         self.clearUI()
         self.initUI()
 
-        # Ask to do the same for the editing panel
-        self.parent.parent.editing.refresh()
+        # Broadcast a refreshSignal order
+        self.refreshSignal.emit()
 
+    @QtCore.Slot(str)
     def removeNotebook(self, notebook):
         """
         Remove the notebook
-
-        TODO: add a confirmation for non-empty notebooks
         """
         self.log.info(
             'deleting %s from the shelves' % notebook)
@@ -122,8 +132,8 @@ class Shelves(QtGui.QFrame):
     def notebookClicked(self):
         sender = self.sender()
         self.log.info('notebook '+sender.text+' button cliked')
-        # Connect this to the switch tab focus to Editing
-        self.parent.parent.switchTab('editing', sender.text)
+        # Emit a signal asking for changing the tab
+        self.switchTabSignal.emit('editing', sender.text)
 
     def folderClicked(self):
         sender = self.sender()
@@ -198,14 +208,12 @@ class TextEditor(QtGui.QFrame):
             oldCursor = self.text.textCursor()
             text = open(self.source).read()
             self.text.setText(text)
-            #cursor = QtGui.QTextCursor(self.text.document())
             self.text.setTextCursor(oldCursor)
-            #self.text.textCursor().setPosition(position)
             self.text.ensureCursorVisible()
 
     def saveText(self):
         self.log.info("Writing modifications to %s" % self.source)
-        text = self.text.toPlainText()
+        text = self.text.toPlainText().encode('utf-8')
         with open(self.source, 'w') as file_handle:
             file_handle.write(text)
 
@@ -216,6 +224,8 @@ class TextEditor(QtGui.QFrame):
 
 class PicButton(QtGui.QPushButton):
     """Button with a picture"""
+    deleteNotebook = QtCore.Signal(str)
+
     def __init__(self, pixmap, text, style, parent=None):
         QtGui.QPushButton.__init__(self, parent)
         self.parent = parent
@@ -250,7 +260,7 @@ class PicButton(QtGui.QPushButton):
 
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
-        self.parent.removeNotebook(self.text)
+        self.deleteNotebook.emit(self.text)
 
 
 if __name__ == "__main__":
