@@ -135,7 +135,7 @@ def normalize_post(post):
     True
     """
     # Remove trailing \n
-    post = [line.strip() for line in post]
+    post = [line.rstrip('\n') for line in post]
 
     # Recover the dashline (title of the post)
     dashes = [e for e in post if e.find('----') != -1]
