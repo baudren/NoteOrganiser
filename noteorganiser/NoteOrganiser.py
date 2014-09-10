@@ -77,15 +77,23 @@ class NoteOrganiser(QtGui.QMainWindow):
     def initLogic(self):
         self.state = 'library'
         # Connect slots to signal
-        # * Connect the shelves refresh to the editing refresh
+        # * shelves refresh to the editing refresh
         self.library.shelves.refreshSignal.connect(self.editing.refresh)
+        # * shelves switchTab to the own switchTab method
         self.library.shelves.switchTabSignal.connect(self.switchTab)
+        # * editing preview to preview loadNotebook, and switch the the tab
+        self.editing.loadNotebook.connect(self.previewNotebook)
 
     @QtCore.Slot(str, str)
     def switchTab(self, tab, notebook):
         self.tabs.setCurrentIndex(self.states.index(tab))
         if tab == 'editing':
             self.editing.switchNotebook(notebook)
+
+    @QtCore.Slot(str)
+    def previewNotebook(self, notebook):
+        self.preview.loadNotebook(notebook)
+        self.switchTab('preview', notebook)
 
     def createNotebook(self):
         self.popup = NewNotebook(self)

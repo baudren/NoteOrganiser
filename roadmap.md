@@ -2,11 +2,14 @@ Roadmap for 0.2
 ===============
 
 # General
+[ ] Document more.
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
 [ ] Ensure proper resizing at all times.
+[ ] Ensure proper key navigation at all times.
 [ ] Use py.test and qtbot module to test the individual functionalities.
     [~] replace calls to parent's methods by proper use of signal/slot
-    [ ] ensuring proper relative import for tests
+    [x] ensuring proper relative import for tests
+    [ ] tests *actually* passing
 
 # Library
 [ ] vector icons?
@@ -24,7 +27,7 @@ Roadmap for 0.2
 
 # Preview
 [ ] allow for zooming in (ctrl +)
-[ ] better overall style (bootstrap?)
+[ ] better overall css style (bootstrap?)
 [x] better css style for python (pygments)
 [x] keep indentation for code
 [ ] change the graphics of setFlat to match the disabled look, without the

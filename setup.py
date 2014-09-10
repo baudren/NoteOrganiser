@@ -32,6 +32,6 @@ setup(name='NoteOrganiser',
       url='https://github.com/baudren/NoteOrganiser',
       packages=PACKAGES,
       scripts=['noteorganiser/NoteOrganiser.py'],
-      install_requires=['pypandoc', 'PySide>=1.2.2'],
+      install_requires=['pypandoc', 'PySide>=1.2.2', 'pygments'],
       data_files=ASSETS,
       )
