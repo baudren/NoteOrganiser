@@ -4,6 +4,8 @@ python:
   - "2.7"
 install:
   - pip install coveralls
+  - pip install pypandoc
+  - pip install PySide
   - python setup.py install
 script: make test
 after_success:
