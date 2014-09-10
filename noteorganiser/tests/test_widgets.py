@@ -5,9 +5,9 @@ from PySide import QtGui
 from PySide import QtCore
 import pytest
 
-from ..noteorganiser.widgets import Shelves
-from ..noteorganiser.logger import create_logger
-from ..noteorganiser import configuration as conf
+from ..widgets import Shelves
+from ..logger import create_logger
+from .. import configuration as conf
 
 
 @pytest.fixture
