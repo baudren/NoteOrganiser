@@ -363,6 +363,7 @@ class Preview(CustomFrame):
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
         html = pa.convert(temp_path, 'html')
+        html = html.encode('utf-8')
 
         # Write the html to a file
         url = os.path.join(self.website_root, base+'.html')
