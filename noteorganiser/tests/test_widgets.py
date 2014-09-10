@@ -48,14 +48,10 @@ def test_shelves(qtbot, parent):
     shelves = Shelves(parent)
     qtbot.addWidget(shelves)
 
-    # Connecting the signal to a dummy function
-    @QtCore.Slot(str, str)
-    def dummy(tab, notebook):
-        return tab, notebook
-
-    shelves.switchTabSignal.connect(dummy)
+    assert hasattr(shelves, 'buttons')
     # Asserting that left clicking on the notebook icon sends a signal to
     # switch tab
     with qtbot.waitSignal(shelves.switchTabSignal, timeout=1000) as switch:
         qtbot.mouseClick(shelves.buttons[0], QtCore.Qt.LeftButton)
+
     assert switch.signal_triggered
