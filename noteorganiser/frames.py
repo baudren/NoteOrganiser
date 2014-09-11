@@ -393,8 +393,9 @@ class Shelves(CustomFrame):
             # distinguish between a notebook and a folder, stored as a tuple.
             # When encountering a folder, simply put a different image for the
             # moment.
-            button = PicButton(QtGui.QPixmap(
-                os.path.join(path, 'assets', 'notebook-128.png')),
+            button = PicButton(
+                QtGui.QPixmap(
+                    os.path.join(path, 'assets', 'notebook-128.png')),
                 notebook.strip(EXTENSION), 'notebook', self)
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
@@ -405,8 +406,9 @@ class Shelves(CustomFrame):
             grid.addWidget(button, 0, index)
 
         for index, folder in enumerate(self.info.folders):
-            button = PicButton(QtGui.QPixmap(
-                os.path.join(path, 'assets', 'folder-128.png')),
+            button = PicButton(
+                QtGui.QPixmap(
+                    os.path.join(path, 'assets', 'folder-128.png')),
                 os.path.basename(folder), 'folder', self)
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
