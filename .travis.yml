@@ -6,6 +6,8 @@ install:
   - pip install coveralls
   - pip install pypandoc
   - pip install PySide
+  - pip install pytest
+  - pip install 'pytest-qt>=1.2.1'
   - python setup.py install
 script: make test
 after_success:

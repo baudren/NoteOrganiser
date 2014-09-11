@@ -6,7 +6,9 @@ from PySide import QtCore
 import pytest
 
 from ..frames import Shelves
+from ..widgets import PicButton
 from ..logger import create_logger
+from ..configuration import search_folder_recursively
 from .. import configuration as conf
 
 
@@ -19,23 +21,30 @@ def parent(request, qtbot):
         home, '.test_%s' % date)
     if not os.path.isdir(temp_folder_path):
         os.mkdir(temp_folder_path)
-    # Copy there the example.md file
+    # Copy there the example.md file, create a subfolder, and put again the
+    # same example.md in the subfolder
     shutil.copy(
         os.path.join(os.path.os.getcwd(), 'example', 'example.md'),
         temp_folder_path)
+    subfolder = os.path.join(temp_folder_path, 'toto')
+    os.mkdir(subfolder)
+    shutil.copy(
+        os.path.join(os.path.os.getcwd(), 'example', 'example.md'),
+        subfolder)
     # Create a parent window, containing an information instance, and a
     # logger
     parent = QtGui.QFrame()
     qtbot.addWidget(parent)
     log = create_logger('CRITICAL', 'stream')
     # Create an info instance
-    info = conf.Information(log, home, ['example.md'], [])
-    info.level = temp_folder_path
+    # Search the folder recursively
+    notebooks, folders = search_folder_recursively(log, temp_folder_path)
+    info = conf.Information(log, temp_folder_path, notebooks, folders)
     parent.info = info
     parent.log = log
 
     def fin():
-        print("Tear down parent class")
+        """Tear down parent class"""
         shutil.rmtree(temp_folder_path)
         parent.destroy()
     request.addfinalizer(fin)
@@ -48,11 +57,43 @@ def test_shelves(qtbot, parent):
     shelves = Shelves(parent)
     qtbot.addWidget(shelves)
 
-    assert hasattr(shelves, 'buttons')
-    # Asserting that left clicking on the notebook icon sends a signal to
-    # switch tab
+    # Checking if the buttons list was created, and that it contains only two
+    # elements (the notebook, and the folder)
+    assert hasattr(shelves, 'buttons'), 'buttons attribute not created'
+    assert len(shelves.buttons) == 2, 'not all buttons were created'
+    for button in shelves.buttons:
+        assert isinstance(button, PicButton)
+    # Asserting that left clicking on the notebook icon (first element of the
+    # buttons attribute) sends the proper signal.
     with qtbot.waitSignal(shelves.switchTabSignal, timeout=1000) as switch:
         qtbot.mouseClick(shelves.buttons[0], QtCore.Qt.LeftButton)
+    assert switch.signal_triggered, \
+        "clicking on a notebook should trigger a switchTabSignal"
 
-    # Commenting out the incriminating part until the bug is found
-    #assert switch.signal_triggered
+    # Checking that the up button is currently inaccessible (we are still in
+    # the root folder
+    assert not shelves.upButton.isEnabled(), \
+        "upButton should be disabled while in root"
+
+    # Checking the behaviour when clicking on a folder
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as way_down:
+        qtbot.mouseClick(shelves.buttons[1], QtCore.Qt.LeftButton)
+        # Check that the info.level has changed properly
+        assert shelves.info.level != shelves.info.root, "did not change dir"
+        # Check that now, the upButton is enabled
+        assert shelves.upButton.isEnabled(), "upButton was not enabled"
+    assert way_down.signal_triggered, "going down did not send a refreshSignal"
+
+    # Go back to the root
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as way_up:
+        qtbot.mouseClick(shelves.upButton, QtCore.Qt.LeftButton)
+        assert shelves.info.level == shelves.info.root, \
+            "the upButton did not go back up"
+        assert not shelves.upButton.isEnabled(), \
+            "the upButton was not properly reconnected"
+    assert way_up.signal_triggered, "going up did not send a refreshSignal"
+
+    # Test right click on the notebook. It should not trigger a switch tab
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=100) as right:
+        qtbot.mouseClick(shelves.buttons[0], QtCore.Qt.RightButton)
+    assert not right.signal_triggered
