@@ -10,6 +10,7 @@ from ..frames import Shelves, TextEditor
 from ..widgets import PicButton
 from ..logger import create_logger
 from ..configuration import search_folder_recursively
+from ..constants import EXTENSION
 from .. import configuration as conf
 
 
@@ -100,7 +101,6 @@ def test_shelves(qtbot, parent):
     assert not right.signal_triggered
 
     # Test right click, should open the menu TODO
-
     # Test clicking on the menu, should actually delete the file, and send a
     # refresh signal. TODO. temporary fix: call directly removeNotebook method
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as remove:
@@ -115,6 +115,16 @@ def test_shelves(qtbot, parent):
         "the notebook was not removed from the shelves"
     assert not shelves.info.notebooks, \
         "the notebook was not removed from the information instance"
+
+    # Adding a notebook
+    # TODO the popup should not appear!
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as new:
+        qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
+        # Create a notebook called toto TODO
+        assert len(shelves.buttons) == 2, "the notebook was not created"
+        assert shelves.info.notebooks == ['toto'+EXTENSION], \
+            "the notebook was not added to the information instance"
+    assert new.signal_triggered
 
 
 def test_text_editor(qtbot, parent):

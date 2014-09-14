@@ -6,7 +6,7 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
-from .popups import NewEntry
+from .popups import NewEntry, NewNotebook, NewFolder
 import noteorganiser.text_processing as tp
 from .constants import EXTENSION
 from .configuration import search_folder_recursively
@@ -415,11 +415,10 @@ class Shelves(CustomFrame):
             self.upButton.setDisabled(True)
 
         self.newNotebookButton = QtGui.QPushButton("&New Notebook")
-        self.newNotebookButton.clicked.connect(self.parent.parent.createNotebook)
+        self.newNotebookButton.clicked.connect(self.createNotebook)
 
         self.newFolderButton = QtGui.QPushButton("New &Folder")
-        self.newFolderButton.clicked.connect(self.parent.parent.createFolder)
-        self.newFolderButton.setDisabled(True)
+        self.newFolderButton.clicked.connect(self.createFolder)
 
         hboxLayout.addWidget(self.upButton)
         hboxLayout.addWidget(self.newNotebookButton)
@@ -455,6 +454,42 @@ class Shelves(CustomFrame):
 
         # Broadcast a refreshSignal order
         self.refreshSignal.emit()
+
+    def createNotebook(self):
+        self.popup = NewNotebook(self)
+        ok = self.popup.exec_()
+        if ok:
+            desired_name = self.info.notebooks[-1]
+            self.log.info(desired_name+' is the desired name')
+            file_name = desired_name
+            # Create an empty file (open and close)
+            open(os.path.join(self.info.level, file_name), 'w').close()
+            # Refresh both the library and Editing tab.
+            self.refresh()
+
+    def createFolder(self):
+        self.popup = NewFolder(self)
+        ok = self.popup.exec_()
+        if ok:
+            desired_name = self.info.folders[-1]
+            self.log.info(desired_name+' is the desired name')
+            folder_name = desired_name
+            # Create the folder
+            try:
+                os.mkdir(os.path.join(self.info.level, folder_name))
+            except OSError:
+                # If it already exists, continue
+                pass
+        # Change the level to the newly created folder, and send a refresh
+        # TODO display a warning that an empty folder will be discared if
+        # browsed out.
+        folder_path = os.path.join(self.info.root, folder_name)
+        self.info.notebooks, self.info.folders = search_folder_recursively(
+            self.log, folder_path)
+        # Update the current level as the folder_path, and refresh the content
+        # of the window
+        self.info.level = folder_path
+        self.refresh()
 
     @QtCore.Slot(str)
     def removeNotebook(self, notebook):

@@ -18,6 +18,8 @@ Roadmap for 0.2
 [ ] variable number of columns/line on the shelves
 [ ] resizing should change the number of columns/lines for the shelves
 [ ] Display all tags in this zone
+[x] Create folder
+[ ] Display the current folder's name somewhere
 
 # Editing
 [ ] allow for zooming

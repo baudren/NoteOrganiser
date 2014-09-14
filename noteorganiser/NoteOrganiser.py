@@ -95,22 +95,6 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.preview.loadNotebook(notebook)
         self.switchTab('preview', notebook)
 
-    def createNotebook(self):
-        self.popup = NewNotebook(self)
-        ok = self.popup.exec_()
-        if ok:
-            desired_name = self.info.notebooks[-1]
-            self.log.info(desired_name+' is the desired name')
-            file_name = desired_name
-            # Create an empty file (open and close)
-            open(os.path.join(self.info.level, file_name), 'w').close()
-            # Refresh both the library and Editing tab.
-            self.library.refresh()
-            self.editing.refresh()
-
-    def createFolder(self):
-        pass
-
 
 def main(args):
     # Initialise the main Qt application
