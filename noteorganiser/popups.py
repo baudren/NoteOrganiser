@@ -108,7 +108,7 @@ class NewFolder(Dialog):
         formLayout = QtGui.QFormLayout()
         self.nameLineEdit = QtGui.QLineEdit()
 
-        formLayout.addRow(self.tr("Notebook's &name:"), self.nameLineEdit)
+        formLayout.addRow(self.tr("Folder's &name:"), self.nameLineEdit)
         self.layout().addLayout(formLayout)
 
         hboxLayout = QtGui.QHBoxLayout()

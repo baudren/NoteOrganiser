@@ -118,13 +118,23 @@ def test_shelves(qtbot, parent):
 
     # Adding a notebook
     # TODO the popup should not appear!
-    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as new:
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as newN:
         qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
         # Create a notebook called toto TODO
         assert len(shelves.buttons) == 2, "the notebook was not created"
         assert shelves.info.notebooks == ['toto'+EXTENSION], \
             "the notebook was not added to the information instance"
-    assert new.signal_triggered
+    assert newN.signal_triggered
+
+    # Adding a folder
+    # TODO the popup should not appear!
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as newF:
+        qtbot.mouseClick(shelves.newFolderButton, QtCore.Qt.LeftButton)
+        # Create a notebook called toto TODO
+        assert len(shelves.buttons) == 0, \
+            "the folder was not created, or the level was not changed"
+    assert newF.signal_triggered
+
 
 
 def test_text_editor(qtbot, parent):
