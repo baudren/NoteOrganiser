@@ -6,16 +6,18 @@ Roadmap for 0.2
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
 [ ] Ensure proper resizing at all times.
 [ ] Ensure proper key navigation at all times.
-[ ] Use py.test and qtbot module to test the individual functionalities.
-    [~] replace calls to parent's methods by proper use of signal/slot
-    [x] ensuring proper relative import for tests
-    [ ] tests *actually* passing
+[x] Use py.test and qtbot module to test the individual functionalities.
+    [x] replace calls to parent's methods by proper use of signal/slot
+    [x] ensuring proper relative import for tests (for py27)
+    [x] tests *actually* passing
+    [ ] testing the right-click menu on buttons?
 
 # Library
 [ ] vector icons?
 [ ] special graphic for shelves (wood?)
 [ ] variable number of columns/line on the shelves
 [ ] resizing should change the number of columns/lines for the shelves
+[ ] Display all tags in this zone
 
 # Editing
 [ ] allow for zooming
@@ -39,3 +41,4 @@ Roadmap for 0.2
 Future work
 ===========
 
+[ ] colored icons, with colors chosen by the user

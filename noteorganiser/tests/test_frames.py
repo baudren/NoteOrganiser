@@ -1,11 +1,12 @@
 import os
+import sys
 import shutil
 import datetime
 from PySide import QtGui
 from PySide import QtCore
 import pytest
 
-from ..frames import Shelves
+from ..frames import Shelves, TextEditor
 from ..widgets import PicButton
 from ..logger import create_logger
 from ..configuration import search_folder_recursively
@@ -97,3 +98,27 @@ def test_shelves(qtbot, parent):
     with qtbot.waitSignal(shelves.refreshSignal, timeout=100) as right:
         qtbot.mouseClick(shelves.buttons[0], QtCore.Qt.RightButton)
     assert not right.signal_triggered
+
+    # Test right click, should open the menu TODO
+
+    # Test clicking on the menu, should actually delete the file, and send a
+    # refresh signal. TODO. temporary fix: call directly removeNotebook method
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as remove:
+        shelves.removeNotebook('example')
+        # So far, it is needed to manually click on the popup window: this
+        # should not be the case.
+        #qtbot.mouseClick(shelves.reply.Ok, QtCore.Qt.LeftButton)
+    assert remove.signal_triggered
+
+    # Check now that the buttons attribute only contains the folder
+    assert len(shelves.buttons) == 1, \
+        "the notebook was not removed from the shelves"
+    assert not shelves.info.notebooks, \
+        "the notebook was not removed from the information instance"
+
+
+def test_text_editor(qtbot, parent):
+    text_editor = TextEditor(parent)
+    qtbot.addWidget(text_editor)
+
+    # modify text, save it, reload it, assert it has been changed, etc..

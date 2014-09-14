@@ -69,35 +69,22 @@ class Library(CustomFrame):
      _________  _________  _________
     / Library \/ Editing \/ Preview \
     |          ----------------------------------
-    |                              |            |
-    |   notebook_1     notebook_2  | [+] new N  |
-    | ------------------------------ [+] new F  |
-    |                              | [-] delete |
+    |                              | global tag |
+    |   notebook_1     notebook_2  | another tag|
+    | ------------------------------ tag taggy  |
+    |                              | taggy tag  |
     |   notebook_3                 |            |
+    |                              |            |
+    | [up] [new N] [new F]         |            |
     --------------------------------------------|
     """
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
-        # Grid Layout
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
-
-        newNotebookButton = QtGui.QPushButton("&New Notebook")
-        newNotebookButton.clicked.connect(self.parentWidget().createNotebook)
-
-        newFolderButton = QtGui.QPushButton("New &Folder")
-        newFolderButton.clicked.connect(self.parentWidget().createFolder)
-        newFolderButton.setDisabled(True)
-
         # Create the shelves object
         self.shelves = Shelves(self)
 
-        grid.addWidget(self.shelves, 0, 0, 5, 5)
-        grid.addWidget(newNotebookButton, 1, 5)
-        grid.addWidget(newFolderButton, 2, 5)
-
-        self.layout().addLayout(grid)
+        self.layout().addWidget(self.shelves)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
@@ -427,7 +414,16 @@ class Shelves(CustomFrame):
         if self.info.level == self.info.root:
             self.upButton.setDisabled(True)
 
+        self.newNotebookButton = QtGui.QPushButton("&New Notebook")
+        self.newNotebookButton.clicked.connect(self.parent.parent.createNotebook)
+
+        self.newFolderButton = QtGui.QPushButton("New &Folder")
+        self.newFolderButton.clicked.connect(self.parent.parent.createFolder)
+        self.newFolderButton.setDisabled(True)
+
         hboxLayout.addWidget(self.upButton)
+        hboxLayout.addWidget(self.newNotebookButton)
+        hboxLayout.addWidget(self.newFolderButton)
         hboxLayout.addStretch(1)
 
         self.layout().addStretch(1)
@@ -471,15 +467,15 @@ class Shelves(CustomFrame):
 
         # Assert that the file is empty, or ask for confirmation
         if os.stat(path).st_size != 0:
-            reply = QtGui.QMessageBox.question(
+            self.reply = QtGui.QMessageBox.question(
                 self, 'Message',
                 "Are you sure you want to delete %s?" % notebook,
                 QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
                 QtGui.QMessageBox.No)
         else:
-            reply = QtGui.QMessageBox.Yes
+            self.reply = QtGui.QMessageBox.Yes
 
-        if reply == QtGui.QMessageBox.Yes:
+        if self.reply == QtGui.QMessageBox.Yes:
             os.remove(path)
             # Delete the reference to the notebook
             index = self.info.notebooks.index(notebook+EXTENSION)
@@ -528,14 +524,14 @@ class TextEditor(CustomFrame):
         # Menu bar
         menuBar = QtGui.QHBoxLayout()
 
-        saveButton = QtGui.QPushButton("&Save", self)
-        saveButton.clicked.connect(self.saveText)
+        self.saveButton = QtGui.QPushButton("&Save", self)
+        self.saveButton.clicked.connect(self.saveText)
 
-        readButton = QtGui.QPushButton("&Reload", self)
-        readButton.clicked.connect(self.loadText)
+        self.readButton = QtGui.QPushButton("&Reload", self)
+        self.readButton.clicked.connect(self.loadText)
 
-        menuBar.addWidget(saveButton)
-        menuBar.addWidget(readButton)
+        menuBar.addWidget(self.saveButton)
+        menuBar.addWidget(self.readButton)
         menuBar.addStretch(1)
 
         self.layout().addLayout(menuBar)
