@@ -37,6 +37,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.initWidgets()
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
+        # TODO set this to be half-screen, on the right
         self.setGeometry(600, 1000, 1000, 600)
         self.setWindowTitle('Note Organiser')
 

@@ -62,12 +62,12 @@ class NewNotebook(Dialog):
         hboxLayout = QtGui.QHBoxLayout()
 
         # Add the "Create" button, as a confirmation, and the "Cancel" one
-        create = QtGui.QPushButton("&Create")
-        create.clicked.connect(self.createNotebook)
-        cancel = QtGui.QPushButton("C&ancel")
-        cancel.clicked.connect(self.clean_reject)
-        hboxLayout.addWidget(create)
-        hboxLayout.addWidget(cancel)
+        self.createButton = QtGui.QPushButton("&Create")
+        self.createButton.clicked.connect(self.createNotebook)
+        self.cancelButton = QtGui.QPushButton("C&ancel")
+        self.cancelButton.clicked.connect(self.clean_reject)
+        hboxLayout.addWidget(self.createButton)
+        hboxLayout.addWidget(self.cancelButton)
         self.layout().addLayout(hboxLayout)
 
         # Create a status bar
@@ -114,12 +114,12 @@ class NewFolder(Dialog):
         hboxLayout = QtGui.QHBoxLayout()
 
         # Add the "Create" button, as a confirmation, and the "Cancel" one
-        create = QtGui.QPushButton("&Create")
-        create.clicked.connect(self.createFolder)
-        cancel = QtGui.QPushButton("C&ancel")
-        cancel.clicked.connect(self.clean_reject)
-        hboxLayout.addWidget(create)
-        hboxLayout.addWidget(cancel)
+        self.createButton = QtGui.QPushButton("&Create")
+        self.createButton.clicked.connect(self.createFolder)
+        self.cancelButton = QtGui.QPushButton("C&ancel")
+        self.cancelButton.clicked.connect(self.clean_reject)
+        hboxLayout.addWidget(self.createButton)
+        hboxLayout.addWidget(self.cancelButton)
         self.layout().addLayout(hboxLayout)
 
         # Create a status bar

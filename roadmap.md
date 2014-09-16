@@ -10,7 +10,9 @@ Roadmap for 0.2
     [x] replace calls to parent's methods by proper use of signal/slot
     [x] ensuring proper relative import for tests (for py27)
     [x] tests *actually* passing
+    [x] using mock windows, and QTimer for popups
     [ ] testing the right-click menu on buttons?
+[ ] Use persistent settings to be stored, for window's size and position
 
 # Library
 [ ] vector icons?
@@ -43,4 +45,5 @@ Roadmap for 0.2
 Future work
 ===========
 
-[ ] colored icons, with colors chosen by the user
+[ ] colored icons and tags, with colors chosen by the user
+[ ] support well multi-screen

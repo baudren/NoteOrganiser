@@ -54,7 +54,7 @@ def parent(request, qtbot):
     return parent
 
 
-def test_shelves(qtbot, parent):
+def test_shelves(qtbot, parent, mock):
     # Creating the shelves, and adding them to the bot
     shelves = Shelves(parent)
     qtbot.addWidget(shelves)
@@ -104,10 +104,16 @@ def test_shelves(qtbot, parent):
     # Test clicking on the menu, should actually delete the file, and send a
     # refresh signal. TODO. temporary fix: call directly removeNotebook method
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as remove:
+        # Mock the question QMessageBox
+        mock.patch.object(QtGui.QMessageBox, 'question',
+                          return_value=QtGui.QMessageBox.No)
         shelves.removeNotebook('example')
-        # So far, it is needed to manually click on the popup window: this
-        # should not be the case.
-        #qtbot.mouseClick(shelves.reply.Ok, QtCore.Qt.LeftButton)
+        # Check nothing happened
+        assert len(shelves.buttons) == 2, \
+            "Saying no to the question did not stop the removal"
+        mock.patch.object(QtGui.QMessageBox, 'question',
+                          return_value=QtGui.QMessageBox.Yes)
+        shelves.removeNotebook('example')
     assert remove.signal_triggered
 
     # Check now that the buttons attribute only contains the folder
@@ -117,18 +123,29 @@ def test_shelves(qtbot, parent):
         "the notebook was not removed from the information instance"
 
     # Adding a notebook
-    # TODO the popup should not appear!
-    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as newN:
+    def interact_newN():
+        # Create a notebook called toto
+        qtbot.keyClicks(shelves.popup.nameLineEdit, 'toto')
+        qtbot.mouseClick(shelves.popup.createButton, QtCore.Qt.LeftButton)
+
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=2000) as newN:
+        # Create a timer, to let the window be created, then fill in the
+        # information
+        QtCore.QTimer.singleShot(200, interact_newN)
         qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
-        # Create a notebook called toto TODO
+
         assert len(shelves.buttons) == 2, "the notebook was not created"
         assert shelves.info.notebooks == ['toto'+EXTENSION], \
             "the notebook was not added to the information instance"
     assert newN.signal_triggered
 
     # Adding a folder
-    # TODO the popup should not appear!
+    def interact_newF():
+        qtbot.keyClicks(shelves.popup.nameLineEdit, 'titi')
+        qtbot.mouseClick(shelves.popup.createButton, QtCore.Qt.LeftButton)
+
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as newF:
+        QtCore.QTimer.singleShot(200, interact_newF)
         qtbot.mouseClick(shelves.newFolderButton, QtCore.Qt.LeftButton)
         # Create a notebook called toto TODO
         assert len(shelves.buttons) == 0, \
