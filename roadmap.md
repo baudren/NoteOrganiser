@@ -24,15 +24,15 @@ Roadmap for 0.2
 [ ] Display the current folder's name somewhere
 
 # Editing
-[ ] allow for zooming
+[ ] allow for zooming in/out (ctrl +/-)
 [ ] when opening newly created notebook, write the title on top
 [ ] list of existing tags when entering a new field
 [ ] keep cursor position on reload
-[ ] Use a monospaced font
+[x] Use a monospaced font
 [ ] Use syntax highlighting (QSyntaxHighlighter), margins
 
 # Preview
-[ ] allow for zooming in (ctrl +)
+[ ] allow for zooming in/out (ctrl +/-)
 [ ] better overall css style (bootstrap?)
 [x] better css style for python (pygments)
 [x] keep indentation for code

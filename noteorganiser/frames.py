@@ -575,6 +575,14 @@ class TextEditor(CustomFrame):
         self.text = QtGui.QTextEdit()
         self.text.setTabChangesFocus(True)
 
+        # Font
+        self.font = QtGui.QFont()
+        self.font.setFamily("Inconsolata")
+        self.font.setStyleHint(QtGui.QFont.Monospace)
+        self.font.setFixedPitch(True)
+        self.font.setPointSize(14)
+
+        self.text.setFont(self.font)
         self.layout().addWidget(self.text)
 
     def setSource(self, source):
