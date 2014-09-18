@@ -12,7 +12,7 @@ Roadmap for 0.2
     [x] tests *actually* passing
     [x] using mock windows, and QTimer for popups
     [ ] testing the right-click menu on buttons?
-[ ] Use persistent settings to be stored, for window's size and position
+[x] Use persistent settings to be stored, for window's size and position
 
 # Library
 [ ] vector icons?
@@ -30,6 +30,8 @@ Roadmap for 0.2
 [ ] keep cursor position on reload
 [x] Use a monospaced font
 [ ] Use syntax highlighting (QSyntaxHighlighter), margins
+[ ] The NewEntry form should not accept "ESC" as a cancel option if there is
+    text in the TextEdit block.
 
 # Preview
 [ ] allow for zooming in/out (ctrl +/-)
