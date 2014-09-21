@@ -61,14 +61,39 @@ class NoteOrganiser(QtGui.QMainWindow):
     def initMenuBar(self):
         """Defining the menu bar"""
         self.log.info("Creating Menu Bar")
+        # Exit
         exitAction = QtGui.QAction('&Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.cleanClose)
 
+        # Zoom-in
+        zoomInAction = QtGui.QAction('Zoom-in', self)
+        zoomInAction.setShortcut('Ctrl++')
+        zoomInAction.setStatusTip('Zoom in')
+        zoomInAction.triggered.connect(self.zoomIn)
+        # Zoom-out
+        zoomOutAction = QtGui.QAction('Zoom-out', self)
+        zoomOutAction.setShortcut('Ctrl+-')
+        zoomOutAction.setStatusTip('Zoom out')
+        zoomOutAction.triggered.connect(self.zoomOut)
+        # Reset Size
+        resetSizeAction = QtGui.QAction('Reset-size', self)
+        resetSizeAction.setShortcut('Ctrl+0')
+        resetSizeAction.setStatusTip('Reset size')
+        resetSizeAction.triggered.connect(self.resetSize)
+
+        # Create the menu
         menubar = self.menuBar()
+        # File menu
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
+
+        # Display menu
+        displayMenu = menubar.addMenu('&Display')
+        displayMenu.addAction(zoomInAction)
+        displayMenu.addAction(zoomOutAction)
+        displayMenu.addAction(resetSizeAction)
 
     def initStatusBar(self):
         """Defining the status bar"""
@@ -123,6 +148,17 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
         self.settings.setValue("geometry", self.saveGeometry())
         self.close()
+
+    def zoomIn(self):
+        """send a zoom-in signal to the current tab"""
+        self.tabs.currentWidget().zoomIn()
+
+    def zoomOut(self):
+        """send a zoom-out signal to the current tab"""
+        self.tabs.currentWidget().zoomOut()
+
+    def resetSize(self):
+        self.tabs.currentWidget().resetSize()
 
 
 def main(args):

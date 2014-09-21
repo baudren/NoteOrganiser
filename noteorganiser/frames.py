@@ -60,6 +60,15 @@ class CustomFrame(QtGui.QFrame):
                 else:
                     self.clearLayout(item.layout())
 
+    def zoomIn(self):
+        raise NotImplementedError
+
+    def zoomOut(self):
+        raise NotImplementedError
+
+    def resetSize(self):
+        raise NotImplementedError
+
 
 class Library(CustomFrame):
     r"""
@@ -223,6 +232,11 @@ class Preview(CustomFrame):
         self.extracted_tags = od()
         self.filters = []
 
+        # Shortcuts for resizing
+        acceptShortcut = QtGui.QShortcut(
+            QtGui.QKeySequence(self.tr("Ctrl+k")), self)
+        acceptShortcut.activated.connect(self.zoomIn)
+
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
         self.layout().setDirection(QtGui.QBoxLayout.LeftToRight)
@@ -362,6 +376,17 @@ class Preview(CustomFrame):
     def enableButton(self, button):
         button.setFlat(False)
         button.setCheckable(True)
+
+    def zoomIn(self):
+        multiplier = self.web.textSizeMultiplier()
+        self.web.setTextSizeMultiplier(multiplier+0.1)
+
+    def zoomOut(self):
+        multiplier = self.web.textSizeMultiplier()
+        self.web.setTextSizeMultiplier(multiplier-0.1)
+
+    def resetSize(self):
+        self.web.setTextSizeMultiplier(1)
 
 
 class Shelves(CustomFrame):
