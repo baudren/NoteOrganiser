@@ -195,6 +195,21 @@ class Editing(CustomFrame):
         self.log.info('ask to preview notebook %s' % notebook)
         self.loadNotebook.emit(notebook)
 
+    def zoomIn(self):
+        # recover the current editor
+        editor = self.tabs.currentWidget()
+        editor.zoomIn()
+
+    def zoomOut(self):
+        # recover the current editor
+        editor = self.tabs.currentWidget()
+        editor.zoomOut()
+
+    def resetSize(self):
+        # recover the current editor
+        editor = self.tabs.currentWidget()
+        editor.resetSize()
+
 
 class Preview(CustomFrame):
     r"""
@@ -579,6 +594,8 @@ class Shelves(CustomFrame):
 
 class TextEditor(CustomFrame):
     """Custom text editor"""
+    defaultFontSize = 14
+
     def initUI(self):
         """top menu bar and the text area"""
         # Menu bar
@@ -605,7 +622,7 @@ class TextEditor(CustomFrame):
         self.font.setFamily("Inconsolata")
         self.font.setStyleHint(QtGui.QFont.Monospace)
         self.font.setFixedPitch(True)
-        self.font.setPointSize(14)
+        self.font.setPointSize(self.defaultFontSize)
 
         self.text.setFont(self.font)
         self.layout().addWidget(self.text)
@@ -633,3 +650,17 @@ class TextEditor(CustomFrame):
     def appendText(self, text):
         self.text.append('\n'+text)
         self.saveText()
+
+    def zoomIn(self):
+        size = self.font.pointSize()
+        self.font.setPointSize(size+1)
+        self.text.setFont(self.font)
+
+    def zoomOut(self):
+        size = self.font.pointSize()
+        self.font.setPointSize(size-1)
+        self.text.setFont(self.font)
+
+    def resetSize(self):
+        self.font.setPointSize(self.defaultFontSize)
+        self.text.setFont(self.font)
