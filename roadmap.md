@@ -5,8 +5,9 @@ Roadmap for 0.2
 [ ] Document more.
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
 [ ] Ensure proper resizing at all times.
-[ ] Ensure proper key navigation at all times (sometimes ctrl+tab does not
+[?] Ensure proper key navigation at all times (sometimes ctrl+tab does not
     switch between tabs)
+[x] Keyboard shortcut for accessing the tabs
 [x] Use py.test and qtbot module to test the individual functionalities.
     [x] replace calls to parent's methods by proper use of signal/slot
     [x] ensuring proper relative import for tests (for py27)

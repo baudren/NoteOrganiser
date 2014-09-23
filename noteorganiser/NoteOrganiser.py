@@ -112,9 +112,9 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.preview = Preview(self)
 
         # Adding them to the tabs widget
-        self.tabs.addTab(self.library, "Library")
-        self.tabs.addTab(self.editing, "Editing")
-        self.tabs.addTab(self.preview, "Preview")
+        self.tabs.addTab(self.library, "&Library")
+        self.tabs.addTab(self.editing, "&Editing")
+        self.tabs.addTab(self.preview, "Previe&w")
 
         # Set the tabs widget to be the center widget of the main window
         self.log.info("Setting the central widget")
