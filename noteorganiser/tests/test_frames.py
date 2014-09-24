@@ -147,15 +147,78 @@ def test_shelves(qtbot, parent, mock):
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as newF:
         QtCore.QTimer.singleShot(200, interact_newF)
         qtbot.mouseClick(shelves.newFolderButton, QtCore.Qt.LeftButton)
-        # Create a notebook called toto TODO
         assert len(shelves.buttons) == 0, \
             "the folder was not created, or the level was not changed"
-    assert newF.signal_triggered
+        # Create a notebook called toto inside the titi folder
+        QtCore.QTimer.singleShot(200, interact_newN)
+        qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
 
+        assert len(shelves.buttons) == 1, "the notebook was not created"
+        assert shelves.info.notebooks == ['toto'+EXTENSION], \
+            "the notebook was not added to the information instance"
+
+    assert newF.signal_triggered
 
 
 def test_text_editor(qtbot, parent):
     text_editor = TextEditor(parent)
     qtbot.addWidget(text_editor)
 
-    # modify text, save it, reload it, assert it has been changed, etc..
+    # Load the file
+    source = os.path.join(parent.info.level, parent.info.notebooks[0])
+    text_editor.setSource(source)
+
+    # check that now the text is non-empty
+    assert text_editor.text.toPlainText().encode('utf-8') is not None, \
+        "The source file was not read"
+
+    def check_final_line(text, check_new_line=True):
+        if check_new_line:
+            start = -len(text)-1
+            new_text = text_editor.text.toPlainText().encode('utf-8')[start:]
+            control = "\n"+text
+        else:
+            start = -len(text)
+            new_text = text_editor.text.toPlainText().encode('utf-8')[start:]
+            control = text
+        assert new_text == control, "The line was not added properly"
+
+    # append a line with the method appendText used in NewEntry
+    text_editor.appendText("Life is beautiful")
+    check_final_line("Life is beautiful")
+
+    # Check that it has been saved while appending by reloading
+    text_editor.setSource(source)
+    check_final_line("Life is beautiful")
+
+    # Try to write in the end without saving, and reloading
+    # TODO how to input a "enter" pressed, ie, carriage return?
+    qtbot.keyClicks(text_editor.text, 'Life is beautiful')
+    check_final_line("Life is beautiful", check_new_line=False)
+
+    # Reload from disk, and check that the last line is gone (i.e., that there
+    # is still the "\nLife is beautiful", and not "\nLife is BeautifulLife is
+    # beautiful"
+    qtbot.mouseClick(text_editor.readButton, QtCore.Qt.LeftButton)
+    check_final_line("Life is beautiful")
+
+    # Try to zoom out, in, and reset, simply testing that the font has been
+    # updated, the text has the proper font, and that the pointSize has the
+    # right value
+    def check_font_size(size):
+        font = text_editor.font
+        text_font = text_editor.text.font()
+        # Check that the font was set to the right value
+        assert font.pointSize() == size
+        # Check that the text was properly updated
+        assert font.pointSize() == text_font.pointSize()
+
+    text_editor.zoomIn()
+    check_font_size(text_editor.defaultFontSize+1)
+
+    text_editor.zoomOut()
+    text_editor.zoomOut()
+    check_font_size(text_editor.defaultFontSize-1)
+
+    text_editor.resetSize()
+    check_font_size(text_editor.defaultFontSize)
