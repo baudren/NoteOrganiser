@@ -4,3 +4,4 @@ dist/
 log
 files.txt
 *egg-info/
+.coverage

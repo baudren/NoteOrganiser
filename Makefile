@@ -2,4 +2,4 @@ all:
 	python -m noteorganiser/NoteOrganiser
 
 test:
-	py.test noteorganiser/ -v --doctest-modules
+	py.test --cov noteorganiser noteorganiser/ -v --doctest-modules
