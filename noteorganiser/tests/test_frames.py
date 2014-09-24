@@ -6,7 +6,11 @@ from PySide import QtGui
 from PySide import QtCore
 import pytest
 
-from ..frames import Shelves, TextEditor
+# Frames to test
+from ..frames import Shelves
+from ..frames import TextEditor
+from ..frames import Editing
+
 from ..widgets import PicButton
 from ..logger import create_logger
 from ..configuration import search_folder_recursively
@@ -222,3 +226,38 @@ def test_text_editor(qtbot, parent):
 
     text_editor.resetSize()
     check_font_size(text_editor.defaultFontSize)
+
+
+def test_editing(qtbot, parent):
+    """Test the editing tab"""
+    editing = Editing(parent)
+    qtbot.addWidget(editing)
+
+    # Check that there is only one tab
+    assert editing.tabs.count() == 1, "the tabs were not created properly"
+
+    # Test the new entry button
+    def interact_newEntry():
+        # Create a post called toto, with tags tata and tutu and entry titi
+        qtbot.keyClicks(editing.popup.titleLineEdit, 'toto')
+        qtbot.keyClicks(editing.popup.tagsLineEdit, 'tata, tutu')
+        qtbot.keyClicks(editing.popup.corpusBox, 'titi')
+        qtbot.mouseClick(editing.popup.okButton, QtCore.Qt.LeftButton)
+
+    QtCore.QTimer.singleShot(200, interact_newEntry)
+    qtbot.mouseClick(editing.newEntryButton, QtCore.Qt.LeftButton)
+
+    # Check that the entry was appended, with the date properly set
+    new_text = editing.tabs.currentWidget().text.toPlainText().encode('utf-8')[
+        -44:]
+    expectation = '\ntoto\n----\n# tata, tutu\n\n*%s*\n\ntiti\n' % (
+        datetime.date.today().strftime("%d/%m/%Y"))
+    assert new_text == expectation, "The new entry was not appended %s, %s" % (
+        new_text, expectation)
+
+    # Check if preview button works by sending the signal loadNotebook
+    with qtbot.waitSignal(editing.loadNotebook, timeout=1000) as preview:
+        qtbot.mouseClick(editing.previewButton, QtCore.Qt.LeftButton)
+
+    assert preview.signal_triggered, \
+        "asking for previewing does not send the right signal"

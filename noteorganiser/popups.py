@@ -172,17 +172,17 @@ class NewEntry(Dialog):
         # Define the RHS with Ok, Cancel and list of tags TODO)
         buttonLayout = QtGui.QVBoxLayout()
 
-        okButton = QtGui.QPushButton("Ok")
-        okButton.clicked.connect(self.creating_entry)
+        self.okButton = QtGui.QPushButton("Ok")
+        self.okButton.clicked.connect(self.creating_entry)
         acceptShortcut = QtGui.QShortcut(
             QtGui.QKeySequence(self.tr("Shift+Enter")), self.corpusBox)
         acceptShortcut.activated.connect(self.creating_entry)
 
-        cancelButton = QtGui.QPushButton("&Cancel")
-        cancelButton.clicked.connect(self.clean_reject)
+        self.cancelButton = QtGui.QPushButton("&Cancel")
+        self.cancelButton.clicked.connect(self.clean_reject)
 
-        buttonLayout.addWidget(okButton)
-        buttonLayout.addWidget(cancelButton)
+        buttonLayout.addWidget(self.okButton)
+        buttonLayout.addWidget(self.cancelButton)
 
         hboxLayout.addLayout(buttonLayout)
         # Create the status bar

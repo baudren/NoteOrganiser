@@ -128,15 +128,15 @@ class Editing(CustomFrame):
         grid = QtGui.QGridLayout()
         grid.setSpacing(10)
 
-        newButton = QtGui.QPushButton("&New entry", self)
-        newButton.clicked.connect(self.newEntry)
+        self.newEntryButton = QtGui.QPushButton("&New entry", self)
+        self.newEntryButton.clicked.connect(self.newEntry)
 
         # Edit in an exterior editor
-        editButton = QtGui.QPushButton("&Edit (exterior editor)", self)
+        self.editButton = QtGui.QPushButton("&Edit (exterior editor)", self)
 
         # Launch the previewing
-        previewButton = QtGui.QPushButton("&Preview notebook", self)
-        previewButton.clicked.connect(self.preview)
+        self.previewButton = QtGui.QPushButton("&Preview notebook", self)
+        self.previewButton.clicked.connect(self.preview)
 
         # Create the tabbed widgets
         self.tabs = QtGui.QTabWidget(self)
@@ -150,9 +150,9 @@ class Editing(CustomFrame):
 
         vbox = QtGui.QVBoxLayout()
 
-        vbox.addWidget(newButton)
-        vbox.addWidget(editButton)
-        vbox.addWidget(previewButton)
+        vbox.addWidget(self.newEntryButton)
+        vbox.addWidget(self.editButton)
+        vbox.addWidget(self.previewButton)
 
         grid.addWidget(self.tabs, 0, 0)
         grid.addLayout(vbox, 0, 1)
