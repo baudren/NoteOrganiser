@@ -1,8 +1,8 @@
 Note Organiser for scientists
 =============================
 
-[![Build Status](https://travis-ci.org/baudren/NoteOrganiser.svg?branch=devel)](https://travis-ci.org/baudren/NoteOrganiser)
-[![Coverage Status](https://img.shields.io/coveralls/baudren/NoteOrganiser.svg)](https://coveralls.io/r/baudren/NoteOrganiser?branch=devel)
+[![Build Status](https://travis-ci.org/baudren/NoteOrganiser.png?branch=devel)](https://travis-ci.org/baudren/NoteOrganiser)
+[![Coverage Status](https://coveralls.io/repos/baudren/NoteOrganiser/badge.png?branch=devel)](https://coveralls.io/r/baudren/NoteOrganiser?branch=devel)
 
 Objective
 ---------

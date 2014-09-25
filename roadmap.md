@@ -50,6 +50,7 @@ Future work
 
 [ ] colored icons and tags, with colors chosen by the user
 [ ] support well multi-screen
+[ ] use tox for automated testing
 
 # Library
 [ ] special graphic for shelves, maybe wood?
