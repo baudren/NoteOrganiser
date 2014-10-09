@@ -2,6 +2,7 @@ Roadmap for 0.2
 ===============
 
 # General
+[ ] Ensure compatibility with python 3 and 2
 [ ] Document more.
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
 [ ] Ensure proper resizing at all times.
