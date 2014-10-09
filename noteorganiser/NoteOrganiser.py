@@ -6,7 +6,6 @@
 """
 # Main imports
 import sys
-import os
 from PySide import QtGui
 from PySide import QtCore
 
@@ -72,11 +71,13 @@ class NoteOrganiser(QtGui.QMainWindow):
         zoomInAction.setShortcut('Ctrl++')
         zoomInAction.setStatusTip('Zoom in')
         zoomInAction.triggered.connect(self.zoomIn)
+
         # Zoom-out
         zoomOutAction = QtGui.QAction('Zoom-out', self)
         zoomOutAction.setShortcut('Ctrl+-')
         zoomOutAction.setStatusTip('Zoom out')
         zoomOutAction.triggered.connect(self.zoomOut)
+
         # Reset Size
         resetSizeAction = QtGui.QAction('Reset-size', self)
         resetSizeAction.setShortcut('Ctrl+0')

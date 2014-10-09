@@ -1,12 +1,19 @@
+"""
+.. module:: frames
+    :synopsys: Define all the custom frames
+
+.. moduleauthor:: Benjamin Audren <benjamin.audren@gmail.com>
+"""
 import os
 from collections import OrderedDict as od
 import pypandoc as pa
-import six
+import six  # Used to replace the od iteritems from py2
 
 from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
+# Local imports
 from .popups import NewEntry, NewNotebook, NewFolder
 import noteorganiser.text_processing as tp
 from .constants import EXTENSION
@@ -17,6 +24,7 @@ from .widgets import PicButton
 class CustomFrame(QtGui.QFrame):
     """
     Base class for all three tabbed frames
+
     """
     def __init__(self, parent=None):
         """ Create the basic layout """
@@ -35,9 +43,15 @@ class CustomFrame(QtGui.QFrame):
         self.initUI()
 
     def initUI(self):
+        """
+        This will be called on creation
+
+        A daughter class should implement this function
+        """
         raise NotImplementedError
 
     def clearUI(self):
+        """ Common method for recursively cleaning layouts """
         while self.layout().count():
             item = self.layout().takeAt(0)
             if isinstance(item, QtGui.QLayout):
@@ -52,6 +66,7 @@ class CustomFrame(QtGui.QFrame):
                     pass
 
     def clearLayout(self, layout):
+        """ Submethod to help cleaning the UI before redrawing """
         if layout is not None:
             while layout.count():
                 item = layout.takeAt(0)
@@ -93,12 +108,12 @@ class Library(CustomFrame):
 
         # Create the shelves object
         self.shelves = Shelves(self)
-
         self.layout().addWidget(self.shelves)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
+        """ Refresh all elements of the frame """
         self.shelves.refresh()
 
 
@@ -122,48 +137,55 @@ class Editing(CustomFrame):
     |   \|_________________________|                  |
     ---------------------------------------------------
     """
+    # Launched when the previewer is desired
     loadNotebook = QtCore.Signal(str)
 
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
 
+        # Global horizontal layout
+        hbox = QtGui.QHBoxLayout()
+
+        # New Entry Button to enter a new field in the current notebook
         self.newEntryButton = QtGui.QPushButton("&New entry", self)
         self.newEntryButton.clicked.connect(self.newEntry)
 
-        # Edit in an exterior editor
+        # Edit in an exterior editor TODO
         self.editButton = QtGui.QPushButton("&Edit (exterior editor)", self)
 
-        # Launch the previewing
+        # Launch the previewing of the current notebook
         self.previewButton = QtGui.QPushButton("&Preview notebook", self)
         self.previewButton.clicked.connect(self.preview)
 
-        # Create the tabbed widgets
+        # Create the tabbed widgets containing the text editors. The tabs will
+        # appear on the left-hand side
         self.tabs = QtGui.QTabWidget(self)
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
+        # The loop is over all the notebooks in the **current** folder
         for notebook in self.info.notebooks:
             editor = TextEditor(self)
+            # Set the source of the TextEditor to the desired notebook
             editor.setSource(os.path.join(self.info.level, notebook))
-
+            # Add the text editor to the tabbed area
             self.tabs.addTab(editor, notebook.strip(EXTENSION))
 
+        # Create the vertical layout for the right-hand side button
         vbox = QtGui.QVBoxLayout()
 
         vbox.addWidget(self.newEntryButton)
         vbox.addWidget(self.editButton)
         vbox.addWidget(self.previewButton)
 
-        grid.addWidget(self.tabs, 0, 0)
-        grid.addLayout(vbox, 0, 1)
+        hbox.addWidget(self.tabs)
+        hbox.addLayout(vbox)
 
-        self.layout().addLayout(grid)
+        self.layout().addLayout(hbox)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
-        """Redraw (time consuming...)"""
+        """Redraw the UI (time consuming...)"""
         self.clearUI()
         self.initUI()
 
@@ -174,29 +196,47 @@ class Editing(CustomFrame):
         self.tabs.setCurrentIndex(index)
 
     def newEntry(self):
-        """Open a form and store the results to the file"""
+        """
+        Open a form and store the results to the file
+
+        .. note::
+            this method does not save the file automatically
+
+        """
         self.popup = NewEntry(self)
+        # This will popup the popup
         ok = self.popup.exec_()
+        # The return code is True if successful
         if ok:
+            # Recover the three fields
             title = self.popup.title
             tags = self.popup.tags
             corpus = self.popup.corpus
 
             # Create the post
             post = tp.create_post_from_entry(title, tags, corpus)
-            # recover the current editor
+            # recover the editor of the current widget, i.e. the open editor
             editor = self.tabs.currentWidget()
             # Append the text
             editor.appendText(post)
 
     def preview(self):
-        """Launch the previewing of the current notebook"""
+        """
+        Launch the previewing of the current notebook
+
+        Fires the loadNotebook signal with the desired notebook as an
+        argument.
+        """
         index = self.tabs.currentIndex()
         notebook = self.info.notebooks[index]
         self.log.info('ask to preview notebook %s' % notebook)
         self.loadNotebook.emit(notebook)
 
     def zoomIn(self):
+        """
+        So far only applies to the inside editor, and not the global fonts
+
+        """
         # recover the current editor
         editor = self.tabs.currentWidget()
         editor.zoomIn()
@@ -217,9 +257,8 @@ class Preview(CustomFrame):
     Preview of the markdown in html, with tag selection
 
     The left hand side will be an html window, displaying the whole notebook.
-    On the right, a list of tags will be displayed, as well as a calendar for
-    date selection TODO
-
+    On the right, a list of tags will be displayed.
+    At some point, a calendar for date selection should also be displayed TODO
 
      _________  _________  _________
     / Library \/ Editing \/ Preview \
@@ -306,6 +345,13 @@ class Preview(CustomFrame):
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def addFilter(self):
+        """
+        Filter out/in a certain tag
+
+        From the status of the sender button, the associated tag will be
+        added/removed from the filter.
+
+        """
         sender = self.sender()
         if not sender.isFlat():
             if sender.isChecked():
@@ -332,9 +378,11 @@ class Preview(CustomFrame):
         self.web.load(QtCore.QUrl(page))
 
     def loadNotebook(self, notebook, tags=[]):
-        # Check the SHA1 sum to see if it has been computed already TODO
-        # If not, compute it, recovering the list of tags, of dates TODO, and
-        # the straight markdown file
+        """
+        Load a given markdown file as an html page
+
+        """
+        # TODO the dates should be recovered as well"
         self.initLogic()
         self.info.current_notebook = notebook
         self.log.info("Extracting markdown from %s" % notebook)
@@ -351,6 +399,10 @@ class Preview(CustomFrame):
     def convert(self, path, tags):
         """
         Convert a notebook to html, with entries corresponding to the tags
+
+        TODO: during the execution of this method, a check should be performed
+        to verify if the file already exists, or maybe inside the convert
+        function.
 
         Returns
         -------
@@ -393,10 +445,12 @@ class Preview(CustomFrame):
         return url, remaining_tags
 
     def disableButton(self, button):
+        """ TODO: this should also alter the style """
         button.setFlat(True)
         button.setCheckable(False)
 
     def enableButton(self, button):
+        """ TODO: this should also alter the style """
         button.setFlat(False)
         button.setCheckable(True)
 
@@ -413,7 +467,14 @@ class Preview(CustomFrame):
 
 
 class Shelves(CustomFrame):
+    """
+    Custom display of the notebooks and folder
+
+    """
+    # Fired when a change is made, so that the Editing panel can also adapt
     refreshSignal = QtCore.Signal()
+    # Fired when a notebook is clicked, to navigate to the editor.
+    # TODO also define as a shift+click to directly open the previewer
     switchTabSignal = QtCore.Signal(str, str)
 
     def initUI(self):
@@ -476,25 +537,6 @@ class Shelves(CustomFrame):
         self.layout().addStretch(1)
         self.layout().insertLayout(2, hboxLayout)
 
-    def clearUI(self):
-        while self.layout().count():
-            layout = self.layout().takeAt(0)
-            if isinstance(layout, QtGui.QLayout):
-                self.clearLayout(layout)
-                layout.deleteLater()
-        del self.buttons
-        del self.upButton
-
-    def clearLayout(self, layout):
-        if layout is not None:
-            while layout.count():
-                item = layout.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
-                else:
-                    self.clearLayout(item.layout())
-
     def refresh(self):
         # Redraw the graphical interface.
         self.clearUI()
@@ -543,6 +585,7 @@ class Shelves(CustomFrame):
     def removeNotebook(self, notebook):
         """
         Remove the notebook
+
         """
         self.log.info(
             'deleting %s from the shelves' % notebook)
