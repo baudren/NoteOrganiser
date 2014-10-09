@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import sys
 
 from PySide import QtGui
@@ -11,7 +12,7 @@ class PicButton(QtGui.QPushButton):
     def __init__(self, pixmap, text, style, parent=None):
         QtGui.QPushButton.__init__(self, parent)
         self.parent = parent
-        self.text = unicode(text)
+        self.text = str(text)
         self.pixmap = pixmap
         self.style = style
 

@@ -1,5 +1,4 @@
 import os
-import sys
 import shutil
 import datetime
 from PySide import QtGui
@@ -107,14 +106,14 @@ def test_shelves(qtbot, parent, mock):
     # Test right click, should open the menu TODO
     # Test clicking on the menu, should actually delete the file, and send a
     # refresh signal. TODO. temporary fix: call directly removeNotebook method
-    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as remove:
-        # Mock the question QMessageBox
-        mock.patch.object(QtGui.QMessageBox, 'question',
-                          return_value=QtGui.QMessageBox.No)
-        shelves.removeNotebook('example')
-        # Check nothing happened
-        assert len(shelves.buttons) == 2, \
-            "Saying no to the question did not stop the removal"
+    # Mock the question QMessageBox
+    mock.patch.object(QtGui.QMessageBox, 'question',
+                      return_value=QtGui.QMessageBox.No)
+    shelves.removeNotebook('example')
+    # Check nothing happened
+    assert len(shelves.buttons) == 2, \
+        "Saying no to the question did not stop the removal"
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=2000) as remove:
         mock.patch.object(QtGui.QMessageBox, 'question',
                           return_value=QtGui.QMessageBox.Yes)
         shelves.removeNotebook('example')
@@ -173,17 +172,17 @@ def test_text_editor(qtbot, parent):
     text_editor.setSource(source)
 
     # check that now the text is non-empty
-    assert text_editor.text.toPlainText().encode('utf-8') is not None, \
+    assert text_editor.text.toPlainText() is not None, \
         "The source file was not read"
 
     def check_final_line(text, check_new_line=True):
         if check_new_line:
             start = -len(text)-1
-            new_text = text_editor.text.toPlainText().encode('utf-8')[start:]
+            new_text = text_editor.text.toPlainText()[start:]
             control = "\n"+text
         else:
             start = -len(text)
-            new_text = text_editor.text.toPlainText().encode('utf-8')[start:]
+            new_text = text_editor.text.toPlainText()[start:]
             control = text
         assert new_text == control, "The line was not added properly"
 
@@ -248,7 +247,7 @@ def test_editing(qtbot, parent):
     qtbot.mouseClick(editing.newEntryButton, QtCore.Qt.LeftButton)
 
     # Check that the entry was appended, with the date properly set
-    new_text = editing.tabs.currentWidget().text.toPlainText().encode('utf-8')[
+    new_text = editing.tabs.currentWidget().text.toPlainText()[
         -44:]
     expectation = '\ntoto\n----\n# tata, tutu\n\n*%s*\n\ntiti\n' % (
         datetime.date.today().strftime("%d/%m/%Y"))

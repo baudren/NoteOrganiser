@@ -76,7 +76,7 @@ class NewNotebook(Dialog):
 
     def createNotebook(self):
         """Query the entry fields and append the notebook list"""
-        desired_name = self.nameLineEdit.text()
+        desired_name = str(self.nameLineEdit.text())
         self.log.info("Desired Notebook name: "+desired_name)
         if not desired_name or len(desired_name) < 2:
             self.statusBar.showMessage("name too short", 2000)
@@ -127,7 +127,7 @@ class NewFolder(Dialog):
         self.layout().addWidget(self.statusBar)
 
     def createFolder(self):
-        desired_name = self.nameLineEdit.text()
+        desired_name = str(self.nameLineEdit.text())
         self.log.info("Desired Folder name: "+desired_name)
         if not desired_name or len(desired_name) < 2:
             self.statusBar.showMessage("name too short", 2000)
@@ -196,11 +196,11 @@ class NewEntry(Dialog):
 
     def creating_entry(self):
         # Check if title is valid (non-empty)
-        title = self.titleLineEdit.text()
+        title = str(self.titleLineEdit.text())
         if not title or len(title) < 2:
             self.statusBar.showMessage(self.tr("Invalid title"), 2000)
             return
-        tags = self.tagsLineEdit.text()
+        tags = str(self.tagsLineEdit.text())
         if not tags or len(tags) < 2:
             self.statusBar.showMessage(self.tr("Invalid tags"), 2000)
             return

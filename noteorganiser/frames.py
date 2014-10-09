@@ -1,6 +1,7 @@
 import os
 from collections import OrderedDict as od
 import pypandoc as pa
+import six
 
 from PySide import QtGui
 from PySide import QtCore
@@ -262,8 +263,9 @@ class Preview(CustomFrame):
         # Set the css file. Note that the path to the css needs to be absolute,
         # somehow...
         path = os.path.abspath(os.path.dirname(__file__))
+        self.css = os.path.join(path, 'assets', 'style', 'default.css')
         self.web.settings().setUserStyleSheetUrl(QtCore.QUrl.fromLocalFile(
-            os.path.join(path, 'assets', 'style', 'default.css')))
+            self.css))
 
         # The 1 stands for a stretch factor, set to 0 by default (seems to be
         # only for QWebView, though...
@@ -283,7 +285,7 @@ class Preview(CustomFrame):
         vbox = QtGui.QVBoxLayout()
         self.tagButtons = []
         if self.extracted_tags:
-            for key, value in self.extracted_tags.iteritems():
+            for key, value in six.iteritems(self.extracted_tags):
                 tag = QtGui.QPushButton(key)
                 tag.setFlat(False)
                 tag.setMinimumSize(100, 40+5*value)
@@ -371,11 +373,17 @@ class Preview(CustomFrame):
         with open(temp_path, 'w') as temp:
             temp.write('\n'.join(markdown))
 
+        bootstrap_min = (
+            "http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/"
+            "css/bootstrap.min.css")
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
         html = pa.convert(temp_path, 'html',
-                          extra_args=['--highlight-style', 'pygments', '-s'])
-        html = html.encode('utf-8')
+                          extra_args=['--highlight-style', 'pygments', '-s',
+                                      '-c', bootstrap_min,
+                                      '-c', self.css])
+        if isinstance(html, bytes):
+            html = html.decode('utf-8')
 
         # Write the html to a file
         url = os.path.join(self.website_root, base+'.html')
@@ -614,7 +622,7 @@ class TextEditor(CustomFrame):
         self.layout().addLayout(menuBar)
 
         # Text
-        self.text = QtGui.QTextEdit()
+        self.text = CustomTextEdit()
         self.text.setTabChangesFocus(True)
 
         # Font
@@ -643,7 +651,9 @@ class TextEditor(CustomFrame):
 
     def saveText(self):
         self.log.info("Writing modifications to %s" % self.source)
-        text = self.text.toPlainText().encode('utf-8')
+        text = self.text.toPlainText()
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
         with open(self.source, 'w') as file_handle:
             file_handle.write(text)
 
@@ -664,3 +674,12 @@ class TextEditor(CustomFrame):
     def resetSize(self):
         self.font.setPointSize(self.defaultFontSize)
         self.text.setFont(self.font)
+
+
+class CustomTextEdit(QtGui.QTextEdit):
+
+    def toPlainText(self):
+        text = QtGui.QTextEdit.toPlainText(self)
+        if isinstance(text, bytes):
+            text = str(text)
+        return text
