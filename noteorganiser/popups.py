@@ -17,7 +17,7 @@ class Dialog(QtGui.QDialog):
 
         # Define Ctrl+W to close it, and overwrite Esc
         QtGui.QShortcut(QtGui.QKeySequence('Ctrl+W'),
-                        self, self.clean_accept)
+                        self, self.clean_reject)
         QtGui.QShortcut(QtGui.QKeySequence('Esc'),
                         self, self.clean_reject)
 
