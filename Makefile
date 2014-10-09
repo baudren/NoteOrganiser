@@ -8,10 +8,9 @@ test-2:
 	py.test-2.7 --cov noteorganiser noteorganiser/ -v --doctest-modules
 
 test-3:
-	py.test-3.3 --cov noteorganiser noteorganiser/ -v --doctest-modules
+	py.test-3.3 --cov noteorganiser noteorganiser/ -v --doctest-modules --cov-report=html
 
 test: test-2 test-3
 
 test-single:
-	py.test --cov noteorganiser noteorganiser/ -v --doctest-modules
-
+	py.test --cov noteorganiser noteorganiser/ -v --doctest-modules --cov-report=html

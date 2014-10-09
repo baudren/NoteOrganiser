@@ -5,3 +5,6 @@ log
 files.txt
 *egg-info/
 .coverage
+
+# coverage reports from py.test
+htmlcov/
