@@ -14,6 +14,6 @@ install:
   - pip install pytest-cov
   - pip install pytest-mock
   - python setup.py install
-script: make test
+script: make test-single
 after_success:
   coveralls
