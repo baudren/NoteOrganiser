@@ -9,55 +9,45 @@ import pytest
 from ..frames import Shelves
 from ..frames import TextEditor
 from ..frames import Editing
+from .custom_fixtures import parent
 
 from ..widgets import PicButton
-from ..logger import create_logger
-from ..configuration import search_folder_recursively
 from ..constants import EXTENSION
-from .. import configuration as conf
+
+def test_shelves_remove_cancel(qtbot, parent, mocker):
+    # Creating the shelves, and adding them to the bot
+    shelves = Shelves(parent)
+    qtbot.addWidget(shelves)
+
+    # Test right click, should open the menu TODO
+    # Test clicking on the menu, should actually delete the file, and send a
+    # refresh signal. TODO. temporary fix: call directly removeNotebook method
+    # Mock the question QMessageBox
+    mocker.patch.object(QtGui.QMessageBox, 'question', autospect=True,
+                        return_value=QtGui.QMessageBox.No)
+    shelves.removeNotebook('example')
+    # Check that nothing happened
+    assert len(shelves.buttons) == 2, \
+        "Saying no to the question did not stop the removal"
 
 
-@pytest.fixture
-def parent(request, qtbot):
-    date = str(datetime.date.today())
-    home = os.path.join(os.path.expanduser("~"), '.noteorganiser')
-    # Create the temp folder
-    temp_folder_path = os.path.join(
-        home, '.test_%s' % date)
-    if not os.path.isdir(temp_folder_path):
-        os.mkdir(temp_folder_path)
-    # Copy there the example.md file, create a subfolder, and put again the
-    # same example.md in the subfolder
-    shutil.copy(
-        os.path.join(os.path.os.getcwd(), 'example', 'example.md'),
-        temp_folder_path)
-    subfolder = os.path.join(temp_folder_path, 'toto')
-    os.mkdir(subfolder)
-    shutil.copy(
-        os.path.join(os.path.os.getcwd(), 'example', 'example.md'),
-        subfolder)
-    # Create a parent window, containing an information instance, and a
-    # logger
-    parent = QtGui.QFrame()
-    qtbot.addWidget(parent)
-    log = create_logger('CRITICAL', 'stream')
-    # Create an info instance
-    # Search the folder recursively
-    notebooks, folders = search_folder_recursively(log, temp_folder_path)
-    info = conf.Information(log, temp_folder_path, notebooks, folders)
-    parent.info = info
-    parent.log = log
+def test_shelves_remove_accept(qtbot, parent, mocker):
+    # Creating the shelves, and adding them to the bot
+    shelves = Shelves(parent)
+    qtbot.addWidget(shelves)
 
-    def fin():
-        """Tear down parent class"""
-        shutil.rmtree(temp_folder_path)
-        parent.destroy()
-    request.addfinalizer(fin)
-
-    return parent
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=2000) as remove:
+        mocker.patch.object(QtGui.QMessageBox, 'question', autospect=True,
+                            return_value=QtGui.QMessageBox.Yes)
+        shelves.removeNotebook('example')
+    assert remove.signal_triggered
+    # Check that the file was indeed removed
+    assert len(shelves.buttons) == 1, \
+        "Saying yes to the question did not remove the notebook"
 
 
-def test_shelves(qtbot, parent, mock):
+
+def test_shelves(qtbot, parent, mocker):
     # Creating the shelves, and adding them to the bot
     shelves = Shelves(parent)
     qtbot.addWidget(shelves)
@@ -98,32 +88,10 @@ def test_shelves(qtbot, parent, mock):
             "the upButton was not properly reconnected"
     assert way_up.signal_triggered, "going up did not send a refreshSignal"
 
-    # Test right click on the notebook. It should not trigger a switch tab
+    # Test right click on the notebook. It should **not** trigger a switch tab
     with qtbot.waitSignal(shelves.refreshSignal, timeout=100) as right:
         qtbot.mouseClick(shelves.buttons[0], QtCore.Qt.RightButton)
     assert not right.signal_triggered
-
-    # Test right click, should open the menu TODO
-    # Test clicking on the menu, should actually delete the file, and send a
-    # refresh signal. TODO. temporary fix: call directly removeNotebook method
-    # Mock the question QMessageBox
-    mock.patch.object(QtGui.QMessageBox, 'question',
-                      return_value=QtGui.QMessageBox.No)
-    shelves.removeNotebook('example')
-    # Check nothing happened
-    assert len(shelves.buttons) == 2, \
-        "Saying no to the question did not stop the removal"
-    with qtbot.waitSignal(shelves.refreshSignal, timeout=2000) as remove:
-        mock.patch.object(QtGui.QMessageBox, 'question',
-                          return_value=QtGui.QMessageBox.Yes)
-        shelves.removeNotebook('example')
-    assert remove.signal_triggered
-
-    # Check now that the buttons attribute only contains the folder
-    assert len(shelves.buttons) == 1, \
-        "the notebook was not removed from the shelves"
-    assert not shelves.info.notebooks, \
-        "the notebook was not removed from the information instance"
 
     # Adding a notebook
     def interact_newN():
@@ -137,8 +105,8 @@ def test_shelves(qtbot, parent, mock):
         QtCore.QTimer.singleShot(200, interact_newN)
         qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
 
-        assert len(shelves.buttons) == 2, "the notebook was not created"
-        assert shelves.info.notebooks == ['toto'+EXTENSION], \
+        assert len(shelves.buttons) == 3, "the notebook was not created"
+        assert shelves.info.notebooks[-1] == 'toto'+EXTENSION, \
             "the notebook was not added to the information instance"
     assert newN.signal_triggered
 
