@@ -47,6 +47,3 @@ def parent(request, qtbot):
     request.addfinalizer(fin)
 
     return parent
-
-
-
