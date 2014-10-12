@@ -35,8 +35,8 @@ def test_full_file(parent):
     assert set(reduced_keys) == set(['layout', 'widget', 'clear'])
 
 
-def check_tag_sorting():
-    source = {'toto': 3, 'tata': 1, 'titi': 10}
+def test_tag_sorting():
+    source = ['toto', 'toto', 'toto', 'tata', 'titi', 'titi', 'titi', 'titi']
     ordered_keys = ['titi', 'toto', 'tata']
     output = sort_tags(source)
     # Check the output type

@@ -247,7 +247,6 @@ def sort_tags(source):
     """
     output = od(sorted(Counter([e for e in source]).items(),
                 key=lambda t: -t[1]))
-
     return output
 
 
