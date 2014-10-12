@@ -170,7 +170,7 @@ def extract_title_and_posts_from_text(text):
     post_starting_indices = []
     for index, line in enumerate(text):
         # Remove white lines at the beginning
-        if not line:
+        if not line.strip():
             continue
         if line.find("====") != -1:
             title = text[index-1].strip()
@@ -262,8 +262,3 @@ def create_post_from_entry(title, tags, corpus):
     text.append('\n*%s*\n\n' % date.today().strftime("%d/%m/%Y"))
     text.append(corpus+'\n')
     return ''.join(text)
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
