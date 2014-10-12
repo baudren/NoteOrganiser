@@ -18,11 +18,14 @@ def parent(request, qtbot):
         home, '.test_%s' % date)
     if not os.path.isdir(temp_folder_path):
         os.mkdir(temp_folder_path)
-    # Copy there the example.md file, create a subfolder, and put again the
-    # same example.md in the subfolder
+    # Copy there twice the example.md file, create a subfolder, and put again
+    # the same example.md in the subfolder
     shutil.copy(
         os.path.join(os.path.os.getcwd(), 'example', 'example.md'),
         temp_folder_path)
+    shutil.copyfile(
+        os.path.join(temp_folder_path, 'example.md'),
+        os.path.join(temp_folder_path, 'second.md'))
     subfolder = os.path.join(temp_folder_path, 'toto')
     os.mkdir(subfolder)
     shutil.copy(

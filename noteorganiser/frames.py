@@ -330,8 +330,6 @@ class Preview(CustomFrame):
                 tag.setMinimumSize(100, 40+5*value)
                 tag.setMaximumWidth(165)
                 tag.setCheckable(True)
-                if key in self.filters:
-                    tag.setChecked(True)
                 tag.clicked.connect(self.addFilter)
                 self.tagButtons.append([key, tag])
                 vbox.addWidget(tag)
@@ -363,12 +361,12 @@ class Preview(CustomFrame):
 
             self.log.info("filter %s out of %s" % (
                 ', '.join(self.filters), self.info.current_notebook))
-            url, remaining_tags = self.convert(
+            url, self.remaining_tags = self.convert(
                 os.path.join(self.info.level, self.info.current_notebook),
                 self.filters)
             # Grey out not useful buttons
             for key, button in self.tagButtons:
-                if key in remaining_tags:
+                if key in self.remaining_tags:
                     self.enableButton(button)
                 else:
                     self.disableButton(button)
@@ -631,12 +629,9 @@ class Shelves(CustomFrame):
         self.refresh()
 
     def upFolder(self):
-        if self.info.level == self.info.root:
-            return
-        else:
-            folder_path = os.path.dirname(self.info.level)
-            self.info.notebooks, self.info.folders = search_folder_recursively(
-                self.log, folder_path)
+        folder_path = os.path.dirname(self.info.level)
+        self.info.notebooks, self.info.folders = search_folder_recursively(
+            self.log, folder_path)
         # Update the current level as the folder_path, and refresh the content
         # of the window
         self.info.level = folder_path

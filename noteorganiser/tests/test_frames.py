@@ -6,13 +6,56 @@ from PySide import QtCore
 import pytest
 
 # Frames to test
+from ..frames import CustomFrame
+from ..frames import Library
 from ..frames import Shelves
 from ..frames import TextEditor
 from ..frames import Editing
+from ..frames import Preview
 from .custom_fixtures import parent
 
 from ..widgets import PicButton
 from ..constants import EXTENSION
+
+
+def test_custom_frame(qtbot, parent):
+    # Creating a basic frame. This should raise a NotImplementedError
+    with pytest.raises(NotImplementedError):
+        CustomFrame(parent)
+
+    # Define a daughter class which implements a dummy initUI method. Then,
+    # calling zoomIn, zoomOut or resetSize should also raise a
+    # NotImplementedError
+    class Dummy(CustomFrame):
+        def initUI(self):
+            pass
+
+    dummy = Dummy(parent)
+    qtbot.addWidget(dummy)
+    with pytest.raises(NotImplementedError):
+        dummy.zoomIn()
+    with pytest.raises(NotImplementedError):
+        dummy.zoomOut()
+    with pytest.raises(NotImplementedError):
+        dummy.resetSize()
+
+
+def test_library(qtbot, parent):
+    # Creating the object and adding it to the bot
+    library = Library(parent)
+    qtbot.addWidget(library)
+
+    # Check the nature of the shelves object
+    assert hasattr(library, 'shelves')
+    assert isinstance(library.shelves, Shelves)
+
+    # Check that the refresh method of the library at least call the refresh
+    # method of the shelves, and therefore, emits the expected signal
+    with qtbot.waitSignal(library.shelves.refreshSignal, timeout=1000) as \
+            refresh:
+        library.refresh()
+    assert refresh.signal_triggered, \
+        "refreshing the library should transmit the signal to the shelves"
 
 
 def test_shelves(qtbot, parent, mocker):
@@ -23,7 +66,7 @@ def test_shelves(qtbot, parent, mocker):
     # Checking if the buttons list was created, and that it contains only two
     # elements (the notebook, and the folder)
     assert hasattr(shelves, 'buttons'), 'buttons attribute not created'
-    assert len(shelves.buttons) == 2, 'not all buttons were created'
+    assert len(shelves.buttons) == 3, 'not all buttons were created'
     for button in shelves.buttons:
         assert isinstance(button, PicButton)
     # Asserting that left clicking on the notebook icon (first element of the
@@ -40,7 +83,7 @@ def test_shelves(qtbot, parent, mocker):
 
     # Checking the behaviour when clicking on a folder
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as way_down:
-        qtbot.mouseClick(shelves.buttons[1], QtCore.Qt.LeftButton)
+        qtbot.mouseClick(shelves.buttons[2], QtCore.Qt.LeftButton)
         # Check that the info.level has changed properly
         assert shelves.info.level != shelves.info.root, "did not change dir"
         # Check that now, the upButton is enabled
@@ -69,17 +112,16 @@ def test_shelves(qtbot, parent, mocker):
                                    return_value=QtGui.QMessageBox.No)
     shelves.removeNotebook('example')
     # Check that nothing happened
-    assert len(shelves.buttons) == 2, \
+    assert len(shelves.buttons) == 3, \
         "Saying no to the question did not stop the removal"
 
     with qtbot.waitSignal(shelves.refreshSignal, timeout=2000) as remove:
+        # Reuse the question object because of a Pyside bug under Python 3.3
         question.return_value = QtGui.QMessageBox.Yes
-        #mocker.patch.object(QtGui.QMessageBox, 'question', autospect=True,
-                            #return_value=QtGui.QMessageBox.Yes)
         shelves.removeNotebook('example')
     assert remove.signal_triggered
     # Check that the file was indeed removed
-    assert len(shelves.buttons) == 1, \
+    assert len(shelves.buttons) == 2, \
         "Saying yes to the question did not remove the notebook"
 
     # Adding a notebook
@@ -94,7 +136,7 @@ def test_shelves(qtbot, parent, mocker):
         QtCore.QTimer.singleShot(200, interact_newN)
         qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
 
-        assert len(shelves.buttons) == 2, "the notebook was not created"
+        assert len(shelves.buttons) == 3, "the notebook was not created"
         assert shelves.info.notebooks[-1] == 'toto'+EXTENSION, \
             "the notebook was not added to the information instance"
     assert newN.signal_triggered
@@ -118,6 +160,23 @@ def test_shelves(qtbot, parent, mocker):
             "the notebook was not added to the information instance"
 
     assert newF.signal_triggered
+
+    # Go back, and check that creating a new folder that already exists does
+    # not overwrite it
+    qtbot.mouseClick(shelves.upButton, QtCore.Qt.LeftButton)
+
+    def interact_existingF():
+        qtbot.keyClicks(shelves.popup.nameLineEdit, 'toto')
+        qtbot.mouseClick(shelves.popup.createButton, QtCore.Qt.LeftButton)
+
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as existingF:
+        QtCore.QTimer.singleShot(200, interact_existingF)
+        qtbot.mouseClick(shelves.newFolderButton, QtCore.Qt.LeftButton)
+        assert len(shelves.buttons) == 1, \
+            "the existing folder was overwritten"
+    assert existingF.signal_triggered
+
+    # Create an empty file, and remove it TODO
 
 
 def test_text_editor(qtbot, parent):
@@ -190,7 +249,7 @@ def test_editing(qtbot, parent):
     qtbot.addWidget(editing)
 
     # Check that there is only one tab
-    assert editing.tabs.count() == 1, "the tabs were not created properly"
+    assert editing.tabs.count() == 2, "the tabs were not created properly"
 
     # Test the new entry button
     def interact_newEntry():
@@ -217,3 +276,61 @@ def test_editing(qtbot, parent):
 
     assert preview.signal_triggered, \
         "asking for previewing does not send the right signal"
+
+    # Test the tabs (should switch from one notebook to the other)
+    # Check that there are two of them
+    assert editing.tabs.count() == 2
+
+    initial_index = editing.tabs.currentIndex()
+    new_index = initial_index % 2
+    new_notebook = editing.info.notebooks[new_index]
+    editing.switchNotebook(new_notebook[:-3])
+    assert editing.tabs.currentIndex() == new_index
+    # Test the refresh method by removing directly on the disk a file
+
+    os.remove(
+        os.path.join(editing.info.root, 'second'+EXTENSION))
+    editing.info.notebooks.pop(
+        editing.info.notebooks.index('second'+EXTENSION))
+    editing.refresh()
+    # There should be only one tab left
+    assert editing.tabs.count() == 1
+    # Test zoom-in, zoom-out, resetSize in a meaningful fashion? TODO
+
+
+def test_preview(qtbot, parent):
+    preview = Preview(parent)
+    qtbot.addWidget(preview)
+
+    # Load a notebook
+    preview.loadNotebook(preview.info.notebooks[0])
+
+    # assert tagButtons contains six elements
+    assert len(preview.tagButtons) == 6
+    assert isinstance(preview.tagButtons[0][1], QtGui.QPushButton)
+
+    # Click on the first tag button
+    first_key, first_button = preview.tagButtons[0]
+    qtbot.mouseClick(first_button, QtCore.Qt.LeftButton)
+
+    assert len(preview.filters) == 1
+    assert preview.filters[0] == first_key
+
+    # Click on another, disabled button
+    for key, button in preview.tagButtons:
+        if key not in preview.remaining_tags:
+            qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+            assert len(preview.filters) == 1
+
+    # Add another filter
+    for key, button in preview.tagButtons:
+        if key in preview.remaining_tags and key != first_key:
+            newFilter = [key, button]
+            break
+
+    qtbot.mouseClick(newFilter[1], QtCore.Qt.LeftButton)
+    assert len(preview.filters) == 2
+
+    # Unclick both
+    qtbot.mouseClick(newFilter[1], QtCore.Qt.LeftButton)
+    qtbot.mouseClick(first_button, QtCore.Qt.LeftButton)
