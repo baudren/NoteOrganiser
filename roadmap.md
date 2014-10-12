@@ -2,7 +2,8 @@ Roadmap for 0.2
 ===============
 
 # General
-[~] Ensure compatibility with python 3 and 2
+[x] Ensure compatibility with python 3 and 2
+[ ] Ensure platform independence
 [.] Document more.
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
 [ ] Ensure proper resizing at all times.
@@ -52,6 +53,9 @@ Future work
 [ ] colored icons and tags, with colors chosen by the user
 [ ] support well multi-screen
 [ ] use tox for automated testing
+[ ] use only one webpage, and stop displaying members instead of generating all
+    these webpages! Using an underlying sort of table system, which you could
+    turn on/off (javascript?)
 
 # Library
 [ ] special graphic for shelves, maybe wood?
