@@ -14,38 +14,6 @@ from .custom_fixtures import parent
 from ..widgets import PicButton
 from ..constants import EXTENSION
 
-def test_shelves_remove_cancel(qtbot, parent, mocker):
-    # Creating the shelves, and adding them to the bot
-    shelves = Shelves(parent)
-    qtbot.addWidget(shelves)
-
-    # Test right click, should open the menu TODO
-    # Test clicking on the menu, should actually delete the file, and send a
-    # refresh signal. TODO. temporary fix: call directly removeNotebook method
-    # Mock the question QMessageBox
-    mocker.patch.object(QtGui.QMessageBox, 'question', autospect=True,
-                        return_value=QtGui.QMessageBox.No)
-    shelves.removeNotebook('example')
-    # Check that nothing happened
-    assert len(shelves.buttons) == 2, \
-        "Saying no to the question did not stop the removal"
-
-
-def test_shelves_remove_accept(qtbot, parent, mocker):
-    # Creating the shelves, and adding them to the bot
-    shelves = Shelves(parent)
-    qtbot.addWidget(shelves)
-
-    with qtbot.waitSignal(shelves.refreshSignal, timeout=2000) as remove:
-        mocker.patch.object(QtGui.QMessageBox, 'question', autospect=True,
-                            return_value=QtGui.QMessageBox.Yes)
-        shelves.removeNotebook('example')
-    assert remove.signal_triggered
-    # Check that the file was indeed removed
-    assert len(shelves.buttons) == 1, \
-        "Saying yes to the question did not remove the notebook"
-
-
 
 def test_shelves(qtbot, parent, mocker):
     # Creating the shelves, and adding them to the bot
@@ -93,6 +61,27 @@ def test_shelves(qtbot, parent, mocker):
         qtbot.mouseClick(shelves.buttons[0], QtCore.Qt.RightButton)
     assert not right.signal_triggered
 
+    # Test right click, should open the menu TODO
+    # Test clicking on the menu, should actually delete the file, and send a
+    # refresh signal. TODO. temporary fix: call directly removeNotebook method
+    # Mock the question QMessageBox
+    question = mocker.patch.object(QtGui.QMessageBox, 'question',
+                                   return_value=QtGui.QMessageBox.No)
+    shelves.removeNotebook('example')
+    # Check that nothing happened
+    assert len(shelves.buttons) == 2, \
+        "Saying no to the question did not stop the removal"
+
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=2000) as remove:
+        question.return_value = QtGui.QMessageBox.Yes
+        #mocker.patch.object(QtGui.QMessageBox, 'question', autospect=True,
+                            #return_value=QtGui.QMessageBox.Yes)
+        shelves.removeNotebook('example')
+    assert remove.signal_triggered
+    # Check that the file was indeed removed
+    assert len(shelves.buttons) == 1, \
+        "Saying yes to the question did not remove the notebook"
+
     # Adding a notebook
     def interact_newN():
         # Create a notebook called toto
@@ -105,7 +94,7 @@ def test_shelves(qtbot, parent, mocker):
         QtCore.QTimer.singleShot(200, interact_newN)
         qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
 
-        assert len(shelves.buttons) == 3, "the notebook was not created"
+        assert len(shelves.buttons) == 2, "the notebook was not created"
         assert shelves.info.notebooks[-1] == 'toto'+EXTENSION, \
             "the notebook was not added to the information instance"
     assert newN.signal_triggered
