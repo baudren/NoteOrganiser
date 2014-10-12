@@ -44,17 +44,3 @@ class PicButton(QtGui.QPushButton):
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
         self.deleteNotebook.emit(self.text)
-
-
-if __name__ == "__main__":
-    # Testing the clickable buttons with picture
-    app = QtGui.QApplication(sys.argv)
-    window = QtGui.QWidget()
-    layout = QtGui.QHBoxLayout(window)
-
-    button = PicButton(QtGui.QPixmap(
-        "./noteorganiser/assets/notebook-128.png"), 'something', 'notebook')
-    layout.addWidget(button)
-
-    window.show()
-    sys.exit(app.exec_())

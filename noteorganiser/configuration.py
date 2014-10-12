@@ -91,9 +91,3 @@ class Information(object):
         # Stores the SHA sum for every notebook, in order to avoid re-analyzing
         # the entire file for each filtering TODO
         self.sha = {}
-
-
-if __name__ == "__main__":
-    from logger import create_logger
-    LOGGER = create_logger()
-    print(initialise(LOGGER))
