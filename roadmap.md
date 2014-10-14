@@ -17,6 +17,8 @@ Roadmap for 0.2
     [x] using mock windows, and QTimer for popups
     [ ] testing the right-click menu on buttons?
 [x] Use persistent settings to be stored, for window's size and position
+[ ] Allow for a different location of the .noteorganiser folder (on SpiderOak
+    instead of home directory, for instance)
 
 # Library
 [ ] draw vector icons, and use several sizes
@@ -45,6 +47,10 @@ Roadmap for 0.2
     drawback of preventing scrolling.
 [ ] have a "global" page, storing all notebooks, filter added with the
     notebooks' name as a tag
+[ ] have several options for tag sorting:
+    [ ] importance (which also should use alphabetical for equally important tags)
+    [ ] alphabetical
+    [ ] cloud (*a la* Wiki)
 
 
 Future work
