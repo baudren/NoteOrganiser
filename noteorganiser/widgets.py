@@ -3,6 +3,7 @@ import sys
 
 from PySide import QtGui
 from PySide import QtCore
+from PySide.QtCore import Qt
 
 
 class PicButton(QtGui.QPushButton):
@@ -39,7 +40,9 @@ class PicButton(QtGui.QPushButton):
 
     def mouseReleaseEvent(self, ev):
         """Define a behaviour under click"""
-        self.click()
+        # only fire event, when left button is clicked
+        if ev.button() == Qt.LeftButton:
+            self.click()
 
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
