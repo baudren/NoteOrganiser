@@ -26,6 +26,8 @@ Roadmap for 0.2
 [ ] resizing should change the number of columns/lines for the shelves
 [ ] Display all tags in this zone
 [x] Create folder
+[x] Display also empty folders (now default behaviour)
+    [ ] add a button to toggle between displaying and not displaying them
 [ ] Display the current folder's name somewhere
 
 # Editing

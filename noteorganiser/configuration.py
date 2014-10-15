@@ -31,13 +31,23 @@ def initialise(logger):
     return main, notebooks, folders
 
 
-def search_folder_recursively(logger, main):
+def search_folder_recursively(logger, main, display_empty=True):
     """
     Search the main folder for notebooks and folders with notebooks
 
     Note that the returned notebooks and folders are flat (that is, folders is
     not a list that then contains all the subnotebooks. They are discarded, and
     only loaded if the folder is then clicked on).
+
+    Parameters
+    ----------
+    logger : logging module instance
+
+    main : str
+        folder to search
+
+    display_empty : bool
+        determines whether to return empty folders or not
     """
     notebooks, folders = [], []
     if os.path.isdir(main):
@@ -51,13 +61,15 @@ def search_folder_recursively(logger, main):
                     notebooks.append(elem)
             elif os.path.isdir(os.path.join(main, elem)):
                 # Otherwise, check the folder for valid files, and append it to
-                # folders in case there are some inside.
+                # folders in case there are some inside, or if display_empty is
+                # set to True (by default).
                 # If the folder is hidden (linux convention, with a leading
-                # dot), ignore
+                # dot), ignore. TODO also determines if it is hidden as far as
+                # Windows is concerned
                 if elem[0] != '.':
                     temp, _ = search_folder_recursively(
                         logger, os.path.join(main, elem))
-                    if temp:
+                    if temp or display_empty:
                         folders.append(os.path.join(main, elem))
     else:
         logger.info("Main folder non-existant: creating it now")
