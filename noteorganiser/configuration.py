@@ -46,7 +46,7 @@ def search_folder_recursively(logger, main):
         for elem in os.listdir(main):
             if os.path.isfile(os.path.join(main, elem)):
                 # If it is a valid file, append it to notebooks
-                if elem.find(EXTENSION) != -1:
+                if elem[-len(EXTENSION):] == EXTENSION:
                     logger.info("Found the file %s as a valid notebook" % elem)
                     notebooks.append(elem)
             elif os.path.isdir(os.path.join(main, elem)):
