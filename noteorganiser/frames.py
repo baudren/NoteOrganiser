@@ -516,21 +516,31 @@ class Shelves(CustomFrame):
         # Create the navigation symbols
         hboxLayout = QtGui.QHBoxLayout()
 
+        # Go up in the directories (disabled if in the root directory)
         self.upButton = QtGui.QPushButton("&Up")
         self.upButton.clicked.connect(self.upFolder)
         if self.info.level == self.info.root:
             self.upButton.setDisabled(True)
 
+        # Create a new notebook
         self.newNotebookButton = QtGui.QPushButton("&New Notebook")
         self.newNotebookButton.clicked.connect(self.createNotebook)
 
+        # Create a new folder
         self.newFolderButton = QtGui.QPushButton("New &Folder")
         self.newFolderButton.clicked.connect(self.createFolder)
+
+        # Toggle between displaying and hiding empty folders
+        self.toggleDisplayFoldersButton = QtGui.QPushButton(
+            "&Toggle Display Empty Folder")
+        self.toggleDisplayFoldersButton.clicked.connect(
+            self.toggleDisplayEmpty)
 
         hboxLayout.addWidget(self.upButton)
         hboxLayout.addWidget(self.newNotebookButton)
         hboxLayout.addWidget(self.newFolderButton)
         hboxLayout.addStretch(1)
+        hboxLayout.addWidget(self.toggleDisplayFoldersButton)
 
         self.layout().addStretch(1)
         self.layout().insertLayout(2, hboxLayout)
@@ -573,10 +583,17 @@ class Shelves(CustomFrame):
         # browsed out.
         folder_path = os.path.join(self.info.root, folder_name)
         self.info.notebooks, self.info.folders = search_folder_recursively(
-            self.log, folder_path)
+            self.log, folder_path, self.info.display_empty)
         # Update the current level as the folder_path, and refresh the content
         # of the window
         self.info.level = folder_path
+        self.refresh()
+
+    def toggleDisplayEmpty(self):
+        self.info.display_empty = not self.info.display_empty
+        # Read again the current folder
+        self.info.notebooks, self.info.folders = search_folder_recursively(
+            self.log, self.info.level, self.info.display_empty)
         self.refresh()
 
     @QtCore.Slot(str)
@@ -622,7 +639,7 @@ class Shelves(CustomFrame):
         self.log.info('folder '+sender.text+' button cliked')
         folder_path = os.path.join(self.info.root, sender.text)
         self.info.notebooks, self.info.folders = search_folder_recursively(
-            self.log, folder_path)
+            self.log, folder_path, self.info.display_empty)
         # Update the current level as the folder_path, and refresh the content
         # of the window
         self.info.level = folder_path
@@ -631,7 +648,7 @@ class Shelves(CustomFrame):
     def upFolder(self):
         folder_path = os.path.dirname(self.info.level)
         self.info.notebooks, self.info.folders = search_folder_recursively(
-            self.log, folder_path)
+            self.log, folder_path, self.info.display_empty)
         # Update the current level as the folder_path, and refresh the content
         # of the window
         self.info.level = folder_path

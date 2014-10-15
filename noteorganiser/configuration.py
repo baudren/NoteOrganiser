@@ -103,3 +103,7 @@ class Information(object):
         # Stores the SHA sum for every notebook, in order to avoid re-analyzing
         # the entire file for each filtering TODO
         self.sha = {}
+
+        # Switch that holds the property to either display or hide empty
+        # folders in the shelves
+        self.display_empty = True

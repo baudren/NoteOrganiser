@@ -27,7 +27,8 @@ Roadmap for 0.2
 [ ] Display all tags in this zone
 [x] Create folder
 [x] Display also empty folders (now default behaviour)
-    [ ] add a button to toggle between displaying and not displaying them
+    [x] add a button to toggle between displaying and not displaying them
+    [ ] check for Windows empty folders
 [ ] Display the current folder's name somewhere
 
 # Editing
