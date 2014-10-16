@@ -4,10 +4,12 @@
 
 .. moduleauthor:: Benjamin Audren <benjamin.audren@gmail.com>
 """
+from __future__ import unicode_literals
 import os
 from collections import OrderedDict as od
 import pypandoc as pa
 import six  # Used to replace the od iteritems from py2
+import io
 
 from PySide import QtGui
 from PySide import QtCore
@@ -413,6 +415,7 @@ class Preview(CustomFrame):
         markdown, remaining_tags = tp.from_notes_to_markdown(
             path, input_tags=tags)
 
+        print('\n'.join(markdown))
         # save a temp. The basename will be modified to reflect the selection
         # of tags.
         base = os.path.basename(path)[:-len(EXTENSION)]
@@ -420,7 +423,7 @@ class Preview(CustomFrame):
             base += '_'+'_'.join(tags)
         temp_path = os.path.join(self.temp_root, base+EXTENSION)
         self.log.debug('Creating temp file %s' % temp_path)
-        with open(temp_path, 'w') as temp:
+        with io.open(temp_path, 'w') as temp:
             temp.write('\n'.join(markdown))
 
         bootstrap_min = (
@@ -432,12 +435,10 @@ class Preview(CustomFrame):
                           extra_args=['--highlight-style', 'pygments', '-s',
                                       '-c', bootstrap_min,
                                       '-c', self.css])
-        if isinstance(html, bytes):
-            html = html.decode('utf-8')
 
         # Write the html to a file
         url = os.path.join(self.website_root, base+'.html')
-        with open(url, 'w') as page:
+        with io.open(url, 'w') as page:
             page.write(html)
 
         return url, remaining_tags
@@ -561,7 +562,7 @@ class Shelves(CustomFrame):
             self.log.info(desired_name+' is the desired name')
             file_name = desired_name
             # Create an empty file (open and close)
-            open(os.path.join(self.info.level, file_name), 'w').close()
+            io.open(os.path.join(self.info.level, file_name), 'w').close()
             # Refresh both the library and Editing tab.
             self.refresh()
 
@@ -699,7 +700,7 @@ class TextEditor(CustomFrame):
         if self.source:
             # Store the last cursor position
             oldCursor = self.text.textCursor()
-            text = open(self.source).read()
+            text = io.open(self.source).read()
             self.text.setText(text)
             self.text.setTextCursor(oldCursor)
             self.text.ensureCursorVisible()
@@ -707,10 +708,9 @@ class TextEditor(CustomFrame):
     def saveText(self):
         self.log.info("Writing modifications to %s" % self.source)
         text = self.text.toPlainText()
-        if isinstance(text, bytes):
-            text = text.decode('utf-8')
-        with open(self.source, 'w') as file_handle:
+        with io.open(self.source, 'w') as file_handle:
             file_handle.write(text)
+
 
     def appendText(self, text):
         self.text.append('\n'+text)

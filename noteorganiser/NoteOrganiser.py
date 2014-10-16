@@ -4,6 +4,7 @@
 
 .. moduleauthor:: Benjamin Audren <benjamin.audren@gmail.com>
 """
+from __future__ import unicode_literals
 # Main imports
 import sys
 from PySide import QtGui

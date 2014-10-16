@@ -4,6 +4,7 @@
 
 .. moduleauthor:: Benjamin Audren <benjamin.audren@gmail.com>
 """
+from __future__ import unicode_literals
 import os
 from noteorganiser.constants import EXTENSION
 

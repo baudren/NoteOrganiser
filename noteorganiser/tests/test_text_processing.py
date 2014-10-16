@@ -1,7 +1,12 @@
+from __future__ import unicode_literals
 import os
-from ..text_processing import extract_title_and_posts_from_text
-from ..text_processing import from_notes_to_markdown
-from ..text_processing import sort_tags
+import pytest
+from datetime import date
+from ..text_processing import *
+#from ..text_processing import extract_title_and_posts_from_text
+#from ..text_processing import from_notes_to_markdown
+#from ..text_processing import sort_tags
+#from ..text_processing import extract
 from .custom_fixtures import parent
 from collections import OrderedDict as od
 
@@ -44,3 +49,63 @@ def test_tag_sorting():
 
     # Check the order
     assert [k for k in output.keys()] == ordered_keys
+
+
+def test_extract_tags_from_post():
+    post = ['Toto', '-------', ' # non-linear, pk', '*21/12/2012*']
+    tags, clean_post = extract_tags_from_post(post)
+    assert len(tags) == 2
+    assert tags == ['non-linear', 'pk']
+    assert clean_post == ['Toto', '-------', '*21/12/2012*']
+
+
+def test_is_valid_post():
+
+    good = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*"]
+    assert is_valid_post(good)
+
+    with pytest.raises(ValueError):
+        is_valid_post(["Toto", "-------", "*21/12/2012*"])
+
+    with pytest.raises(ValueError):
+        is_valid_post(["Toto", "-----", "# something", "12/12/042*"])
+
+    with pytest.raises(ValueError):
+        is_valid_post(['Toto', '=======', '# something', '*21/12/2012*'])
+
+    with pytest.raises(ValueError):
+        is_valid_post(['', '-------', '# non-linear, pk', '*21/12/2012*'])
+
+    with pytest.raises(ValueError):
+        is_valid_post(['Toto', '-------', '*21/12/2012*', 'something'])
+
+
+def test_extract_corpus_from_post():
+    post = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*",
+            "This morning I woke", "", "up and it was a nice weather"]
+    answer = extract_corpus_from_post(post)
+    assert answer == ['This morning I woke', '',
+                      'up and it was a nice weather']
+
+
+def test_extract_title_from_post():
+    post = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*"]
+    answer = extract_title_from_post(post)
+    assert answer == 'Toto'
+
+
+def test_extract_date_from_post():
+    post = ["Toto", "-------", "*21/12/2012*", "Something something"]
+    post_date, clean_post = extract_date_from_post(post)
+    assert post_date == date(2012, 12, 21)
+    assert clean_post == ['Toto', '-------', 'Something something']
+    with pytest.raises(ValueError):
+        extract_date_from_post(["Toto", "---------", "meh"])
+
+
+def test_normalize_post():
+    post = ['Toto', 'has a long title', '-------', '# bla', '*08/11/2010*']
+    answer = normalize_post(post)
+    assert answer == ['Toto has a long title', '-------',
+                      '# bla', '*08/11/2010*']
+    assert is_valid_post(answer)
