@@ -39,7 +39,8 @@ class NewNotebook(Dialog):
 
     def __init__(self, parent=None):
         Dialog.__init__(self, parent)
-        self.names = [elem.strip(EXTENSION) for elem in self.info.notebooks]
+        self.names = [elem.replace(EXTENSION, '')
+                      for elem in self.info.notebooks]
         self.initUI()
 
     def initUI(self):

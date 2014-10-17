@@ -170,7 +170,7 @@ class Editing(CustomFrame):
             # Set the source of the TextEditor to the desired notebook
             editor.setSource(os.path.join(self.info.level, notebook))
             # Add the text editor to the tabbed area
-            self.tabs.addTab(editor, notebook.strip(EXTENSION))
+            self.tabs.addTab(editor, notebook.replace(EXTENSION, ''))
 
         # Create the vertical layout for the right-hand side button
         vbox = QtGui.QVBoxLayout()
@@ -491,7 +491,7 @@ class Shelves(CustomFrame):
             button = PicButton(
                 QtGui.QPixmap(
                     os.path.join(path, 'assets', 'notebook-128.png')),
-                notebook.strip(EXTENSION), 'notebook', self)
+                notebook.replace(EXTENSION, ''), 'notebook', self)
             button.setMinimumSize(128, 128)
             button.setMaximumSize(128, 128)
             button.clicked.connect(self.notebookClicked)
