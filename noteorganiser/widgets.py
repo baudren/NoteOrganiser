@@ -41,7 +41,6 @@ class PicButton(QtGui.QPushButton):
         # only fire event, when left button is clicked
         if ev.button() == QtCore.Qt.LeftButton:
             self.click()
-        self.click()
 
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
