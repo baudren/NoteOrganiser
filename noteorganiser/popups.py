@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from PySide import QtGui
+import os
 
 from .constants import EXTENSION
 
@@ -39,7 +40,7 @@ class NewNotebook(Dialog):
 
     def __init__(self, parent=None):
         Dialog.__init__(self, parent)
-        self.names = [elem.replace(EXTENSION, '')
+        self.names = [os.path.splitext(elem)[0]
                       for elem in self.info.notebooks]
         self.initUI()
 
