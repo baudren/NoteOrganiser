@@ -222,7 +222,7 @@ def from_notes_to_markdown(path, input_tags=None):
         list of tags extracted from the text, with their importance
     """
     # Create the array to return
-    text = io.open(path, 'r', encoding='utf-8').readlines()
+    text = io.open(path, 'r').readlines()
     title, posts = extract_title_and_posts_from_text(text)
     markdown = ["# %s" % title, ""]
     extracted_tags = []
