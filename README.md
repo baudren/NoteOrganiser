@@ -76,6 +76,20 @@ License
 The code is published under the MIT license, please see LICENSE.txt for the
 complete notice.
 
+
+Contributing
+------------
+
+Contributions are welcome, so please submit a bug-report or a feature request.
+Pull-Request are also very appreciated. Please think about running the tests
+under both python 2.7 and 3.3 before submitting, though!
+
+## Contributors
+
+- Tobias Maier ([@egolus](https://github.com/egolus)), for his help in
+  supporting Windows.
+
+
 Health
 ------
 
