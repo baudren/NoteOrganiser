@@ -701,7 +701,7 @@ class TextEditor(CustomFrame):
         if self.source:
             # Store the last cursor position
             oldCursor = self.text.textCursor()
-            text = io.open(self.source, encoding='utf-8').read()
+            text = io.open(self.source, 'r').read()
             self.text.setText(text)
             self.text.setTextCursor(oldCursor)
             self.text.ensureCursorVisible()
