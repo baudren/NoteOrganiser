@@ -423,7 +423,7 @@ class Preview(CustomFrame):
             base += '_'+'_'.join(tags)
         temp_path = os.path.join(self.temp_root, base+EXTENSION)
         self.log.debug('Creating temp file %s' % temp_path)
-        with io.open(temp_path, 'w') as temp:
+        with io.open(temp_path, 'w', encoding='utf-8') as temp:
             temp.write('\n'.join(markdown))
 
         bootstrap_min = (
@@ -431,14 +431,14 @@ class Preview(CustomFrame):
             "css/bootstrap.min.css")
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
-        html = pa.convert(temp_path, 'html',
+        html = pa.convert(temp_path, 'html', encoding='utf-8',
                           extra_args=['--highlight-style', 'pygments', '-s',
                                       '-c', bootstrap_min,
                                       '-c', self.css])
 
         # Write the html to a file
         url = os.path.join(self.website_root, base+'.html')
-        with io.open(url, 'w') as page:
+        with io.open(url, 'w', encoding='utf-8') as page:
             page.write(html)
 
         return url, remaining_tags
@@ -562,7 +562,8 @@ class Shelves(CustomFrame):
             self.log.info(desired_name+' is the desired name')
             file_name = desired_name
             # Create an empty file (open and close)
-            io.open(os.path.join(self.info.level, file_name), 'w').close()
+            io.open(os.path.join(self.info.level, file_name),
+                    'w', encoding='utf-8').close()
             # Refresh both the library and Editing tab.
             self.refresh()
 
@@ -700,7 +701,7 @@ class TextEditor(CustomFrame):
         if self.source:
             # Store the last cursor position
             oldCursor = self.text.textCursor()
-            text = io.open(self.source).read()
+            text = io.open(self.source, encoding='utf-8').read()
             self.text.setText(text)
             self.text.setTextCursor(oldCursor)
             self.text.ensureCursorVisible()
@@ -708,7 +709,7 @@ class TextEditor(CustomFrame):
     def saveText(self):
         self.log.info("Writing modifications to %s" % self.source)
         text = self.text.toPlainText()
-        with io.open(self.source, 'w') as file_handle:
+        with io.open(self.source, 'w', encoding='utf-8') as file_handle:
             file_handle.write(text)
 
 
