@@ -175,7 +175,7 @@ class NewEntry(Dialog):
         # Define the RHS with Ok, Cancel and list of tags TODO)
         buttonLayout = QtGui.QVBoxLayout()
 
-        self.okButton = QtGui.QPushButton("Ok")
+        self.okButton = QtGui.QPushButton("&Ok")
         self.okButton.clicked.connect(self.creating_entry)
         acceptShortcut = QtGui.QShortcut(
             QtGui.QKeySequence(self.tr("Shift+Enter")), self.corpusBox)
