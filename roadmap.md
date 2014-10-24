@@ -33,7 +33,7 @@ Roadmap for 0.2
 
 # Editing
 [x] allow for zooming in/out, reset (ctrl +/-/0)
-[ ] when opening newly created notebook, write the title on top
+[x] when opening newly created notebook, write the title on top
 [ ] list of existing tags when entering a new field
 [ ] keep cursor position on reload
 [x] Use a monospaced font

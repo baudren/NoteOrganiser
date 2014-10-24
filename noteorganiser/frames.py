@@ -561,9 +561,13 @@ class Shelves(CustomFrame):
             desired_name = self.info.notebooks[-1]
             self.log.info(desired_name+' is the desired name')
             file_name = desired_name
-            # Create an empty file (open and close)
-            io.open(os.path.join(self.info.level, file_name),
-                    'w', encoding='utf-8').close()
+            # Create a file, containing only the title
+            with io.open(os.path.join(self.info.level, file_name),
+                         'w', encoding='utf-8') as notebook:
+                clean_name = os.path.splitext(desired_name)[0]
+                notebook.write(clean_name.capitalize()+'\n')
+                notebook.write(''.join(['=' for letter in clean_name]))
+                notebook.write('\n\n')
             # Refresh both the library and Editing tab.
             self.refresh()
 
