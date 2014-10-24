@@ -26,11 +26,15 @@ class PicButton(QtGui.QPushButton):
         painter = QtGui.QPainter(self)
         painter.drawPixmap(event.rect(), self.pixmap)
         if self.style == 'notebook':
-            painter.translate(42, 90)
+            painter.translate(42, 102)
             painter.rotate(-90)
         elif self.style == 'folder':
-            painter.translate(20, 110)
-        painter.setFont(QtGui.QFont('unicode', 12))
+            painter.translate(10, 110)
+        if len(self.text) > 10:
+            fontsize = 9
+        else:
+            fontsize = 12
+        painter.setFont(QtGui.QFont('unicode', fontsize))
         painter.drawText(event.rect(), self.text)
 
     def sizeHint(self):

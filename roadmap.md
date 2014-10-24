@@ -29,6 +29,7 @@ Roadmap for 0.2
 [x] Display also empty folders (now default behaviour)
     [x] add a button to toggle between displaying and not displaying them
     [ ] check for Windows empty folders
+[~] Handle long notebook names
 [ ] Display the current folder's name somewhere
 
 # Editing
