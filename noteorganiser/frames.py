@@ -415,7 +415,6 @@ class Preview(CustomFrame):
         markdown, remaining_tags = tp.from_notes_to_markdown(
             path, input_tags=tags)
 
-        print('\n'.join(markdown))
         # save a temp. The basename will be modified to reflect the selection
         # of tags.
         base = os.path.basename(path)[:-len(EXTENSION)]
@@ -724,7 +723,7 @@ class TextEditor(CustomFrame):
         if self.source:
             # Store the last cursor position
             oldCursor = self.text.textCursor()
-            text = io.open(self.source, 'r').read()
+            text = io.open(self.source, 'r', encoding='utf-8', errors='replace').read()
             self.text.setText(text)
             self.text.setTextCursor(oldCursor)
             self.text.ensureCursorVisible()
