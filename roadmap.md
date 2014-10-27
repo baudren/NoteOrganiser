@@ -21,14 +21,16 @@ Roadmap for 0.2
     instead of home directory, for instance)
 
 # Library
-[ ] draw vector icons, and use several sizes
-[ ] variable number of columns/line on the shelves
-[ ] resizing should change the number of columns/lines for the shelves
+[ ] Better display of icons
+    [x] make the shelves a scrolling area
+    [ ] variable number of columns/line on the shelves
+    [ ] resizing should change the number of columns/lines for the shelves
+    [ ] proper redraw on scrolling
+    [ ] draw vector icons, and use several sizes
 [ ] Display all tags in this zone
 [x] Create folder
 [x] Display also empty folders (now default behaviour)
     [x] add a button to toggle between displaying and not displaying them
-    [ ] check for Windows empty folders
 [~] Handle long notebook names
 [ ] Display the current folder's name somewhere
 

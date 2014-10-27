@@ -479,10 +479,23 @@ class Shelves(CustomFrame):
     def initUI(self):
         """Create the physical shelves"""
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(100)
+
         path = os.path.dirname(__file__)
         self.buttons = []
+
+        # Left hand side: Vertical layout for the notebooks and folders
+        scrollArea = QtGui.QScrollArea()
+        scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        scrollArea.verticalScrollBar().setFocusPolicy(QtCore.Qt.StrongFocus)
+
+        # Need to create a dummy Widget, because QScrollArea can not accept a
+        # layout, only a Widget
+        dummy = QtGui.QWidget()
+
+        vbox = QtGui.QVBoxLayout()
+
+        # TODO create as many hbox layouts as needed
+        hbox = QtGui.QHBoxLayout()
 
         for index, notebook in enumerate(self.info.notebooks):
             # distinguish between a notebook and a folder, stored as a tuple.
@@ -498,8 +511,11 @@ class Shelves(CustomFrame):
             button.deleteNotebook.connect(self.removeNotebook)
             self.buttons.append(button)
 
-            grid.addWidget(button, 0, index)
+            hbox.addWidget(button)
 
+        vbox.addLayout(hbox)
+
+        hbox = QtGui.QHBoxLayout()
         for index, folder in enumerate(self.info.folders):
             button = PicButton(
                 QtGui.QPixmap(
@@ -510,10 +526,14 @@ class Shelves(CustomFrame):
             button.clicked.connect(self.folderClicked)
             self.buttons.append(button)
 
-            grid.addWidget(button, 1, index)
+            hbox.addWidget(button)
 
-        self.layout().insertLayout(0, grid)
+        vbox.addLayout(hbox)
 
+        dummy.setLayout(vbox)
+        scrollArea.setWidget(dummy)
+
+        self.layout().addWidget(scrollArea)
         # Create the navigation symbols
         hboxLayout = QtGui.QHBoxLayout()
 
@@ -543,8 +563,7 @@ class Shelves(CustomFrame):
         hboxLayout.addStretch(1)
         hboxLayout.addWidget(self.toggleDisplayFoldersButton)
 
-        self.layout().addStretch(1)
-        self.layout().insertLayout(2, hboxLayout)
+        self.layout().insertLayout(1, hboxLayout)
 
     def refresh(self):
         # Redraw the graphical interface.
