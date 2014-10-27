@@ -172,18 +172,24 @@ def extract_title_and_posts_from_text(text):
     # Make a first pass to recover the title (first line that is underlined
     # with = signs) and the indices of the dash, that signals a new post.
     post_starting_indices = []
+    has_title = False
     for index, line in enumerate(text):
         # Remove white lines at the beginning
         if not line.strip():
             continue
         if line.find("====") != -1:
             title = ' '.join(text[:index]).strip()
+            has_title = True
         if line.find('----') != -1 and line[0] == '-':
             # find the latest non empty line
             for backward_index in range(1, 10):
                 if not text[index-backward_index].strip():
                     post_starting_indices.append(index-backward_index+1)
                     break
+
+    if not has_title:
+        raise ValueError("You should specify a title to your file"
+                         ", underlined with = signs")
     number_of_posts = len(post_starting_indices)
 
     # Create post_indices such that it stores all the post, so the starting and
