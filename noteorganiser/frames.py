@@ -415,7 +415,6 @@ class Preview(CustomFrame):
         markdown, remaining_tags = tp.from_notes_to_markdown(
             path, input_tags=tags)
 
-        print('\n'.join(markdown))
         # save a temp. The basename will be modified to reflect the selection
         # of tags.
         base = os.path.basename(path)[:-len(EXTENSION)]
