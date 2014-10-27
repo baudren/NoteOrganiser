@@ -177,9 +177,13 @@ def extract_title_and_posts_from_text(text):
         if not line.strip():
             continue
         if line.find("====") != -1:
-            title = text[index-1].strip()
+            title = ' '.join(text[:index]).strip()
         if line.find('----') != -1 and line[0] == '-':
-            post_starting_indices.append(index-1)
+            # find the latest non empty line
+            for backward_index in range(1, 10):
+                if not text[index-backward_index].strip():
+                    post_starting_indices.append(index-backward_index+1)
+                    break
     number_of_posts = len(post_starting_indices)
 
     # Create post_indices such that it stores all the post, so the starting and
