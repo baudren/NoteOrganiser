@@ -88,7 +88,7 @@ def extract_tags_from_post(post):
     """
     tag_line = post[2].strip()
     if tag_line and tag_line[0] == '#':
-        tags = [elem.strip() for elem in tag_line[1:].split(',')]
+        tags = [elem.strip().lower() for elem in tag_line[1:].split(',')]
 
     return tags, post[:2]+post[3:]
 
