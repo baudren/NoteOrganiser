@@ -177,10 +177,10 @@ def extract_title_and_posts_from_text(text):
         # Remove white lines at the beginning
         if not line.strip():
             continue
-        if line.find("====") != -1:
+        if line.find("==") != -1 and not has_title:
             title = ' '.join(text[:index]).strip()
             has_title = True
-        if line.find('----') != -1 and line[0] == '-':
+        if line.find('--') != -1 and line[0] == '-':
             # find the latest non empty line
             for backward_index in range(1, 10):
                 if not text[index-backward_index].strip():
