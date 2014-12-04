@@ -49,3 +49,24 @@ class PicButton(QtGui.QPushButton):
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
         self.deleteNotebook.emit(self.text)
+
+
+class VerticalScrollArea(QtGui.QScrollArea):
+    """Implementation of a purely vertical scroll area"""
+
+    def __init__(self, parent=None):
+        QtGui.QScrollArea.__init__(self, parent)
+        self.setWidgetResizable(True)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.verticalScrollBar().setFocusPolicy(QtCore.Qt.StrongFocus)
+
+    def eventFilter(self, item, event):
+        """
+        This works because setWidget installs an eventFilter on the widget"""
+        if (item and item == self.widget()
+                and event.type() == QtCore.QEvent.Resize):
+            self.setMinimumWidth(
+                self.widget().minimumSizeHint().width() +
+                self.verticalScrollBar().width())
+        return QtGui.QScrollArea.eventFilter(self, item, event)

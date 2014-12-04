@@ -20,7 +20,7 @@ from .popups import NewEntry, NewNotebook, NewFolder
 import noteorganiser.text_processing as tp
 from .constants import EXTENSION
 from .configuration import search_folder_recursively
-from .widgets import PicButton
+from .widgets import PicButton, VerticalScrollArea
 
 
 class CustomFrame(QtGui.QFrame):
@@ -483,9 +483,7 @@ class Shelves(CustomFrame):
         self.buttons = []
 
         # Left hand side: Vertical layout for the notebooks and folders
-        scrollArea = QtGui.QScrollArea()
-        scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        scrollArea.verticalScrollBar().setFocusPolicy(QtCore.Qt.StrongFocus)
+        scrollArea = VerticalScrollArea(self)
 
         # Need to create a dummy Widget, because QScrollArea can not accept a
         # layout, only a Widget
@@ -528,6 +526,7 @@ class Shelves(CustomFrame):
             hbox.addWidget(button)
 
         vbox.addLayout(hbox)
+        vbox.addStretch(1)
 
         dummy.setLayout(vbox)
         scrollArea.setWidget(dummy)
