@@ -8,3 +8,6 @@ files.txt
 
 # coverage reports from py.test
 htmlcov/
+
+# Idea hidden folder
+.idea/
