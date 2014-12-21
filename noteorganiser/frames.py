@@ -425,14 +425,10 @@ class Preview(CustomFrame):
         with io.open(temp_path, 'w', encoding='utf-8') as temp:
             temp.write('\n'.join(markdown))
 
-        bootstrap_min = (
-            "http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/"
-            "css/bootstrap.min.css")
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
         html = pa.convert(temp_path, 'html', encoding='utf-8',
                           extra_args=['--highlight-style', 'pygments', '-s',
-                                      '-c', bootstrap_min,
                                       '-c', self.css])
 
         # Write the html to a file
