@@ -479,7 +479,7 @@ class Shelves(CustomFrame):
         """Create the physical shelves"""
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
 
-        path = os.path.dirname(__file__)
+        self.path = os.path.dirname(__file__)
         self.buttons = []
 
         # Left hand side: Vertical layout for the notebooks and folders
@@ -490,44 +490,10 @@ class Shelves(CustomFrame):
         dummy = QtGui.QWidget()
 
         vbox = QtGui.QVBoxLayout()
+        grid = self.createLines()
 
-        # TODO create as many hbox layouts as needed
-        hbox = QtGui.QHBoxLayout()
-
-        for index, notebook in enumerate(self.info.notebooks):
-            # distinguish between a notebook and a folder, stored as a tuple.
-            # When encountering a folder, simply put a different image for the
-            # moment.
-            button = PicButton(
-                QtGui.QPixmap(
-                    os.path.join(path, 'assets', 'notebook-128.png')),
-                os.path.splitext(notebook)[0], 'notebook', self)
-            button.setMinimumSize(128, 128)
-            button.setMaximumSize(128, 128)
-            button.clicked.connect(self.notebookClicked)
-            button.deleteNotebook.connect(self.removeNotebook)
-            self.buttons.append(button)
-
-            hbox.addWidget(button)
-
-        vbox.addLayout(hbox)
-
-        hbox = QtGui.QHBoxLayout()
-        for index, folder in enumerate(self.info.folders):
-            button = PicButton(
-                QtGui.QPixmap(
-                    os.path.join(path, 'assets', 'folder-128.png')),
-                os.path.basename(folder), 'folder', self)
-            button.setMinimumSize(128, 128)
-            button.setMaximumSize(128, 128)
-            button.clicked.connect(self.folderClicked)
-            self.buttons.append(button)
-
-            hbox.addWidget(button)
-
-        vbox.addLayout(hbox)
+        vbox.addLayout(grid)
         vbox.addStretch(1)
-
         dummy.setLayout(vbox)
         scrollArea.setWidget(dummy)
 
@@ -676,6 +642,64 @@ class Shelves(CustomFrame):
         # of the window
         self.info.level = folder_path
         self.refresh()
+
+    def resizeEvent(self, event):
+        if event.oldSize().width() != -1:
+            self.refresh()
+
+    def createLines(self):
+        # Defining the icon size used
+        self.size = 128
+
+        # Number of elements on each line
+        # This might fail for some cases
+        objectsPerLine = self.width() // (self.size*1.2)
+        if objectsPerLine == 0:
+            objectsPerLine = 1
+        index_row, index_column = 0, 0
+
+        # Create the lines array
+        grid = QtGui.QGridLayout()
+        for index, notebook in enumerate(self.info.notebooks):
+            # distinguish between a notebook and a folder, stored as a tuple.
+            # When encountering a folder, simply put a different image for the
+            # moment.
+
+            button = PicButton(
+                QtGui.QPixmap(
+                    os.path.join(self.path, 'assets',
+                                 'notebook-%i.png' % self.size)),
+                os.path.splitext(notebook)[0], 'notebook', self)
+            button.setMinimumSize(self.size, self.size)
+            button.setMaximumSize(self.size, self.size)
+            button.clicked.connect(self.notebookClicked)
+            button.deleteNotebook.connect(self.removeNotebook)
+            self.buttons.append(button)
+            grid.addWidget(button, index_column, index_row)
+
+            # Incrementing the index_object
+            index_row += 1
+            if index_row % objectsPerLine == 0:
+                index_row = 0
+                index_column += 1
+
+        for index, folder in enumerate(self.info.folders):
+            button = PicButton(
+                QtGui.QPixmap(
+                    os.path.join(self.path, 'assets',
+                                 'folder-%i.png' % self.size)),
+                os.path.basename(folder), 'folder', self)
+            button.setMinimumSize(self.size, self.size)
+            button.setMaximumSize(self.size, self.size)
+            button.clicked.connect(self.folderClicked)
+            self.buttons.append(button)
+            grid.addWidget(button, index_column, index_row)
+            index_row += 1
+            if index_row % objectsPerLine == 0:
+                index_row = 0
+                index_column += 1
+
+        return grid
 
 
 class TextEditor(CustomFrame):
