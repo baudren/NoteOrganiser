@@ -3,10 +3,10 @@ Roadmap for 0.2
 
 # General
 [x] Ensure compatibility with python 3 and 2
-[ ] Ensure platform independence
+[x] Ensure platform independence
 [.] Document more.
 [ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
-[ ] Ensure proper resizing at all times.
+[x] Ensure proper resizing at all times.
 [?] Ensure proper key navigation at all times (sometimes ctrl+tab does not
     switch between tabs)
 [x] Keyboard shortcut for accessing the tabs
@@ -21,17 +21,17 @@ Roadmap for 0.2
     instead of home directory, for instance)
 
 # Library
-[ ] Better display of icons
+[~] Better display of icons
     [x] make the shelves a scrolling area
-    [ ] variable number of columns/line on the shelves
-    [ ] resizing should change the number of columns/lines for the shelves
-    [ ] proper redraw on scrolling
+    [x] variable number of columns/line on the shelves
+    [x] resizing should change the number of columns/lines for the shelves
+    [x] proper redraw on scrolling
     [ ] draw vector icons, and use several sizes
 [ ] Display all tags in this zone
 [x] Create folder
 [x] Display also empty folders (now default behaviour)
     [x] add a button to toggle between displaying and not displaying them
-[~] Handle long notebook names
+[x] Handle long notebook names
 [ ] Display the current folder's name somewhere
 
 # Editing

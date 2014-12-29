@@ -12,6 +12,8 @@ class PicButton(QtGui.QPushButton):
         QtGui.QPushButton.__init__(self, parent)
         self.parent = parent
         self.label = str(text)
+        # Define the tooltip
+        self.setToolTip(self.label)
         self.pixmap = pixmap
         self.style = style
 
@@ -32,7 +34,7 @@ class PicButton(QtGui.QPushButton):
 
         # If the width of the text is too large, reduce the fontsize
         metrics = QtGui.QFontMetrics(self.font())
-        if metrics.width(self.label) > 80:
+        if metrics.width(self.label) > 76:
             self.fontsize = 7
             painter.setFont(QtGui.QFont('unicode', self.fontsize))
 
