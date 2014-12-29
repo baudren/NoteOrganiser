@@ -518,6 +518,7 @@ class Shelves(CustomFrame):
         hboxLayout.addWidget(self.upButton)
         hboxLayout.addWidget(self.newNotebookButton)
         hboxLayout.addWidget(self.newFolderButton)
+        hboxLayout.addStretch(1)
 
         self.layout().insertLayout(1, hboxLayout)
 
