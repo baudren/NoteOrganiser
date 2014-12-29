@@ -81,6 +81,7 @@ pre {
   background-color: #eee8d5;
   padding-left: 2em;
   margin-left: 2em;
+  overflow-x: auto;
 }
 
 pre.warning, pre.definition, pre.information {
