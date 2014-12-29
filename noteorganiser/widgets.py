@@ -11,9 +11,13 @@ class PicButton(QtGui.QPushButton):
     def __init__(self, pixmap, text, style, parent=None):
         QtGui.QPushButton.__init__(self, parent)
         self.parent = parent
-        self.text = str(text)
+        self.label = str(text)
         self.pixmap = pixmap
         self.style = style
+
+        # Default fontsize
+        self.default = 9
+        self.fontsize = self.default
 
         # Define behaviour under right click
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
@@ -24,18 +28,25 @@ class PicButton(QtGui.QPushButton):
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
+        painter.setFont(QtGui.QFont('unicode', self.fontsize))
+
+        # If the width of the text is too large, reduce the fontsize
+        metrics = QtGui.QFontMetrics(self.font())
+        if metrics.width(self.label) > 80:
+            self.fontsize = 7
+            painter.setFont(QtGui.QFont('unicode', self.fontsize))
+
+        # If the width is still too large, elide the text
+        elided = metrics.elidedText(
+            self.label, QtCore.Qt.ElideRight, 90)
+
         painter.drawPixmap(event.rect(), self.pixmap)
         if self.style == 'notebook':
             painter.translate(42, 102)
             painter.rotate(-90)
         elif self.style == 'folder':
-            painter.translate(10, 110)
-        if len(self.text) > 10:
-            fontsize = 9
-        else:
-            fontsize = 12
-        painter.setFont(QtGui.QFont('unicode', fontsize))
-        painter.drawText(event.rect(), self.text)
+            painter.translate(10, 100+self.default-self.fontsize)
+        painter.drawText(event.rect(), elided)
 
     def sizeHint(self):
         return self.pixmap.size()
@@ -48,7 +59,7 @@ class PicButton(QtGui.QPushButton):
 
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
-        self.deleteNotebook.emit(self.text)
+        self.deleteNotebook.emit(self.label)
 
 
 class VerticalScrollArea(QtGui.QScrollArea):
