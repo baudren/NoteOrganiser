@@ -515,17 +515,9 @@ class Shelves(CustomFrame):
         self.newFolderButton = QtGui.QPushButton("New &Folder")
         self.newFolderButton.clicked.connect(self.createFolder)
 
-        # Toggle between displaying and hiding empty folders
-        self.toggleDisplayFoldersButton = QtGui.QPushButton(
-            "&Toggle Display Empty Folder")
-        self.toggleDisplayFoldersButton.clicked.connect(
-            self.toggleDisplayEmpty)
-
         hboxLayout.addWidget(self.upButton)
         hboxLayout.addWidget(self.newNotebookButton)
         hboxLayout.addWidget(self.newFolderButton)
-        hboxLayout.addStretch(1)
-        hboxLayout.addWidget(self.toggleDisplayFoldersButton)
 
         self.layout().insertLayout(1, hboxLayout)
 
@@ -754,7 +746,8 @@ class TextEditor(CustomFrame):
         if self.source:
             # Store the last cursor position
             oldCursor = self.text.textCursor()
-            text = io.open(self.source, 'r', encoding='utf-8', errors='replace').read()
+            text = io.open(self.source, 'r', encoding='utf-8',
+                           errors='replace').read()
             self.text.setText(text)
             self.text.setTextCursor(oldCursor)
             self.text.ensureCursorVisible()

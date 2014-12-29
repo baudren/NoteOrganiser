@@ -43,9 +43,9 @@ class NoteOrganiser(QtGui.QMainWindow):
     def initUI(self):
         """Initialise all the User Interface"""
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
+        self.initWidgets()
         self.initMenuBar()
         self.initStatusBar()
-        self.initWidgets()
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
         # set this to be half-screen, on the left
@@ -66,6 +66,13 @@ class NoteOrganiser(QtGui.QMainWindow):
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.cleanClose)
+
+        # Toggle displaying empty folders
+        toggleEmptyAction = QtGui.QAction('Toggle display empty folders', self)
+        toggleEmptyAction.setShortcut('Ctrl+T')
+        toggleEmptyAction.setStatusTip('Toggle the display of empty folders')
+        toggleEmptyAction.triggered.connect(
+            self.library.shelves.toggleDisplayEmpty)
 
         # Zoom-in
         zoomInAction = QtGui.QAction('Zoom-in', self)
@@ -90,6 +97,10 @@ class NoteOrganiser(QtGui.QMainWindow):
         # File menu
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
+
+        # Options menu
+        optionsMenu = menubar.addMenu('&Options')
+        optionsMenu.addAction(toggleEmptyAction)
 
         # Display menu
         displayMenu = menubar.addMenu('&Display')
