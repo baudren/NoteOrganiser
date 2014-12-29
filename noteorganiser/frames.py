@@ -478,6 +478,10 @@ class Shelves(CustomFrame):
         self.path = os.path.dirname(__file__)
         self.buttons = []
 
+        # Store the number of objects per line, for faster redrawing on
+        # resizing. Initially set to zero, it will, the first time, be set by
+        # the method createLines, and then be compared to.
+        self.objectsPerLine = 0
         # Left hand side: Vertical layout for the notebooks and folders
         scrollArea = VerticalScrollArea(self)
 
@@ -652,6 +656,13 @@ class Shelves(CustomFrame):
         objectsPerLine = self.width() // (self.size*1.2)
         if objectsPerLine == 0:
             objectsPerLine = 1
+
+        if objectsPerLine == self.objectsPerLine:
+            return self.grid
+
+        if self.objectsPerLine == 0:
+            self.objectsPerLine = objectsPerLine
+
         index_row, index_column = 0, 0
 
         # Create the lines array
@@ -695,6 +706,7 @@ class Shelves(CustomFrame):
                 index_row = 0
                 index_column += 1
 
+        self.grid = grid
         return grid
 
 
