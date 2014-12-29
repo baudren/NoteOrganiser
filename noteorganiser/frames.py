@@ -615,14 +615,14 @@ class Shelves(CustomFrame):
 
     def notebookClicked(self):
         sender = self.sender()
-        self.log.info('notebook '+sender.text+' button cliked')
+        self.log.info('notebook '+sender.label+' button cliked')
         # Emit a signal asking for changing the tab
-        self.switchTabSignal.emit('editing', sender.text)
+        self.switchTabSignal.emit('editing', sender.label)
 
     def folderClicked(self):
         sender = self.sender()
-        self.log.info('folder '+sender.text+' button cliked')
-        folder_path = os.path.join(self.info.root, sender.text)
+        self.log.info('folder '+sender.label+' button cliked')
+        folder_path = os.path.join(self.info.root, sender.label)
         self.info.notebooks, self.info.folders = search_folder_recursively(
             self.log, folder_path, self.info.display_empty)
         # Update the current level as the folder_path, and refresh the content
