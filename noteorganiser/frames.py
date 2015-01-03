@@ -520,7 +520,7 @@ class Shelves(CustomFrame):
         hboxLayout.addWidget(self.newFolderButton)
         hboxLayout.addStretch(1)
 
-        self.layout().insertLayout(1, hboxLayout)
+        self.layout().addLayout(hboxLayout)
 
     def refresh(self):
         # Redraw the graphical interface.
