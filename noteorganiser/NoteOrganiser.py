@@ -101,6 +101,16 @@ class NoteOrganiser(QtGui.QMainWindow):
             'Set the Commandline for the external Editor')
         externalEditor.triggered.connect(self.setExternalEditor)
 
+        # Toggle use of Table of Content
+        toggleUseTOC = QtGui.QAction('use TOC in output', self)
+        toggleUseTOC.setShortcut('Ctrl+T')
+        toggleUseTOC.setStatusTip(
+                'Toggle the usage of Table of Content in HTML-output')
+        toggleUseTOC.setCheckable(True)
+        toggleUseTOC.setChecked(False)
+        toggleUseTOC.triggered.connect(
+            self.toggleUseTOC)
+
         # Zoom-in
         zoomInAction = QtGui.QAction('Zoom-in', self)
         zoomInAction.setShortcut('Ctrl++')
@@ -130,6 +140,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         optionsMenu.addAction(toggleEmptyAction)
         optionsMenu.addAction(toggleRefreshAction)
         optionsMenu.addAction(externalEditor)
+        optionsMenu.addAction(toggleUseTOC)
 
         # Display menu
         displayMenu = menubar.addMenu('&Display')
@@ -160,6 +171,10 @@ class NoteOrganiser(QtGui.QMainWindow):
             self.log.info('auto refresh enabled')
         else:
             self.log.info('auto refresh disabled')
+
+    def toggleUseTOC(self):
+        """toggle the use of the Table of Content in html-output"""
+        self.info.use_TOC = not self.info.use_TOC
 
     def initStatusBar(self):
         """Defining the status bar"""

@@ -141,3 +141,6 @@ class Information(object):
                 self.refreshEditor = False
         else:
             self.refreshEditor = False
+
+        # Switch to use Table of Content in HTML-Output
+        self.use_TOC = False

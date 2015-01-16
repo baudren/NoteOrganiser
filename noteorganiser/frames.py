@@ -477,11 +477,17 @@ class Preview(CustomFrame):
         with io.open(temp_path, 'w', encoding='utf-8') as temp:
             temp.write('\n'.join(markdown))
 
+        # extra arguments for pandoc
+        extra_args=['--highlight-style', 'pygments', '-s', '-c', self.css]
+
+        # use TOC if enabled
+        if self.info.use_TOC == True:
+            extra_args.append('--toc')
+
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
         html = pa.convert(temp_path, 'html', encoding='utf-8',
-                          extra_args=['--highlight-style', 'pygments', '-s',
-                                      '-c', self.css])
+                          extra_args=extra_args)
 
         # Convert the windows ending of lines to simple line breaks (\r\n to
         # \n)
