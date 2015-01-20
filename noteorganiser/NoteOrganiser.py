@@ -11,6 +11,7 @@ from PySide import QtGui
 from PySide import QtCore
 
 # Local imports
+from noteorganiser.popups import SetExternalEditor
 from noteorganiser.frames import Library, Editing, Preview
 from noteorganiser.logger import create_logger
 import noteorganiser.configuration as conf
@@ -76,6 +77,11 @@ class NoteOrganiser(QtGui.QMainWindow):
         toggleEmptyAction.triggered.connect(
             self.library.shelves.toggleDisplayEmpty)
 
+        # show popup for external editor commandline
+        externalEditor = QtGui.QAction('set external Editor', self)
+        externalEditor.setStatusTip('Set the Commandline for the external Editor')
+        externalEditor.triggered.connect(self.setExternalEditor)
+
         # Zoom-in
         zoomInAction = QtGui.QAction('Zoom-in', self)
         zoomInAction.setShortcut('Ctrl++')
@@ -103,6 +109,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         # Options menu
         optionsMenu = menubar.addMenu('&Options')
         optionsMenu.addAction(toggleEmptyAction)
+        optionsMenu.addAction(externalEditor)
 
         # Display menu
         displayMenu = menubar.addMenu('&Display')
@@ -110,6 +117,15 @@ class NoteOrganiser(QtGui.QMainWindow):
         displayMenu.addAction(zoomOutAction)
         displayMenu.addAction(resetSizeAction)
 
+    def setExternalEditor(self):
+        """set the variable for the external editor"""
+        self.popup = SetExternalEditor(self)
+        #this will popup the popup
+        ok = self.popup.exec_()
+        # the return code is True if successfull
+        if ok:
+            #Recover the field
+            self.info.externalEditor = self.popup.commandline
     def initStatusBar(self):
         """Defining the status bar"""
         self.log.info("Creating Status Bar")

@@ -6,7 +6,7 @@
 """
 from __future__ import unicode_literals
 import os
-from noteorganiser.constants import EXTENSION
+from noteorganiser.constants import EXTENSION, EXTERNALEDITOR
 
 from PySide import QtCore
 
@@ -128,3 +128,5 @@ class Information(object):
         else:
             self.display_empty = True
         
+        # commandline for the external editor
+        self.externalEditor = EXTERNALEDITOR

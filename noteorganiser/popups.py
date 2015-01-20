@@ -221,3 +221,58 @@ class NewEntry(Dialog):
         self.tags = tags
         self.corpus = corpus
         self.clean_accept()
+
+
+class SetExternalEditor(Dialog):
+
+    def __init__(self, parent=None):
+        Dialog.__init__(self, parent)
+        self.initUI()
+
+    def initUI(self):
+        self.log.info("Creating a 'Set External Editor' form")
+
+        self.setWindowTitle("Set External Editor")
+
+        # Define the main window horizontal layout
+        hboxLayout = QtGui.QHBoxLayout()
+
+        # Define the field
+        formLayout = QtGui.QFormLayout()
+        self.commandlineEdit = QtGui.QLineEdit()
+
+        formLayout.addRow(self.tr("&external editor:"), self.commandlineEdit)
+
+        hboxLayout.addLayout(formLayout)
+
+        # Define the RHS with Ok, Cancel and list of tags TODO)
+        buttonLayout = QtGui.QVBoxLayout()
+
+        self.okButton = QtGui.QPushButton("&Ok")
+        self.okButton.clicked.connect(self.set_commandline)
+
+        self.cancelButton = QtGui.QPushButton("&Cancel")
+        self.cancelButton.clicked.connect(self.clean_reject)
+
+        buttonLayout.addWidget(self.okButton)
+        buttonLayout.addWidget(self.cancelButton)
+
+        hboxLayout.addLayout(buttonLayout)
+        # Create the status bar
+        self.statusBar = QtGui.QStatusBar(self)
+        # Create a permanent widget displaying what we are doing
+        statusWidget = QtGui.QLabel("setting the commandline for the external editor")
+        self.statusBar.addPermanentWidget(statusWidget)
+
+        self.layout().addLayout(hboxLayout)
+        self.layout().addWidget(self.statusBar)
+
+    def set_commandline(self):
+        # Check if text is a valid commandline
+        commandline = str(self.commandlineEdit.text())
+        if not commandline or len(commandline) < 2:
+            self.statusBar.showMessage(self.tr("Invalid Commandline"), 2000)
+            return
+        # Storing the variables to be recovered afterwards
+        self.commandline = commandline
+        self.clean_accept()

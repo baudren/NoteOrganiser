@@ -16,6 +16,8 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
+from subprocess import Popen
+
 # Local imports
 from .popups import NewEntry, NewNotebook, NewFolder
 import noteorganiser.text_processing as tp
@@ -156,6 +158,7 @@ class Editing(CustomFrame):
 
         # Edit in an exterior editor TODO
         self.editButton = QtGui.QPushButton("Edit (e&xterior editor)", self)
+        self.editButton.clicked.connect(self.editExternal)
 
         # Launch the previewing of the current notebook
         self.previewButton = QtGui.QPushButton("&Preview notebook", self)
@@ -223,6 +226,16 @@ class Editing(CustomFrame):
             editor = self.tabs.currentWidget()
             # Append the text
             editor.appendText(post)
+
+    def editExternal(self):
+        """
+        edit active file in external editor
+        """
+        # get the current file
+        index = self.tabs.currentIndex()
+        notebook = os.path.join(self.info.level, self.info.notebooks[index])
+        # open the file in the external editor set by the user
+        Popen([self.info.externalEditor, notebook])
 
     def preview(self):
         """
