@@ -72,7 +72,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         toggleEmptyAction.setShortcut('Ctrl+T')
         toggleEmptyAction.setStatusTip('Toggle the display of empty folders')
         toggleEmptyAction.setCheckable(True)
-        toggleEmptyAction.setChecked(True)
+        toggleEmptyAction.setChecked(self.info.display_empty)
         toggleEmptyAction.triggered.connect(
             self.library.shelves.toggleDisplayEmpty)
 

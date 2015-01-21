@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import os
 from noteorganiser.constants import EXTENSION
 
+from PySide import QtCore
 
 def initialise(logger):
     """
@@ -19,20 +20,29 @@ def initialise(logger):
     home = os.path.expanduser("~")
     main = os.path.join(home, '.noteorganiser')
 
+    settings = QtCore.QSettings("audren", "NoteOrganiser")
+    if settings.contains("display_empty"):
+        if settings.value("display_empty") == "true":
+            display_empty = True
+        else:
+            display_empty = False
+    else:
+        display_empty = True
+
     # Recursively search the main folder for notebooks or folders of notebooks
     # It also checks if the folder ".noteorganiser" exists, and creates it
     # otherwise.
     # folders will contain all the non-empty folders in the main. The method
     # search_folder_recursively will be called again when the user wants to
     # explore also the contents of this folder
-    notebooks, folders = search_folder_recursively(logger, main)
+    notebooks, folders = search_folder_recursively(logger, main, display_empty)
 
     # Return both the path to the folder where it is stored, and the list of
     # notebooks
     return main, notebooks, folders
 
 
-def search_folder_recursively(logger, main, display_empty=True):
+def search_folder_recursively(logger, main, display_empty):
     """
     Search the main folder for notebooks and folders with notebooks
 
@@ -69,7 +79,7 @@ def search_folder_recursively(logger, main, display_empty=True):
                 # Windows is concerned
                 if elem[0] != '.':
                     temp, _ = search_folder_recursively(
-                        logger, os.path.join(main, elem))
+                        logger, os.path.join(main, elem), display_empty)
                     if temp or display_empty:
                         folders.append(os.path.join(main, elem))
     else:
@@ -105,6 +115,16 @@ class Information(object):
         # the entire file for each filtering TODO
         self.sha = {}
 
+        # get saved settings
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+
         # Switch that holds the property to either display or hide empty
         # folders in the shelves
-        self.display_empty = True
+        if self.settings.contains("display_empty"):
+            if self.settings.value("display_empty") == "true":
+                self.display_empty = True
+            else:
+                self.display_empty = False
+        else:
+            self.display_empty = True
+        
