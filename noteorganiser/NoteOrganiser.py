@@ -103,13 +103,10 @@ class NoteOrganiser(QtGui.QMainWindow):
 
         # Toggle use of Table of Content
         toggleUseTOC = QtGui.QAction('use TOC in output', self)
-        toggleUseTOC.setShortcut('Ctrl+T')
-        toggleUseTOC.setStatusTip(
-                'Toggle the usage of Table of Content in HTML-output')
+        toggleUseTOC.setStatusTip( 'Toggle the usage of Table of Content in HTML-output')
         toggleUseTOC.setCheckable(True)
-        toggleUseTOC.setChecked(False)
-        toggleUseTOC.triggered.connect(
-            self.toggleUseTOC)
+        toggleUseTOC.setChecked(self.info.use_TOC)
+        toggleUseTOC.triggered.connect(self.toggleUseTOC)
 
         # Zoom-in
         zoomInAction = QtGui.QAction('Zoom-in', self)
@@ -175,6 +172,9 @@ class NoteOrganiser(QtGui.QMainWindow):
     def toggleUseTOC(self):
         """toggle the use of the Table of Content in html-output"""
         self.info.use_TOC = not self.info.use_TOC
+        #save the setting
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        self.settings.setValue("use_TOC", self.info.use_TOC)
 
     def initStatusBar(self):
         """Defining the status bar"""

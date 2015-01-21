@@ -143,4 +143,10 @@ class Information(object):
             self.refreshEditor = False
 
         # Switch to use Table of Content in HTML-Output
-        self.use_TOC = False
+        if self.settings.contains("use_TOC"):
+            if self.settings.value("use_TOC") == "true":
+                self.use_TOC = True
+            else:
+                self.use_TOC = False
+        else:
+            self.use_TOC = False
