@@ -42,7 +42,7 @@ def initialise(logger):
     return main, notebooks, folders
 
 
-def search_folder_recursively(logger, main, display_empty):
+def search_folder_recursively(logger, main, display_empty=True):
     """
     Search the main folder for notebooks and folders with notebooks
 
