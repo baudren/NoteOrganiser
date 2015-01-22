@@ -35,6 +35,10 @@ class Dialog(QtGui.QDialog):
         self.log.info("Aborting %s form" % self.__class__.__name__)
         self.reject()
 
+    def translate(self, string):
+        """Temporary fix for unicode tr problems"""
+        return string
+
 
 class NewNotebook(Dialog):
 
@@ -58,8 +62,8 @@ class NewNotebook(Dialog):
         self.notebookType = QtGui.QComboBox()
         self.notebookType.addItem("Standard")
 
-        formLayout.addRow(self.tr("Notebook's &name:"), self.nameLineEdit)
-        formLayout.addRow(self.tr("&Notebook's &type:"), self.notebookType)
+        formLayout.addRow(self.translate("Notebook's &name:"), self.nameLineEdit)
+        formLayout.addRow(self.translate("&Notebook's &type:"), self.notebookType)
         self.layout().addLayout(formLayout)
 
         hboxLayout = QtGui.QHBoxLayout()
@@ -111,7 +115,7 @@ class NewFolder(Dialog):
         formLayout = QtGui.QFormLayout()
         self.nameLineEdit = QtGui.QLineEdit()
 
-        formLayout.addRow(self.tr("Folder's &name:"), self.nameLineEdit)
+        formLayout.addRow(self.translate("Folder's &name:"), self.nameLineEdit)
         self.layout().addLayout(formLayout)
 
         hboxLayout = QtGui.QHBoxLayout()
@@ -166,9 +170,9 @@ class NewEntry(Dialog):
         self.tagsLineEdit = QtGui.QLineEdit()
         self.corpusBox = QtGui.QTextEdit()
 
-        formLayout.addRow(self.tr("&Title:"), self.titleLineEdit)
-        formLayout.addRow(self.tr("Ta&gs:"), self.tagsLineEdit)
-        formLayout.addRow(self.tr("&Body:"), self.corpusBox)
+        formLayout.addRow(self.translate("&Title:"), self.titleLineEdit)
+        formLayout.addRow(self.translate("Ta&gs:"), self.tagsLineEdit)
+        formLayout.addRow(self.translate("&Body:"), self.corpusBox)
 
         hboxLayout.addLayout(formLayout)
 
@@ -178,7 +182,7 @@ class NewEntry(Dialog):
         self.okButton = QtGui.QPushButton("&Ok")
         self.okButton.clicked.connect(self.creating_entry)
         acceptShortcut = QtGui.QShortcut(
-            QtGui.QKeySequence(self.tr("Shift+Enter")), self.corpusBox)
+            QtGui.QKeySequence(self.translate("Shift+Enter")), self.corpusBox)
         acceptShortcut.activated.connect(self.creating_entry)
 
         self.cancelButton = QtGui.QPushButton("&Cancel")
@@ -201,16 +205,16 @@ class NewEntry(Dialog):
         # Check if title is valid (non-empty)
         title = str(self.titleLineEdit.text())
         if not title or len(title) < 2:
-            self.statusBar.showMessage(self.tr("Invalid title"), 2000)
+            self.statusBar.showMessage(self.translate("Invalid title"), 2000)
             return
         tags = str(self.tagsLineEdit.text())
         if not tags or len(tags) < 2:
-            self.statusBar.showMessage(self.tr("Invalid tags"), 2000)
+            self.statusBar.showMessage(self.translate("Invalid tags"), 2000)
             return
         tags = [tag.strip() for tag in tags.split(',')]
         corpus = self.corpusBox.toPlainText()
         if not corpus or len(corpus) < 2:
-            self.statusBar.showMessage(self.tr("Empty entry"), 2000)
+            self.statusBar.showMessage(self.translate("Empty entry"), 2000)
             return
         # Storing the variables to be recovered afterwards
         self.title = title
