@@ -156,6 +156,9 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.preview.loadNotebook(notebook)
         self.switchTab('preview', notebook)
 
+    def closeEvent(self, event):
+        self.cleanClose()
+
     def cleanClose(self):
         """Overload the closeEvent to store the geometry"""
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
