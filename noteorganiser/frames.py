@@ -415,11 +415,6 @@ class Preview(CustomFrame):
         markdown, remaining_tags = tp.from_notes_to_markdown(
             path, input_tags=tags)
 
-        # Convert the windows ending of lines to simple line breaks (\r\n to
-        # \n)
-        for line in markdown:
-            line.replace('\r\n', '\n')
-
         # save a temp. The basename will be modified to reflect the selection
         # of tags.
         base = os.path.basename(path)[:-len(EXTENSION)]
@@ -435,6 +430,10 @@ class Preview(CustomFrame):
         html = pa.convert(temp_path, 'html', encoding='utf-8',
                           extra_args=['--highlight-style', 'pygments', '-s',
                                       '-c', self.css])
+
+        # Convert the windows ending of lines to simple line breaks (\r\n to
+        # \n)
+        html = html.replace('\r\n', '\n')
 
         # Write the html to a file
         url = os.path.join(self.website_root, base+'.html')
