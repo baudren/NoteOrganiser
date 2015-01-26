@@ -415,6 +415,11 @@ class Preview(CustomFrame):
         markdown, remaining_tags = tp.from_notes_to_markdown(
             path, input_tags=tags)
 
+        # Convert the windows ending of lines to simple line breaks (\r\n to
+        # \n)
+        for line in markdown:
+            line.replace('\r\n', '\n')
+
         # save a temp. The basename will be modified to reflect the selection
         # of tags.
         base = os.path.basename(path)[:-len(EXTENSION)]
