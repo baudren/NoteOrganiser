@@ -181,6 +181,9 @@ def extract_title_and_posts_from_text(text):
             title = ' '.join(text[:index]).strip()
             has_title = True
         if line.find('--') != -1 and line[0] == '-':
+            # Make sur the entire line contains only dashes
+            if not set(''.join(line.split())) == set('-'):
+                continue
             # find the latest non empty line
             for backward_index in range(1, 10):
                 if not text[index-backward_index].strip():
