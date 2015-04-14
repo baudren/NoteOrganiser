@@ -23,17 +23,27 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
         italicsFormat.setFontItalic(True)
         italicsFormat.setForeground(QtCore.Qt.darkGreen)
         self.highlightingRules.append(
-            (QtCore.QRegExp("\*{1,1}([^\n]+)\*{1,1}"), italicsFormat))
+            (QtCore.QRegExp("\*{1,1}([^\n^\*]+)\*{1,1}"), italicsFormat))
 
         # Bold rules
         boldFormat = QtGui.QTextCharFormat()
         boldFormat.setForeground(QtCore.Qt.darkBlue)
         boldFormat.setFontWeight(QtGui.QFont.Bold)
         self.highlightingRules.append(
-            (QtCore.QRegExp("\*{2,2}([^\n]+)\*{2,2}"), boldFormat))
+            (QtCore.QRegExp("\*{2,2}([^\n^\*]+)\*{2,2}"), boldFormat))
+
+        # Code rules
+        codeFormat = QtGui.QTextCharFormat()
+        codeFormat.setForeground(QtCore.Qt.darkBlue)
+        self.highlightingRules.append(
+            (QtCore.QRegExp("`{1,1}([^\n^`]+)`{1,1}"), codeFormat))
 
         # Tags
         tagFormat = QtGui.QTextCharFormat()
+        tagFormat.setForeground(QtCore.Qt.darkRed)
+        self.highlightingRules.append(
+            (QtCore.QRegExp("^# (\w+)(,\s*\w+)*$"), tagFormat))
+
         # Main title rule
         self.mainTitleUnderlineExpression = QtCore.QRegExp("={3,}")
 
