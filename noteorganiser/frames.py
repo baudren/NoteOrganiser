@@ -20,6 +20,7 @@ from .popups import NewEntry, NewNotebook, NewFolder
 import noteorganiser.text_processing as tp
 from .constants import EXTENSION
 from .configuration import search_folder_recursively
+from .syntax import ModifiedMarkdownHighlighter
 from .widgets import PicButton, VerticalScrollArea
 
 
@@ -740,6 +741,9 @@ class TextEditor(CustomFrame):
         self.font.setPointSize(self.defaultFontSize)
 
         self.text.setFont(self.font)
+
+        self.highlighter = ModifiedMarkdownHighlighter(self.text.document())
+
         self.layout().addWidget(self.text)
 
     def setSource(self, source):

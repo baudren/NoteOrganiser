@@ -40,7 +40,9 @@ Roadmap for 0.2
 [ ] list of existing tags when entering a new field
 [ ] keep cursor position on reload
 [x] Use a monospaced font
-[ ] Use syntax highlighting (QSyntaxHighlighter), margins
+[~] Use syntax highlighting (QSyntaxHighlighter), margins
+    [x] For code, links, bold and italic
+    [ ] also for titles and section names
 [ ] The NewEntry form should not accept "ESC" as a cancel option if there is
     text in the TextEdit block.
 
