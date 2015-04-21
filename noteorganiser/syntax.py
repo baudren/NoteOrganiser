@@ -44,19 +44,17 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
         self.highlightingRules.append(
             (QtCore.QRegExp("^# (\w+)(,\s*\w+)*$"), tagFormat))
 
-        # Main title rule
-        self.mainTitleUnderlineExpression = QtCore.QRegExp("={3,}")
-
         # Code blocks (several lines)
         self.blockStartExpression = QtCore.QRegExp("^~~~(\s.*)?$")
         self.blockEndExpression = QtCore.QRegExp("^~~~$")
 
+        # TODO syntax highlighting for titles
+        # Main title rule
+        self.mainTitleUnderlineExpression = QtCore.QRegExp("^={2,}$")
+        # Sections rule
+        self.sectionUnderlineExpression = QtCore.QRegExp("^-{2,}$")
+
     def highlightBlock(self, text):
-        # For code blocks, a new line is compulsory. Since both the start and
-        # end of a code block is defined by the same syntax, there needs to be
-        # two possible states (apart from 0):
-        # 1: just found a block, and then in one
-        # 2: previously found a block, looking for the end
         for pattern, format in self.highlightingRules:
             expression = QtCore.QRegExp(pattern)
             index = expression.indexIn(text)
