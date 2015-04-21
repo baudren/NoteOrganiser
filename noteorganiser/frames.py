@@ -20,7 +20,7 @@ from .popups import NewEntry, NewNotebook, NewFolder
 import noteorganiser.text_processing as tp
 from .constants import EXTENSION
 from .configuration import search_folder_recursively
-from .syntax import Highlighter, ModifiedMarkdownHighlighter
+from .syntax import ModifiedMarkdownHighlighter
 from .widgets import PicButton
 
 
