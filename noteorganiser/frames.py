@@ -581,6 +581,9 @@ class Shelves(CustomFrame):
         # Read again the current folder
         self.info.notebooks, self.info.folders = search_folder_recursively(
             self.log, self.info.level, self.info.display_empty)
+        #save settings
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        self.settings.setValue("display_empty", self.info.display_empty)
         self.refresh()
 
     @QtCore.Slot(str)
