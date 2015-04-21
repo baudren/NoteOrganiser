@@ -154,7 +154,7 @@ class Editing(CustomFrame):
         self.newEntryButton.clicked.connect(self.newEntry)
 
         # Edit in an exterior editor TODO
-        self.editButton = QtGui.QPushButton("&Edit (exterior editor)", self)
+        self.editButton = QtGui.QPushButton("Edit (e&xterior editor)", self)
 
         # Launch the previewing of the current notebook
         self.previewButton = QtGui.QPushButton("&Preview notebook", self)
