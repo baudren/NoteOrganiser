@@ -10,7 +10,7 @@ before_install:
 install:
   - pip install coveralls
   - pip install pypandoc
-  - pip install PySide
+  - travis_wait pip install PySide
   - pip install pytest
   - pip install 'pytest-qt>=1.2.1'
   - pip install pytest-cov
