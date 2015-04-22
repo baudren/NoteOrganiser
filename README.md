@@ -4,6 +4,8 @@ Note Organiser for scientists
 [![Build Status](https://travis-ci.org/baudren/NoteOrganiser.png?branch=devel)](https://travis-ci.org/baudren/NoteOrganiser)
 [![Coverage Status](https://coveralls.io/repos/baudren/NoteOrganiser/badge.png?branch=devel)](https://coveralls.io/r/baudren/NoteOrganiser?branch=devel)
 [![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
+[![Stories in
+Ready](https://badge.waffle.io/baudren/noteorganiser.png?label=ready&title=Ready)](http://waffle.io/baudren/noteorganiser)
 
 Objective
 ---------
