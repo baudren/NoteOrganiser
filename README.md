@@ -3,6 +3,7 @@ Note Organiser for scientists
 
 [![Build Status](https://travis-ci.org/baudren/NoteOrganiser.png?branch=devel)](https://travis-ci.org/baudren/NoteOrganiser)
 [![Coverage Status](https://coveralls.io/repos/baudren/NoteOrganiser/badge.png?branch=devel)](https://coveralls.io/r/baudren/NoteOrganiser?branch=devel)
+[![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
 
 Objective
 ---------
@@ -88,10 +89,3 @@ under both python 2.7 and 3.3 before submitting, though!
 
 - Tobias Maier ([@egolus](https://github.com/egolus)), for his help in
   supporting Windows.
-
-
-Health
-------
-
-According to Landscape (does not recognise PySide members so far...)
-[![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
