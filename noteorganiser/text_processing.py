@@ -20,8 +20,8 @@ def is_valid_post(post):
     """
     Check that it has all the required arguments
 
-    If the post is valid, the function returns True. Otherwise, an ValueError
-    is raised with a description of the problem.
+    If the post is valid, the function returns True. Otherwise, an
+    MarkdownSyntaxError is raised with a description of the problem.
 
     #>>> good = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*"]
     #>>> is_valid_post(good)
@@ -30,26 +30,26 @@ def is_valid_post(post):
     #>>> is_valid_post(["Toto", "-------", "*21/12/2012*"])
     #Traceback (most recent call last):
         #...
-    #ValueError: Post contains under four lines
+    #MarkdownSyntaxError: Post contains under four lines
     #>>> is_valid_post(["Toto", "-----", "# something", "12/12/042*"])
     #Traceback (most recent call last):
         #...
-    #ValueError: The date could not be read
+    #MarkdownSyntaxError: The date could not be read
     #>>> is_valid_post(['Toto', '=======', '# something', '*21/12/2012*'])
     #Traceback (most recent call last):
         #...
-    #ValueError: Post does not contain dashes
+    #MarkdownSyntaxError: Post does not contain dashes
     #>>> is_valid_post(['', '-------', '# non-linear, pk', '*21/12/2012*'])
     #Traceback (most recent call last):
         #...
-    #ValueError: Post title is empty
+    #MarkdownSyntaxError: Post title is empty
     #>>> is_valid_post(['Toto', '-------', '*21/12/2012*', 'something'])
     #Traceback (most recent call last):
         #...
-    #ValueError: Tags were not found after the dashes
+    #MarkdownSyntaxError: Tags were not found after the dashes
     """
     if len(post) < 4:
-        raise ValueError("Post contains under four lines")
+        raise MarkdownSyntaxError("Post contains under four lines", post)
     else:
         # Recover the index of the line of dashes, in case of long titles
         index = 0
@@ -57,18 +57,20 @@ def is_valid_post(post):
         try:
             index = post.index(dashes[0])
         except IndexError:
-            raise ValueError("Post does not contain dashes")
+            raise MarkdownSyntaxError("Post does not contain dashes", post)
         if index:
             if not post[0]:
-                raise ValueError("Post title is empty")
+                raise MarkdownSyntaxError("Post title is empty", post)
             if post[index+1] and post[index+1].find('#') == -1:
-                raise ValueError("Tags were not found after the dashes")
+                raise MarkdownSyntaxError(
+                    "Tags were not found after the dashes", post)
             if post[index+2]:
                 match = re.match(
-                    r"\*[0-9]{2}/[0-1][1-9]/[0-9]{4}\*",
+                    r"^\*[0-9]{2}/[0-1][1-9]/[0-9]{4}\*$",
                     post[index+2])
                 if match is None:
-                    raise ValueError("The date could not be read")
+                    raise MarkdownSyntaxError(
+                        "The date could not be read", post)
     return True
 
 
@@ -114,7 +116,7 @@ def extract_date_from_post(post):
     #>>> extract_date_from_post(["Toto", "---------", "meh"])
     #Traceback (most recent call last):
         #...
-    #ValueError: No date found in the post
+    #MarkdownSyntaxError: No date found in the post
     """
     for index, line in enumerate(post):
         match = re.match(
@@ -125,7 +127,7 @@ def extract_date_from_post(post):
             day, month, year = match.groups()
             extracted_date = date(int(year), int(month), int(day))
             return extracted_date, post[:index]+post[index+1:]
-    raise ValueError("No date found in the post")
+    raise MarkdownSyntaxError("No date found in the post", post)
 
 
 def normalize_post(post):
@@ -191,8 +193,9 @@ def extract_title_and_posts_from_text(text):
                     break
 
     if not has_title:
-        raise ValueError("You should specify a title to your file"
-                         ", underlined with = signs")
+        raise MarkdownSyntaxError(
+            "You should specify a title to your file"
+            ", underlined with = signs", [])
     number_of_posts = len(post_starting_indices)
 
     # Create post_indices such that it stores all the post, so the starting and
@@ -278,3 +281,10 @@ def create_post_from_entry(title, tags, corpus):
     text.append('\n*%s*\n\n' % date.today().strftime("%d/%m/%Y"))
     text.append(corpus+'\n')
     return ''.join(text)
+
+
+class MarkdownSyntaxError(ValueError):
+
+    def __init__(self, message, post):
+        ValueError.__init__(self, message+':\n\n' +
+                            '\n'.join(['    %s' % e for e in post]))
