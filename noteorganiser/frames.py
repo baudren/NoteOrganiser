@@ -10,6 +10,7 @@ from collections import OrderedDict as od
 import pypandoc as pa
 import six  # Used to replace the od iteritems from py2
 import io
+import traceback  # For failure display
 
 from PySide import QtGui
 from PySide import QtCore
@@ -273,6 +274,9 @@ class Preview(CustomFrame):
     |    |_________________________| Calendar         |
     ---------------------------------------------------
     """
+    # Launched when the editor is desired after failed conversion
+    loadEditor = QtCore.Signal(str, str)
+
     def initLogic(self):
         """
         Create variables for storing local information
@@ -388,14 +392,22 @@ class Preview(CustomFrame):
         self.info.current_notebook = notebook
         self.log.info("Extracting markdown from %s" % notebook)
 
-        url, tags = self.convert(
-            os.path.join(self.info.level, notebook), tags)
+        try:
+            url, tags = self.convert(
+                os.path.join(self.info.level, notebook), tags)
+        except ValueError:
+            self.log.error("Markdown conversion failed, aborting")
+            return False
+        except SyntaxError:
+            self.log.warning("Modified Markdown syntax error, aborting")
+            return False
 
         self.extracted_tags = tags
         # Finally, set the url of the web viewer to the desired page
         self.clearUI()
         self.initUI()
         self.setWebpage(url)
+        return True
 
     def convert(self, path, tags):
         """
@@ -413,8 +425,33 @@ class Preview(CustomFrame):
             dictionary of the remaining tags (the ones appearing in posts where
             all the selected tags where appearing, for further refinment)
         """
-        markdown, remaining_tags = tp.from_notes_to_markdown(
-            path, input_tags=tags)
+        # If the conversion fails, a popup should appear to inform the user
+        # about it
+        try:
+            markdown, remaining_tags = tp.from_notes_to_markdown(
+                path, input_tags=tags)
+        except IndexError:
+            self.log.error("Conversion of %s to markdown failed" % path)
+            self.popup = QtGui.QMessageBox(self)
+            self.popup.setIcon(QtGui.QMessageBox.Critical)
+            self.popup.setText(
+                "<b>The conversion to markdown has unexpectedly failed!</b>")
+            self.popup.setInformativeText("%s" % traceback.format_exc())
+            ok = self.popup.exec_()
+            if ok:
+                raise ValueError("The conversion of the notebook failed")
+        except ValueError as e:
+            self.log.warn(
+                "There was an expected error in converting"
+                " %s to markdown" % path)
+            self.popup = QtGui.QMessageBox(self)
+            self.popup.setIcon(QtGui.QMessageBox.Warning)
+            self.popup.setText(
+                "<b>Oups, you (probably) did a syntax error!</b>")
+            self.popup.setInformativeText("%s" % e.message)
+            ok = self.popup.exec_()
+            if ok:
+                raise SyntaxError("There was a syntax error")
 
         # save a temp. The basename will be modified to reflect the selection
         # of tags.

@@ -143,7 +143,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.library.shelves.refreshSignal.connect(self.editing.refresh)
         # * shelves switchTab to the own switchTab method
         self.library.shelves.switchTabSignal.connect(self.switchTab)
-        # * editing preview to preview loadNotebook, and switch the the tab
+        # * editing preview to preview loadNotebook, and switch the tab
         self.editing.loadNotebook.connect(self.previewNotebook)
 
     @QtCore.Slot(str, str)
@@ -155,8 +155,8 @@ class NoteOrganiser(QtGui.QMainWindow):
 
     @QtCore.Slot(str)
     def previewNotebook(self, notebook):
-        self.preview.loadNotebook(notebook)
-        self.switchTab('preview', notebook)
+        if self.preview.loadNotebook(notebook):
+            self.switchTab('preview', notebook)
 
     def closeEvent(self, event):
         self.cleanClose()
