@@ -430,7 +430,7 @@ class Preview(CustomFrame):
         try:
             markdown, remaining_tags = tp.from_notes_to_markdown(
                 path, input_tags=tags)
-        except IndexError:
+        except (IndexError, UnboundLocalError):
             self.log.error("Conversion of %s to markdown failed" % path)
             self.popup = QtGui.QMessageBox(self)
             self.popup.setIcon(QtGui.QMessageBox.Critical)
