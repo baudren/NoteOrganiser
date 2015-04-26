@@ -48,29 +48,30 @@ def is_valid_post(post):
         #...
     #MarkdownSyntaxError: Tags were not found after the dashes
     """
-    if len(post) < 4:
+    # remove all blank lines
+    temp = [e for e in post if e]
+    if len(temp) < 4:
         raise MarkdownSyntaxError("Post contains under four lines", post)
     else:
         # Recover the index of the line of dashes, in case of long titles
         index = 0
-        dashes = [e for e in post if re.match('^-{2,}$', e)]
+        dashes = [e for e in temp if re.match('^-{2,}$', e)]
         try:
-            index = post.index(dashes[0])
+            index = temp.index(dashes[0])
         except IndexError:
             raise MarkdownSyntaxError("Post does not contain dashes", post)
         if index:
-            if not post[0]:
+            if not temp[0]:
                 raise MarkdownSyntaxError("Post title is empty", post)
-            if post[index+1] and post[index+1].find('#') == -1:
+            if not re.match('^#.*$', temp[index+1]):
                 raise MarkdownSyntaxError(
                     "Tags were not found after the dashes", post)
-            if post[index+2]:
-                match = re.match(
-                    r"^\*[0-9]{2}/[0-1][1-9]/[0-9]{4}\*$",
-                    post[index+2])
-                if match is None:
-                    raise MarkdownSyntaxError(
-                        "The date could not be read", post)
+            match = re.match(
+                r"^\*[0-9]{2}/[0-1][0-9]/[0-9]{4}\*$",
+                temp[index+2])
+            if not match:
+                raise MarkdownSyntaxError(
+                    "The date could not be read", temp)
     return True
 
 
