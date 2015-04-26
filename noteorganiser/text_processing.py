@@ -53,7 +53,7 @@ def is_valid_post(post):
     else:
         # Recover the index of the line of dashes, in case of long titles
         index = 0
-        dashes = [e for e in post if e.find('----') != -1]
+        dashes = [e for e in post if re.match('^-{2,}$', e)]
         try:
             index = post.index(dashes[0])
         except IndexError:
@@ -144,7 +144,7 @@ def normalize_post(post):
     post = [line.rstrip('\n') for line in post]
 
     # Recover the dashline (title of the post)
-    dashes = [e for e in post if e.find('----') != -1]
+    dashes = [e for e in post if re.match('^-{2,}$', e)]
     dashline_index = post.index(dashes[0])
 
     title = ' '.join([post[index] for index in range(dashline_index)])
@@ -179,13 +179,10 @@ def extract_title_and_posts_from_text(text):
         # Remove white lines at the beginning
         if not line.strip():
             continue
-        if line.find("==") != -1 and not has_title:
+        if re.match('^={2,}$', line) and not has_title:
             title = ' '.join(text[:index]).strip()
             has_title = True
-        if line.find('--') != -1 and line[0] == '-':
-            # Make sur the entire line contains only dashes
-            if not set(''.join(line.split())) == set('-'):
-                continue
+        if re.match('^-{2,}$', line) and line[0] == '-':
             # find the latest non empty line
             for backward_index in range(1, 10):
                 if not text[index-backward_index].strip():
