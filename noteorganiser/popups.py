@@ -241,6 +241,7 @@ class SetExternalEditor(Dialog):
         formLayout = QtGui.QFormLayout()
         self.commandlineEdit = QtGui.QLineEdit()
 
+        self.commandlineEdit.setText(self.info.externalEditor)
         formLayout.addRow(self.tr("&external editor:"), self.commandlineEdit)
 
         hboxLayout.addLayout(formLayout)
@@ -276,3 +277,4 @@ class SetExternalEditor(Dialog):
         # Storing the variables to be recovered afterwards
         self.commandline = commandline
         self.clean_accept()
+

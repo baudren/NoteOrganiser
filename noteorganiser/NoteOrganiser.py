@@ -120,12 +120,13 @@ class NoteOrganiser(QtGui.QMainWindow):
     def setExternalEditor(self):
         """set the variable for the external editor"""
         self.popup = SetExternalEditor(self)
-        #this will popup the popup
+        #this will show the popup
         ok = self.popup.exec_()
         # the return code is True if successfull
         if ok:
             #Recover the field
             self.info.externalEditor = self.popup.commandline
+
     def initStatusBar(self):
         """Defining the status bar"""
         self.log.info("Creating Status Bar")
