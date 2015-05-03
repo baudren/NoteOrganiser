@@ -228,9 +228,7 @@ class Editing(CustomFrame):
             editor.appendText(post)
 
     def editExternal(self):
-        """
-        edit active file in external editor
-        """
+        """edit active file in external editor"""
         # get the current file
         index = self.tabs.currentIndex()
         notebook = os.path.join(self.info.level, self.info.notebooks[index])

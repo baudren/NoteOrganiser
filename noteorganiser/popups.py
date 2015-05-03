@@ -225,6 +225,7 @@ class NewEntry(Dialog):
 
 
 class SetExternalEditor(Dialog):
+
     """popup for setting the commandline for the external editor"""
 
     def __init__(self, parent=None):
@@ -273,7 +274,6 @@ class SetExternalEditor(Dialog):
 
     def set_commandline(self):
         """check the commandline write it to the settings and return"""
-
         # Check if text is a valid commandline
         commandline = str(self.commandlineEdit.text())
         if not commandline or len(commandline) < 2:
@@ -284,4 +284,3 @@ class SetExternalEditor(Dialog):
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
         self.settings.setValue("externalEditor", self.commandline)
         self.clean_accept()
-
