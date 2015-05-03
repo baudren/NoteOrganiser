@@ -29,11 +29,6 @@ def initialise(logger):
     else:
         display_empty = True
 
-    # commandline for the external editor
-    externalEditor = ''
-    if settings.contains("externalEditor"):
-        externalEditor = settings.value("externalEditor")
-
     # Recursively search the main folder for notebooks or folders of notebooks
     # It also checks if the folder ".noteorganiser" exists, and creates it
     # otherwise.
