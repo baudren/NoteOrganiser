@@ -127,4 +127,8 @@ class Information(object):
                 self.display_empty = False
         else:
             self.display_empty = True
-        
+
+        # commandline for the external editor
+        self.externalEditor = ''
+        if self.settings.contains("externalEditor"):
+            self.externalEditor = self.settings.value("externalEditor")
