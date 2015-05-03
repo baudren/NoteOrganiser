@@ -225,6 +225,7 @@ class NewEntry(Dialog):
 
 
 class SetExternalEditor(Dialog):
+    """popup for setting the commandline for the external editor"""
 
     def __init__(self, parent=None):
         Dialog.__init__(self, parent)
@@ -263,13 +264,16 @@ class SetExternalEditor(Dialog):
         # Create the status bar
         self.statusBar = QtGui.QStatusBar(self)
         # Create a permanent widget displaying what we are doing
-        statusWidget = QtGui.QLabel("setting the commandline for the external editor")
+        statusWidget = \
+            QtGui.QLabel("setting the commandline for the external editor")
         self.statusBar.addPermanentWidget(statusWidget)
 
         self.layout().addLayout(hboxLayout)
         self.layout().addWidget(self.statusBar)
 
     def set_commandline(self):
+        """check the commandline write it to the settings and return"""
+
         # Check if text is a valid commandline
         commandline = str(self.commandlineEdit.text())
         if not commandline or len(commandline) < 2:

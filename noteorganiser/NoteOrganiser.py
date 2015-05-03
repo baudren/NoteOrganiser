@@ -79,7 +79,8 @@ class NoteOrganiser(QtGui.QMainWindow):
 
         # show popup for external editor commandline
         externalEditor = QtGui.QAction('set external Editor', self)
-        externalEditor.setStatusTip('Set the Commandline for the external Editor')
+        externalEditor.setStatusTip(
+            'Set the Commandline for the external Editor')
         externalEditor.triggered.connect(self.setExternalEditor)
 
         # Zoom-in
