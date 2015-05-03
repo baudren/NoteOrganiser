@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from PySide import QtGui
+from PySide import QtCore
 import os
 
 from .constants import EXTENSION
@@ -276,5 +277,7 @@ class SetExternalEditor(Dialog):
             return
         # Storing the variables to be recovered afterwards
         self.commandline = commandline
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        self.settings.setValue("externalEditor", self.commandline)
         self.clean_accept()
 
