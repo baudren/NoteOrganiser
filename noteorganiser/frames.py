@@ -201,6 +201,7 @@ class Editing(CustomFrame):
         self.log.info("switching to "+notebook)
         index = self.info.notebooks.index(notebook+EXTENSION)
         self.tabs.setCurrentIndex(index)
+        self.setupAutoRefresh()
 
     def newEntry(self):
         """
@@ -265,6 +266,27 @@ class Editing(CustomFrame):
         # recover the current editor
         editor = self.tabs.currentWidget()
         editor.resetSize()
+
+    def setupAutoRefresh(self):
+       """add current file to QFileSystemWatcher and refresh when needed"""
+       # only setup if wanted
+       if self.info.refreshEditor == True:
+
+            index = self.tabs.currentIndex()
+            notebook = os.path.join(self.info.level,
+                self.info.notebooks[index])
+            self.fileSystemWatcher = ""
+            self.fileSystemWatcher = QtCore.QFileSystemWatcher()
+
+            self.fileSystemWatcher.addPath(notebook)
+            self.fileSystemWatcher.fileChanged.connect(
+                self.getAutoRefreshSignal)
+            self.log.info("added file %s to FileSystemWatcher" % notebook)
+
+    def getAutoRefreshSignal(self):
+        """refresh editor when needed"""
+        editor = self.tabs.currentWidget()
+        editor.setSource(editor.source)
 
 
 class Preview(CustomFrame):
