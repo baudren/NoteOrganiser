@@ -201,7 +201,6 @@ class Editing(CustomFrame):
         self.log.info("switching to "+notebook)
         index = self.info.notebooks.index(notebook+EXTENSION)
         self.tabs.setCurrentIndex(index)
-        self.setupAutoRefresh()
 
     def newEntry(self):
         """
@@ -266,26 +265,6 @@ class Editing(CustomFrame):
         # recover the current editor
         editor = self.tabs.currentWidget()
         editor.resetSize()
-
-    def setupAutoRefresh(self):
-        """add current file to QFileSystemWatcher and refresh when needed"""
-        # only setup if wanted
-        if self.info.refreshEditor:
-            index = self.tabs.currentIndex()
-            notebook = os.path.join(self.info.level,
-                self.info.notebooks[index])
-            self.fileSystemWatcher = ""
-            self.fileSystemWatcher = QtCore.QFileSystemWatcher()
-
-            self.fileSystemWatcher.addPath(notebook)
-            self.fileSystemWatcher.fileChanged.connect(
-                self.getAutoRefreshSignal)
-            self.log.info("added file %s to FileSystemWatcher" % notebook)
-
-    def getAutoRefreshSignal(self):
-        """refresh editor when needed"""
-        editor = self.tabs.currentWidget()
-        editor.setSource(editor.source)
 
 
 class Preview(CustomFrame):
@@ -822,6 +801,7 @@ class TextEditor(CustomFrame):
         self.log.info("Reading %s" % source)
         self.source = source
         self.loadText()
+        self.setupAutoRefresh(source)
 
     def loadText(self):
         if self.source:
@@ -857,6 +837,24 @@ class TextEditor(CustomFrame):
     def resetSize(self):
         self.font.setPointSize(self.defaultFontSize)
         self.text.setFont(self.font)
+
+    def setupAutoRefresh(self, source):
+        """add current file to QFileSystemWatcher and refresh when needed"""
+        # only setup if wanted
+        if self.info.refreshEditor:
+            self.fileSystemWatcher = ""
+            self.fileSystemWatcher = QtCore.QFileSystemWatcher()
+
+            self.fileSystemWatcher.addPath(source)
+            self.fileSystemWatcher.fileChanged.connect(
+                self.getAutoRefreshSignal)
+            self.log.info("added file %s to FileSystemWatcher" % source)
+
+    def getAutoRefreshSignal(self):
+        """refresh editor when needed"""
+        # wait some time for the change to finish
+        time.sleep(2)
+        self.loadText()
 
 
 class CustomTextEdit(QtGui.QTextEdit):
