@@ -268,10 +268,9 @@ class Editing(CustomFrame):
         editor.resetSize()
 
     def setupAutoRefresh(self):
-       """add current file to QFileSystemWatcher and refresh when needed"""
-       # only setup if wanted
-       if self.info.refreshEditor == True:
-
+        """add current file to QFileSystemWatcher and refresh when needed"""
+        # only setup if wanted
+        if self.info.refreshEditor:
             index = self.tabs.currentIndex()
             notebook = os.path.join(self.info.level,
                 self.info.notebooks[index])
