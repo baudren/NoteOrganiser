@@ -29,8 +29,16 @@ class NoteOrganiser(QtGui.QMainWindow):
         'editing',
         'preview']
 
-    def __init__(self, info):
+    def __init__(self):
         QtGui.QMainWindow.__init__(self)
+
+        # Define a logger
+        logger = create_logger('INFO', 'file')
+        # Recover the folder path and the notebooks
+        root, notebooks, folders = conf.initialise(logger)
+
+        # Create an instance of the Information class to store all this.
+        info = conf.Information(logger, root, notebooks, folders)
 
         # Store reference to the info class
         self.info = info
@@ -202,16 +210,8 @@ def main(args):
     # Initialise the main Qt application
     application = QtGui.QApplication(args)
 
-    # Define a logger
-    logger = create_logger('INFO', 'file')
-    # Recover the folder path and the notebooks
-    root, notebooks, folders = conf.initialise(logger)
-
-    # Create an instance of the Information class to store all this.
-    info = conf.Information(logger, root, notebooks, folders)
-
     # Define the main window
-    NoteOrganiser(info)
+    NoteOrganiser()
 
     # Run
     sys.exit(application.exec_())
