@@ -814,6 +814,7 @@ class TextEditor(CustomFrame):
             self.text.setText(text)
             self.text.setTextCursor(oldCursor)
             self.text.ensureCursorVisible()
+            self.text.document().setModified(False)
 
     def saveText(self):
         self.log.info("Writing modifications to %s" % self.source)
@@ -855,8 +856,7 @@ class TextEditor(CustomFrame):
     def getAutoRefreshSignal(self):
         """refresh editor when needed"""
         # wait some time for the change to finish
-        document = self.document()
-        if not document.isModified():
+        if not self.text.document().isModified():
             time.sleep(2)
             self.loadText()
 
