@@ -11,6 +11,7 @@ import pypandoc as pa
 import six  # Used to replace the od iteritems from py2
 import io
 import traceback  # For failure display
+import time # for sleep
 
 from PySide import QtGui
 from PySide import QtCore
