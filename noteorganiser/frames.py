@@ -763,7 +763,7 @@ class Shelves(CustomFrame):
 class TextEditor(CustomFrame):
     """Custom text editor"""
     defaultFontSize = 14
-    TextChanged = True
+    TextChanged = False
 
     def initUI(self):
         """top menu bar and the text area"""
@@ -799,10 +799,14 @@ class TextEditor(CustomFrame):
 
         self.layout().addWidget(self.text)
 
+        #set switch TextChanged on first change
+        self.textChanged.connect(self.setTextChanged)
+
     def setSource(self, source):
         self.log.info("Reading %s" % source)
         self.source = source
         self.loadText()
+        self.TextChanged = False
         self.setupAutoRefresh(source)
 
     def loadText(self):
@@ -858,6 +862,10 @@ class TextEditor(CustomFrame):
         if not self.TextChanged:
             time.sleep(2)
             self.loadText()
+
+    def setTextChanged(self):
+        """set the switch TextChagned to True"""
+        self.TextChanged = True
 
 
 class CustomTextEdit(QtGui.QTextEdit):
