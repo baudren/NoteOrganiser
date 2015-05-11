@@ -152,11 +152,13 @@ class NoteOrganiser(QtGui.QMainWindow):
         toggle if the editor gets refreshed automatically when the file
         changes
         """
-        #TODO
         #save settings
         self.info.refreshEditor = not self.info.refreshEditor
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
         self.settings.setValue("refreshEditor", self.info.refreshEditor)
+        if self.tabs.currentWidget == Editing(self):
+            self.tabs.currentwidget.refresh()
+
 
 
     def initStatusBar(self):

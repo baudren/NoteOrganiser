@@ -796,6 +796,9 @@ class TextEditor(CustomFrame):
 
         self.highlighter = ModifiedMarkdownHighlighter(self.text.document())
 
+        # watch notebooks on the filesystem for changes
+        self.fileSystemWatcher = QtCore.QFileSystemWatcher()
+
         self.layout().addWidget(self.text)
 
 
@@ -845,9 +848,6 @@ class TextEditor(CustomFrame):
         """add current file to QFileSystemWatcher and refresh when needed"""
         # only setup if wanted
         if self.info.refreshEditor:
-            self.fileSystemWatcher = ""
-            self.fileSystemWatcher = QtCore.QFileSystemWatcher()
-
             self.fileSystemWatcher.addPath(source)
             self.fileSystemWatcher.fileChanged.connect(
                 self.getAutoRefreshSignal)
