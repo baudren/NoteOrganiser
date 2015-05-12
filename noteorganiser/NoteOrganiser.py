@@ -156,7 +156,11 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.info.refreshEditor = not self.info.refreshEditor
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
         self.settings.setValue("refreshEditor", self.info.refreshEditor)
-        if self.tabs.currentWidget == Editing(self):
+        if self.info.refreshEditor:
+            self.log.info('auto refresh enabled')
+        else:
+            self.log.info('auto refresh disabled')
+        if isInstance(self.tabs.currentWidget, Editing(self)):
             self.tabs.currentwidget.refresh()
 
 

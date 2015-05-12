@@ -859,7 +859,10 @@ class TextEditor(CustomFrame):
         if not self.text.document().isModified():
             time.sleep(2)
             self.loadText()
-
+            self.log.info('editor source reloaded because the file changed')
+        else:
+            self.log.info(
+                "reload of editor source skipped because it's modified")
 
 
 class CustomTextEdit(QtGui.QTextEdit):
