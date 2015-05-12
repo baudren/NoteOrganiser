@@ -1,6 +1,8 @@
 Note Organiser for scientists
 =============================
 
+[![Join the chat at https://gitter.im/baudren/NoteOrganiser](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/baudren/NoteOrganiser?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/baudren/NoteOrganiser.png?branch=devel)](https://travis-ci.org/baudren/NoteOrganiser)
 [![Coverage Status](https://coveralls.io/repos/baudren/NoteOrganiser/badge.png?branch=devel)](https://coveralls.io/r/baudren/NoteOrganiser?branch=devel)
 [![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
