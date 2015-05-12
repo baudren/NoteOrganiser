@@ -163,8 +163,6 @@ class NoteOrganiser(QtGui.QMainWindow):
         if isInstance(self.tabs.currentWidget, Editing(self)):
             self.tabs.currentwidget.refresh()
 
-
-
     def initStatusBar(self):
         """Defining the status bar"""
         self.log.info("Creating Status Bar")
