@@ -850,14 +850,14 @@ class TextEditor(CustomFrame):
         if self.info.refreshEditor:
             self.fileSystemWatcher.addPath(source)
             self.fileSystemWatcher.fileChanged.connect(
-                self.getAutoRefreshSignal)
+                self.autoRefresh)
             self.log.info("added file %s to FileSystemWatcher" % source)
 
-    def getAutoRefreshSignal(self):
+    def autoRefresh(self):
         """refresh editor when needed"""
         # wait some time for the change to finish
         if not self.text.document().isModified():
-            time.sleep(2)
+            time.sleep(0.1)
             self.loadText()
             self.log.info('editor source reloaded because the file changed')
         else:
