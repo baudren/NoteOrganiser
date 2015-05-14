@@ -267,6 +267,13 @@ class Editing(CustomFrame):
         editor = self.tabs.currentWidget()
         editor.resetSize()
 
+    def setupAutoRefresh(self):
+        # setup autoRefresh for each TextEditor
+        for i in xrange(self.tabs.count()):
+            notebook = self.tabs.tabText(i) + EXTENSION
+            filename = os.path.join(self.info.level, notebook)
+            self.tabs.widget(i).setupAutoRefresh(filename)
+
 
 class Preview(CustomFrame):
     r"""
@@ -852,6 +859,8 @@ class TextEditor(CustomFrame):
             self.fileSystemWatcher.fileChanged.connect(
                 self.autoRefresh)
             self.log.info("added file %s to FileSystemWatcher" % source)
+        else:
+            self.fileSystemWatcher.removePath(source)
 
     def autoRefresh(self):
         """refresh editor when needed"""
