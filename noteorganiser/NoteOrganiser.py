@@ -160,7 +160,6 @@ class NoteOrganiser(QtGui.QMainWindow):
             self.log.info('auto refresh enabled')
         else:
             self.log.info('auto refresh disabled')
-        self.editing.setupAutoRefresh()
 
     def initStatusBar(self):
         """Defining the status bar"""

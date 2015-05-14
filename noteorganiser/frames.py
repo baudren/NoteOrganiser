@@ -267,13 +267,6 @@ class Editing(CustomFrame):
         editor = self.tabs.currentWidget()
         editor.resetSize()
 
-    def setupAutoRefresh(self):
-        # setup autoRefresh for each TextEditor
-        for i in xrange(self.tabs.count()):
-            notebook = self.tabs.tabText(i) + EXTENSION
-            filename = os.path.join(self.info.level, notebook)
-            self.tabs.widget(i).setupAutoRefresh(filename)
-
 
 class Preview(CustomFrame):
     r"""
@@ -853,25 +846,25 @@ class TextEditor(CustomFrame):
 
     def setupAutoRefresh(self, source):
         """add current file to QFileSystemWatcher and refresh when needed"""
-        # only setup if wanted
-        if self.info.refreshEditor:
-            self.fileSystemWatcher.addPath(source)
-            self.fileSystemWatcher.fileChanged.connect(
-                self.autoRefresh)
-            self.log.info("added file %s to FileSystemWatcher" % source)
-        else:
-            self.fileSystemWatcher.removePath(source)
+        self.fileSystemWatcher.addPath(source)
+        self.fileSystemWatcher.fileChanged.connect(
+            self.autoRefresh)
+        self.log.info("added file %s to FileSystemWatcher" % source)
 
     def autoRefresh(self):
         """refresh editor when needed"""
-        # wait some time for the change to finish
-        if not self.text.document().isModified():
-            time.sleep(0.1)
-            self.loadText()
-            self.log.info('editor source reloaded because the file changed')
-        else:
-            self.log.info(
-                "reload of editor source skipped because it's modified")
+        # only refresh if wanted and the user didn't modify the text in the
+        # internal editor
+        if self.info.refreshEditor:
+            if not self.text.document().isModified():
+                # wait some time for the change to finish
+                time.sleep(0.1)
+                self.loadText()
+                self.log.info(
+                    'editor source reloaded because the file changed')
+            else:
+                self.log.info(
+                    "reload of editor source skipped because it's modified")
 
 
 class CustomTextEdit(QtGui.QTextEdit):
