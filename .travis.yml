@@ -9,8 +9,10 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
   - sudo apt-get update -qq
   - sudo apt-get install -y pandoc
-  - sudo apt-get install -y python-pyside
 install:
+  - pip install PySide --no-index --find-links https://parkin.github.io/python-wheelhouse/;
+  # Travis CI servers use virtualenvs, so we need to finish the install by the following
+  - python ~/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/pyside_postinstall.py -install
   - pip install coveralls
   - pip install pypandoc
   - pip install pytest
