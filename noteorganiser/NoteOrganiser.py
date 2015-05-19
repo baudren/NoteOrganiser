@@ -7,6 +7,7 @@
 from __future__ import unicode_literals
 # Main imports
 import sys
+import os
 from PySide import QtGui
 from PySide import QtCore
 
@@ -56,6 +57,10 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.initMenuBar()
         self.initStatusBar()
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
+
+        # set the window-icon
+        path = os.path.abspath(os.path.dirname(__file__))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(path, 'assets', 'notebook-128.png')))
 
         # set this to be half-screen, on the left
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
