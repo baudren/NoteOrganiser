@@ -851,7 +851,8 @@ class TextEditor(CustomFrame):
             self.autoRefresh)
         self.log.info("added file %s to FileSystemWatcher" % source)
 
-    def autoRefresh(self):
+    @QtCore.Slot(str)
+    def autoRefresh(self, path=''):
         """refresh editor when needed"""
         # only refresh if wanted and the user didn't modify the text in the
         # internal editor
@@ -860,6 +861,8 @@ class TextEditor(CustomFrame):
                 # wait some time for the change to finish
                 time.sleep(0.1)
                 self.loadText()
+                self.fileSystemWatcher.removePath(path)
+                self.fileSystemWatcher.addPath(path)
                 self.log.info(
                     'editor source reloaded because the file changed')
             else:
