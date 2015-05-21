@@ -11,7 +11,7 @@ import pypandoc as pa
 import six  # Used to replace the od iteritems from py2
 import io
 import traceback  # For failure display
-import time # for sleep
+import time  # for sleep
 
 from PySide import QtGui
 from PySide import QtCore
@@ -801,7 +801,6 @@ class TextEditor(CustomFrame):
 
         self.layout().addWidget(self.text)
 
-
     def setSource(self, source):
         self.log.info("Reading %s" % source)
         self.source = source
@@ -824,7 +823,6 @@ class TextEditor(CustomFrame):
         text = self.text.toPlainText()
         with io.open(self.source, 'w', encoding='utf-8') as file_handle:
             file_handle.write(text)
-
 
     def appendText(self, text):
         self.text.append('\n'+text)
