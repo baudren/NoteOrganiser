@@ -11,6 +11,7 @@ import pypandoc as pa
 import six  # Used to replace the od iteritems from py2
 import io
 import traceback  # For failure display
+import time  # for sleep
 
 from PySide import QtGui
 from PySide import QtCore
@@ -781,7 +782,7 @@ class TextEditor(CustomFrame):
         self.layout().addLayout(menuBar)
 
         # Text
-        self.text = CustomTextEdit()
+        self.text = CustomTextEdit(self)
         self.text.setTabChangesFocus(True)
 
         # Font
@@ -795,12 +796,16 @@ class TextEditor(CustomFrame):
 
         self.highlighter = ModifiedMarkdownHighlighter(self.text.document())
 
+        # watch notebooks on the filesystem for changes
+        self.fileSystemWatcher = QtCore.QFileSystemWatcher(self)
+
         self.layout().addWidget(self.text)
 
     def setSource(self, source):
         self.log.info("Reading %s" % source)
         self.source = source
         self.loadText()
+        self.setupAutoRefresh(source)
 
     def loadText(self):
         if self.source:
@@ -811,13 +816,13 @@ class TextEditor(CustomFrame):
             self.text.setText(text)
             self.text.setTextCursor(oldCursor)
             self.text.ensureCursorVisible()
+            self.text.document().setModified(False)
 
     def saveText(self):
         self.log.info("Writing modifications to %s" % self.source)
         text = self.text.toPlainText()
         with io.open(self.source, 'w', encoding='utf-8') as file_handle:
             file_handle.write(text)
-
 
     def appendText(self, text):
         self.text.append('\n'+text)
@@ -836,6 +841,31 @@ class TextEditor(CustomFrame):
     def resetSize(self):
         self.font.setPointSize(self.defaultFontSize)
         self.text.setFont(self.font)
+
+    def setupAutoRefresh(self, source):
+        """add current file to QFileSystemWatcher and refresh when needed"""
+        self.fileSystemWatcher.addPath(source)
+        self.fileSystemWatcher.fileChanged.connect(
+            self.autoRefresh)
+        self.log.info("added file %s to FileSystemWatcher" % source)
+
+    @QtCore.Slot(str)
+    def autoRefresh(self, path=''):
+        """refresh editor when needed"""
+        # only refresh if wanted and the user didn't modify the text in the
+        # internal editor
+        if self.info.refreshEditor:
+            if not self.text.document().isModified():
+                # wait some time for the change to finish
+                time.sleep(0.1)
+                self.loadText()
+                self.fileSystemWatcher.removePath(path)
+                self.fileSystemWatcher.addPath(path)
+                self.log.info(
+                    'editor source reloaded because the file changed')
+            else:
+                self.log.info(
+                    "reload of editor source skipped because it's modified")
 
 
 class CustomTextEdit(QtGui.QTextEdit):

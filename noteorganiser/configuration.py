@@ -132,3 +132,12 @@ class Information(object):
         self.externalEditor = ''
         if self.settings.contains("externalEditor"):
             self.externalEditor = self.settings.value("externalEditor")
+
+        # automatically refresh the editor if file changes
+        if self.settings.contains("refreshEditor"):
+            if self.settings.value("refreshEditor") == "true":
+                self.refreshEditor = True
+            else:
+                self.refreshEditor = False
+        else:
+            self.refreshEditor = False

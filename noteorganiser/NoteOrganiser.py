@@ -85,6 +85,16 @@ class NoteOrganiser(QtGui.QMainWindow):
         toggleEmptyAction.triggered.connect(
             self.library.shelves.toggleDisplayEmpty)
 
+        # Toggle refreshing of editor-page when file changes
+        toggleRefreshAction = QtGui.QAction('automatically refresh editor',
+            self)
+        toggleRefreshAction.setStatusTip(
+            'automatically refresh editor when the file changes')
+        toggleRefreshAction.setCheckable(True)
+        toggleRefreshAction.setChecked(self.info.refreshEditor)
+        toggleRefreshAction.triggered.connect(
+            self.toggleRefresh)
+
         # show popup for external editor commandline
         externalEditor = QtGui.QAction('set external Editor', self)
         externalEditor.setStatusTip(
@@ -118,6 +128,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         # Options menu
         optionsMenu = menubar.addMenu('&Options')
         optionsMenu.addAction(toggleEmptyAction)
+        optionsMenu.addAction(toggleRefreshAction)
         optionsMenu.addAction(externalEditor)
 
         # Display menu
@@ -135,6 +146,20 @@ class NoteOrganiser(QtGui.QMainWindow):
         if ok:
             #Recover the field
             self.info.externalEditor = self.popup.commandline
+
+    def toggleRefresh(self):
+        """
+        toggle if the editor gets refreshed automatically when the file
+        changes
+        """
+        #save settings
+        self.info.refreshEditor = not self.info.refreshEditor
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        self.settings.setValue("refreshEditor", self.info.refreshEditor)
+        if self.info.refreshEditor:
+            self.log.info('auto refresh enabled')
+        else:
+            self.log.info('auto refresh disabled')
 
     def initStatusBar(self):
         """Defining the status bar"""
