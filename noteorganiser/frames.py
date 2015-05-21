@@ -782,7 +782,7 @@ class TextEditor(CustomFrame):
         self.layout().addLayout(menuBar)
 
         # Text
-        self.text = CustomTextEdit()
+        self.text = CustomTextEdit(self)
         self.text.setTabChangesFocus(True)
 
         # Font
@@ -797,7 +797,7 @@ class TextEditor(CustomFrame):
         self.highlighter = ModifiedMarkdownHighlighter(self.text.document())
 
         # watch notebooks on the filesystem for changes
-        self.fileSystemWatcher = QtCore.QFileSystemWatcher()
+        self.fileSystemWatcher = QtCore.QFileSystemWatcher(self)
 
         self.layout().addWidget(self.text)
 
