@@ -83,8 +83,8 @@ def test_is_valid_post():
 
 
 def test_extract_corpus_from_post():
-    post = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*",
-            "This morning I woke", "", "up and it was a nice weather"]
+    post = ["Toto", "-------", "This morning I woke", "",
+            "up and it was a nice weather"]
     answer = extract_corpus_from_post(post)
     assert answer == ['This morning I woke', '',
                       'up and it was a nice weather']
@@ -111,3 +111,10 @@ def test_normalize_post():
     assert answer == ['Toto has a long title', '-------',
                       '# bla', '*08/11/2010*']
     assert is_valid_post(answer)
+
+
+def test_post_to_markdown():
+    no_blank_line = ['Toto', '------', '#tag', '*25/04/2015*', '', 'post']
+    normalized = normalize_post(no_blank_line)
+    text, tags = post_to_markdown(normalized)
+    assert 'post' in text

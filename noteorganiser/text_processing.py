@@ -85,22 +85,24 @@ def extract_date_from_post(post):
     Recover the date from an extracted post, and return the correct post
 
     """
-    for index, line in enumerate(post):
-        match = re.match(
-            r"\*([0-9]{2})/([0-1][0-9])/([0-9]{4})\*",
-            line)
-        if match:
-            assert len(match.groups()) == 3
-            day, month, year = match.groups()
-            extracted_date = date(int(year), int(month), int(day))
-            return extracted_date, post[:index]+post[index+1:]
-    raise MarkdownSyntaxError("No date found in the post", post)
+    match = re.match(
+        r"\*([0-9]{2})/([0-1][0-9])/([0-9]{4})\*",
+        post[2])
+    if match:
+        assert len(match.groups()) == 3
+        day, month, year = match.groups()
+        extracted_date = date(int(year), int(month), int(day))
+        return extracted_date, post[:2]+post[3:]
+    else:
+        raise MarkdownSyntaxError("No date found in the post", post)
 
 
 def normalize_post(post):
     """
-    If a title has several lines, merge them
+    Perform normalization of the input post
 
+    - If a title has several lines, merge them
+    - If there are missing/added blank lines in the headers, remove them
     """
     # Remove trailing \n
     post = [line.rstrip('\n') for line in post]
@@ -110,8 +112,24 @@ def normalize_post(post):
     dashline_index = post.index(dashes[0])
 
     title = ' '.join([post[index] for index in range(dashline_index)])
-    normalized_post = [title]
-    normalized_post.extend(post[dashline_index:])
+    normalized_post = [title]+[post[dashline_index]]
+
+    # Recover the tag line
+    tags = [e for e in post if re.match('^\#(.*)$', e)]
+    tag_line_index = post.index(tags[0])
+    normalized_post.append(post[tag_line_index])
+
+    # Recover the date
+    dates = [e for e in post if re.match(
+        r"\*([0-9]{2})/([0-1][0-9])/([0-9]{4})\*", e)]
+    date_line_index = post.index(dates[0])
+    normalized_post.append(post[date_line_index])
+
+    # Append the rest, starting from the first non-empty line
+    non_empty = [e for e in post[date_line_index+1:] if e]
+    if non_empty:
+        non_empty_index = post.index(non_empty[0])
+        normalized_post.extend(post[non_empty_index:])
 
     return normalized_post
 
@@ -121,7 +139,7 @@ def extract_corpus_from_post(post):
     Recover the whole content of a post
 
     """
-    return post[4:]
+    return post[2:]
 
 
 def extract_title_and_posts_from_text(text):
@@ -175,6 +193,26 @@ def extract_title_and_posts_from_text(text):
     return title, posts
 
 
+def post_to_markdown(post):
+    """
+    Write the markdown for a given post
+
+    post : list
+        lines constituting the post
+
+    """
+    title = post[0]
+    text = ["", "## %s" % title, ""]
+
+    tags, post = extract_tags_from_post(post)
+    edit_date, post = extract_date_from_post(post)
+    corpus = extract_corpus_from_post(post)
+    text.extend(corpus)
+    text.extend(["", ""])
+
+    return text, tags
+
+
 def from_notes_to_markdown(path, input_tags=None):
     """
     From a file, given tags, produce an output markdown file.
@@ -198,19 +236,11 @@ def from_notes_to_markdown(path, input_tags=None):
     markdown = ["# %s" % title, ""]
     extracted_tags = []
     for post in posts:
-        name = extract_title_from_post(post)
-        text = ["", "## %s" % name, ""]
-
-        tags, post = extract_tags_from_post(post)
-        if not all([tag in tags for tag in input_tags]):
-            continue
-        edit_date, post = extract_date_from_post(post)
-        corpus = extract_corpus_from_post(post)
-        text.extend(corpus)
-        text.extend(["", ""])
-        # Store the recovered tags
-        extracted_tags.extend(tags)
-        markdown.extend(text)
+        text, tags = post_to_markdown(post)
+        if all([tag in tags for tag in input_tags]):
+            # Store the recovered tags
+            extracted_tags.extend(tags)
+            markdown.extend(text)
 
     cleaned_tags = sort_tags(extracted_tags)
     return markdown, cleaned_tags
