@@ -3,10 +3,6 @@ import os
 import pytest
 from datetime import date
 from ..text_processing import *
-#from ..text_processing import extract_title_and_posts_from_text
-#from ..text_processing import from_notes_to_markdown
-#from ..text_processing import sort_tags
-#from ..text_processing import extract
 from .custom_fixtures import parent
 from collections import OrderedDict as od
 

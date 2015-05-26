@@ -23,30 +23,6 @@ def is_valid_post(post):
     If the post is valid, the function returns True. Otherwise, an
     MarkdownSyntaxError is raised with a description of the problem.
 
-    #>>> good = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*"]
-    #>>> is_valid_post(good)
-    #True
-
-    #>>> is_valid_post(["Toto", "-------", "*21/12/2012*"])
-    #Traceback (most recent call last):
-        #...
-    #MarkdownSyntaxError: Post contains under four lines
-    #>>> is_valid_post(["Toto", "-----", "# something", "12/12/042*"])
-    #Traceback (most recent call last):
-        #...
-    #MarkdownSyntaxError: The date could not be read
-    #>>> is_valid_post(['Toto', '=======', '# something', '*21/12/2012*'])
-    #Traceback (most recent call last):
-        #...
-    #MarkdownSyntaxError: Post does not contain dashes
-    #>>> is_valid_post(['', '-------', '# non-linear, pk', '*21/12/2012*'])
-    #Traceback (most recent call last):
-        #...
-    #MarkdownSyntaxError: Post title is empty
-    #>>> is_valid_post(['Toto', '-------', '*21/12/2012*', 'something'])
-    #Traceback (most recent call last):
-        #...
-    #MarkdownSyntaxError: Tags were not found after the dashes
     """
     # remove all blank lines
     temp = [e for e in post if e]
@@ -85,9 +61,6 @@ def extract_tags_from_post(post):
         valid posts, determined with :func:`is_valid_post` are sent to this
         routine.
 
-    #>>> post = ['Toto', '-------', ' # non-linear, pk', '*21/12/2012*']
-    #>>> extract_tags_from_post(post)
-    #(['non-linear', 'pk'], ['Toto', '-------', '*21/12/2012*'])
     """
     tag_line = post[2].strip()
     if tag_line and tag_line[0] == '#':
@@ -100,9 +73,6 @@ def extract_title_from_post(post):
     """
     Recover the title from an extracted post
 
-    #>>> post = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*"]
-    #>>> extract_title_from_post(post)
-    #'Toto'
     """
     return post[0]
 
@@ -111,13 +81,6 @@ def extract_date_from_post(post):
     """
     Recover the date from an extracted post, and return the correct post
 
-    #>>> post = ["Toto", "-------", "*21/12/2012*", "Something something"]
-    #>>> extract_date_from_post(post)
-    #(datetime.date(2012, 12, 21), ['Toto', '-------', 'Something something'])
-    #>>> extract_date_from_post(["Toto", "---------", "meh"])
-    #Traceback (most recent call last):
-        #...
-    #MarkdownSyntaxError: No date found in the post
     """
     for index, line in enumerate(post):
         match = re.match(
@@ -135,11 +98,6 @@ def normalize_post(post):
     """
     If a title has several lines, merge them
 
-    #>>> post = ['Toto', 'has a long title', '-------', '# bla', '*08/11/2010*']
-    #>>> normalize_post(post)
-    #['Toto has a long title', '-------', '# bla', '*08/11/2010*']
-    #>>> is_valid_post(_)
-    #True
     """
     # Remove trailing \n
     post = [line.rstrip('\n') for line in post]
@@ -159,10 +117,6 @@ def extract_corpus_from_post(post):
     """
     Recover the whole content of a post
 
-    #>>> post = ["Toto", "-------", "# non-linear, pk", "*21/12/2012*",
-    #...         "This morning I woke", "", "up and it was a nice weather"]
-    #>>> extract_corpus_from_post(post)
-    #['This morning I woke', '', 'up and it was a nice weather']
     """
     return post[4:]
 
