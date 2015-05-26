@@ -48,11 +48,17 @@ def test_tag_sorting():
 
 
 def test_extract_tags_from_post():
+    # Check for a good post
     post = ['Toto', '-------', ' # non-linear, pk', '*21/12/2012*']
     tags, clean_post = extract_tags_from_post(post)
     assert len(tags) == 2
     assert tags == ['non-linear', 'pk']
     assert clean_post == ['Toto', '-------', '*21/12/2012*']
+
+    # Check for empty tags
+    empty_tag_post = ['Toto', '-------', '# ', '*21/12/2012*']
+    with pytest.raises(ValueError):
+        tags, clean_post = extract_tags_from_post(empty_tag_post)
 
 
 def test_is_valid_post():

@@ -66,7 +66,10 @@ def extract_tags_from_post(post):
     if tag_line and tag_line[0] == '#':
         tags = [elem.strip().lower() for elem in tag_line[1:].split(',')]
 
-    return tags, post[:2]+post[3:]
+    if any(tags):
+        return tags, post[:2]+post[3:]
+    else:
+        raise MarkdownSyntaxError("No tags specified in the post", post)
 
 
 def extract_title_from_post(post):
