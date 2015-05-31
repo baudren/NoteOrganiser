@@ -17,6 +17,8 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
+from .flowlayout import FlowLayout
+
 from subprocess import Popen
 
 # Local imports
@@ -693,30 +695,12 @@ class Shelves(CustomFrame):
         self.info.level = folder_path
         self.refresh()
 
-    def resizeEvent(self, event):
-        if event.oldSize().width() != -1:
-            self.refresh()
-
     def createLines(self):
         # Defining the icon size used
         self.size = 128
 
-        # Number of elements on each line
-        # This might fail for some cases
-        objectsPerLine = self.width() // (self.size*1.2)
-        if objectsPerLine == 0:
-            objectsPerLine = 1
-
-        if objectsPerLine == self.objectsPerLine:
-            return self.grid
-
-        if self.objectsPerLine == 0:
-            self.objectsPerLine = objectsPerLine
-
-        index_row, index_column = 0, 0
-
         # Create the lines array
-        grid = QtGui.QGridLayout()
+        grid = FlowLayout()
         for index, notebook in enumerate(self.info.notebooks):
             # distinguish between a notebook and a folder, stored as a tuple.
             # When encountering a folder, simply put a different image for the
@@ -732,13 +716,7 @@ class Shelves(CustomFrame):
             button.clicked.connect(self.notebookClicked)
             button.deleteNotebook.connect(self.removeNotebook)
             self.buttons.append(button)
-            grid.addWidget(button, index_column, index_row)
-
-            # Incrementing the index_object
-            index_row += 1
-            if index_row % objectsPerLine == 0:
-                index_row = 0
-                index_column += 1
+            grid.addWidget(button)
 
         for index, folder in enumerate(self.info.folders):
             button = PicButton(
@@ -750,11 +728,7 @@ class Shelves(CustomFrame):
             button.setMaximumSize(self.size, self.size)
             button.clicked.connect(self.folderClicked)
             self.buttons.append(button)
-            grid.addWidget(button, index_column, index_row)
-            index_row += 1
-            if index_row % objectsPerLine == 0:
-                index_row = 0
-                index_column += 1
+            grid.addWidget(button)
 
         self.grid = grid
         return grid
