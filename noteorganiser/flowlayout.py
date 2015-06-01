@@ -1,4 +1,10 @@
-"""PyQt4 port of the layouts/flowlayout example from Qt v4.x"""
+"""
+PySide port of the layouts/flowlayout example from Qt v4.x
+The flowlayout automatically rearranges its items to fit horizontally
+
+this class is taken from the pyside examples:
+https://github.com/PySide/Examples/tree/master/examples/layouts
+"""
 
 from PySide import QtCore, QtGui
 
