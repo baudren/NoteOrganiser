@@ -209,7 +209,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         if self.preview.loadNotebook(notebook):
             self.switchTab('preview', notebook)
 
-    def closeEvent(self, event):
+    def closeEvent(self, _):
         self.cleanClose()
 
     def cleanClose(self):

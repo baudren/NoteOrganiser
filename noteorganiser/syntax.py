@@ -55,12 +55,12 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
         self.sectionUnderlineExpression = QtCore.QRegExp("^-{2,}$")
 
     def highlightBlock(self, text):
-        for pattern, format in self.highlightingRules:
+        for pattern, _format in self.highlightingRules:
             expression = QtCore.QRegExp(pattern)
             index = expression.indexIn(text)
             while index >= 0:
                 length = expression.matchedLength()
-                self.setFormat(index, length, format)
+                self.setFormat(index, length, _format)
                 index = expression.indexIn(text, index + length)
 
         self.setCurrentBlockState(0)

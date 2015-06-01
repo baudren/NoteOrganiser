@@ -396,7 +396,7 @@ class Preview(CustomFrame):
     def setWebpage(self, page):
         self.web.load(QtCore.QUrl(page))
 
-    def loadNotebook(self, notebook, tags=[]):
+    def loadNotebook(self, notebook, tags=()):
         """
         Load a given markdown file as an html page
 
@@ -598,7 +598,7 @@ class Shelves(CustomFrame):
                          'w', encoding='utf-8') as notebook:
                 clean_name = os.path.splitext(desired_name)[0]
                 notebook.write(clean_name.capitalize()+'\n')
-                notebook.write(''.join(['=' for letter in clean_name]))
+                notebook.write(''.join(['=' for _ in clean_name]))
                 notebook.write('\n\n')
             # Refresh both the library and Editing tab.
             self.refresh()
@@ -700,8 +700,8 @@ class Shelves(CustomFrame):
         self.size = 128
 
         # Create the lines array
-        grid = FlowLayout()
-        for index, notebook in enumerate(self.info.notebooks):
+        flow = FlowLayout()
+        for notebook in self.info.notebooks:
             # distinguish between a notebook and a folder, stored as a tuple.
             # When encountering a folder, simply put a different image for the
             # moment.
@@ -716,9 +716,9 @@ class Shelves(CustomFrame):
             button.clicked.connect(self.notebookClicked)
             button.deleteNotebook.connect(self.removeNotebook)
             self.buttons.append(button)
-            grid.addWidget(button)
+            flow.addWidget(button)
 
-        for index, folder in enumerate(self.info.folders):
+        for folder in self.info.folders:
             button = PicButton(
                 QtGui.QPixmap(
                     os.path.join(self.path, 'assets',
@@ -728,10 +728,10 @@ class Shelves(CustomFrame):
             button.setMaximumSize(self.size, self.size)
             button.clicked.connect(self.folderClicked)
             self.buttons.append(button)
-            grid.addWidget(button)
+            flow.addWidget(button)
 
-        self.grid = grid
-        return grid
+        self.flow = flow
+        return flow
 
 
 class TextEditor(CustomFrame):
