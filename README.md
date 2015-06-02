@@ -1,7 +1,13 @@
 Note Organiser for scientists
 =============================
 
-[![Build Status](https://travis-ci.org/baudren/NoteOrganiser.svg?branch=devel)](https://travis-ci.org/baudren/NoteOrganiser)
+[![Join the chat at https://gitter.im/baudren/NoteOrganiser](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/baudren/NoteOrganiser?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+[![Build Status](https://travis-ci.org/baudren/NoteOrganiser.png?branch=devel)](https://travis-ci.org/baudren/NoteOrganiser)
+[![Coverage Status](https://coveralls.io/repos/baudren/NoteOrganiser/badge.png?branch=devel)](https://coveralls.io/r/baudren/NoteOrganiser?branch=devel)
+[![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
+[![Stories in
+Ready](https://badge.waffle.io/baudren/noteorganiser.png?label=ready&title=Ready)](http://waffle.io/baudren/noteorganiser)
 
 Objective
 ---------
@@ -36,6 +42,9 @@ To get you started, look at the file `example/example.md`.
 Usage
 -----
 
+Simply run, from anywhere, `NoteOrganiser.py`. Create notebooks, add entries
+with the `New Entry` button in the Editing panel, and preview them. On the
+`Preview` panel, you can filter entries with tags.
 
 Markdown
 --------
@@ -72,8 +81,15 @@ License
 The code is published under the MIT license, please see LICENSE.txt for the
 complete notice.
 
-Health
-------
 
-According to Landscape (does not recognise PySide members so far...)
-[![Health](https://landscape.io/github/baudren/NoteOrganiser/devel/landscape.png)](https://landscape.io/github/baudren/NoteOrganiser/devel)
+Contributing
+------------
+
+Contributions are welcome, so please submit a bug-report or a feature request.
+Pull-Request are also very appreciated. Please think about running the tests
+under both python 2.7 and 3.3 before submitting, though!
+
+## Contributors
+
+- Tobias Maier ([@egolus](https://github.com/egolus)), for his help in
+  supporting Windows.

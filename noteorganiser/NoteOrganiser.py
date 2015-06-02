@@ -1,26 +1,44 @@
-import sys
-import os
-from PySide.QtGui import QApplication, QMainWindow
-from PySide.QtGui import QAction, QTabWidget
-from PySide.QtCore import Slot
+"""
+.. module:: NoteOrganiser
+    :synopsis: Define the NoteOrganiser class
 
-# Local module imports
+.. moduleauthor:: Benjamin Audren <benjamin.audren@gmail.com>
+"""
+from __future__ import unicode_literals
+# Main imports
+import sys
+from PySide import QtGui
+from PySide import QtCore
+
+# Local imports
+from noteorganiser.popups import SetExternalEditor
 from noteorganiser.frames import Library, Editing, Preview
-from noteorganiser.popups import NewNotebook
 from noteorganiser.logger import create_logger
 import noteorganiser.configuration as conf
 
 
-class NoteOrganiser(QMainWindow):
-    """TODO"""
+class NoteOrganiser(QtGui.QMainWindow):
+    """
+    Main Program
 
+    The main window will consist of three tabs, to help you navigate your
+    notes: Library, editing and previewing.
+    """
     states = [
         'library',  # The starting one, displaying the notebooks
         'editing',
         'preview']
 
-    def __init__(self, info):
-        QMainWindow.__init__(self)
+    def __init__(self):
+        QtGui.QMainWindow.__init__(self)
+
+        # Define a logger
+        logger = create_logger('INFO', 'file')
+        # Recover the folder path and the notebooks
+        root, notebooks, folders = conf.initialise(logger)
+
+        # Create an instance of the Information class to store all this.
+        info = conf.Information(logger, root, notebooks, folders)
 
         # Store reference to the info class
         self.info = info
@@ -32,33 +50,126 @@ class NoteOrganiser(QMainWindow):
         self.show()
 
     def initUI(self):
+        """Initialise all the User Interface"""
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
+        self.initWidgets()
         self.initMenuBar()
         self.initStatusBar()
-        self.initWidgets()
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
-        self.setGeometry(600, 1000, 1000, 600)
+        # set this to be half-screen, on the left
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        if self.settings.value("geometry"):
+            self.restoreGeometry(self.settings.value("geometry"))
+        else:
+            self.geometry = QtGui.QApplication.desktop().screenGeometry()
+            self.setGeometry(
+                0, 0, self.geometry.width()/2., self.geometry.height())
         self.setWindowTitle('Note Organiser')
 
     def initMenuBar(self):
+        """Defining the menu bar"""
         self.log.info("Creating Menu Bar")
-        exitAction = QAction('&Exit', self)
+        # Exit
+        exitAction = QtGui.QAction('&Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
-        exitAction.triggered.connect(self.close)
+        exitAction.triggered.connect(self.cleanClose)
 
+        # Toggle displaying empty folders
+        toggleEmptyAction = QtGui.QAction('display empty folders', self)
+        toggleEmptyAction.setShortcut('Ctrl+T')
+        toggleEmptyAction.setStatusTip('Toggle the display of empty folders')
+        toggleEmptyAction.setCheckable(True)
+        toggleEmptyAction.setChecked(self.info.display_empty)
+        toggleEmptyAction.triggered.connect(
+            self.library.shelves.toggleDisplayEmpty)
+
+        # Toggle refreshing of editor-page when file changes
+        toggleRefreshAction = QtGui.QAction('automatically refresh editor',
+            self)
+        toggleRefreshAction.setStatusTip(
+            'automatically refresh editor when the file changes')
+        toggleRefreshAction.setCheckable(True)
+        toggleRefreshAction.setChecked(self.info.refreshEditor)
+        toggleRefreshAction.triggered.connect(
+            self.toggleRefresh)
+
+        # show popup for external editor commandline
+        externalEditor = QtGui.QAction('set external Editor', self)
+        externalEditor.setStatusTip(
+            'Set the Commandline for the external Editor')
+        externalEditor.triggered.connect(self.setExternalEditor)
+
+        # Zoom-in
+        zoomInAction = QtGui.QAction('Zoom-in', self)
+        zoomInAction.setShortcut('Ctrl++')
+        zoomInAction.setStatusTip('Zoom in')
+        zoomInAction.triggered.connect(self.zoomIn)
+
+        # Zoom-out
+        zoomOutAction = QtGui.QAction('Zoom-out', self)
+        zoomOutAction.setShortcut('Ctrl+-')
+        zoomOutAction.setStatusTip('Zoom out')
+        zoomOutAction.triggered.connect(self.zoomOut)
+
+        # Reset Size
+        resetSizeAction = QtGui.QAction('Reset-size', self)
+        resetSizeAction.setShortcut('Ctrl+0')
+        resetSizeAction.setStatusTip('Reset size')
+        resetSizeAction.triggered.connect(self.resetSize)
+
+        # Create the menu
         menubar = self.menuBar()
+        # File menu
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAction)
 
+        # Options menu
+        optionsMenu = menubar.addMenu('&Options')
+        optionsMenu.addAction(toggleEmptyAction)
+        optionsMenu.addAction(toggleRefreshAction)
+        optionsMenu.addAction(externalEditor)
+
+        # Display menu
+        displayMenu = menubar.addMenu('&Display')
+        displayMenu.addAction(zoomInAction)
+        displayMenu.addAction(zoomOutAction)
+        displayMenu.addAction(resetSizeAction)
+
+    def setExternalEditor(self):
+        """set the variable for the external editor"""
+        self.popup = SetExternalEditor(self)
+        #this will show the popup
+        ok = self.popup.exec_()
+        # the return code is True if successfull
+        if ok:
+            #Recover the field
+            self.info.externalEditor = self.popup.commandline
+
+    def toggleRefresh(self):
+        """
+        toggle if the editor gets refreshed automatically when the file
+        changes
+        """
+        #save settings
+        self.info.refreshEditor = not self.info.refreshEditor
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        self.settings.setValue("refreshEditor", self.info.refreshEditor)
+        if self.info.refreshEditor:
+            self.log.info('auto refresh enabled')
+        else:
+            self.log.info('auto refresh disabled')
+
     def initStatusBar(self):
+        """Defining the status bar"""
         self.log.info("Creating Status Bar")
         self.statusBar()
 
     def initWidgets(self):
+        """Creating the tabbed widget containing the three main tabs"""
         # Creating the tabbed widget
-        self.tabs = QTabWidget(self)
+        self.tabs = QtGui.QTabWidget(self)
 
         # Creating the three tabs. Through their parent, they will recover the
         # reference to the list of notebooks.
@@ -67,55 +178,65 @@ class NoteOrganiser(QMainWindow):
         self.preview = Preview(self)
 
         # Adding them to the tabs widget
-        self.tabs.addTab(self.library, "Library")
-        self.tabs.addTab(self.editing, "Editing")
-        self.tabs.addTab(self.preview, "Preview")
+        self.tabs.addTab(self.library, "&Library")
+        self.tabs.addTab(self.editing, "&Editing")
+        self.tabs.addTab(self.preview, "Previe&w")
 
         # Set the tabs widget to be the center widget of the main window
         self.log.info("Setting the central widget")
         self.setCentralWidget(self.tabs)
 
     def initLogic(self):
+        """Linking signals from widgets to functions"""
         self.state = 'library'
+        # Connect slots to signal
+        # * shelves refresh to the editing refresh
+        self.library.shelves.refreshSignal.connect(self.editing.refresh)
+        # * shelves switchTab to the own switchTab method
+        self.library.shelves.switchTabSignal.connect(self.switchTab)
+        # * editing preview to preview loadNotebook, and switch the tab
+        self.editing.loadNotebook.connect(self.previewNotebook)
 
+    @QtCore.Slot(str, str)
     def switchTab(self, tab, notebook):
+        """Switch Tab to the desired target"""
         self.tabs.setCurrentIndex(self.states.index(tab))
         if tab == 'editing':
             self.editing.switchNotebook(notebook)
 
-    @Slot()
-    def createNotebook(self):
-        self.popup = NewNotebook(self)
-        ok = self.popup.exec_()
-        if ok:
-            desired_name = self.info.notebooks[-1]
-            self.log.info(desired_name+' is the desired name')
-            file_name = desired_name
-            # Create an empty file (open and close)
-            open(os.path.join(self.info.level, file_name), 'w').close()
-            # Refresh both the library and Editing tab.
-            self.library.refresh()
-            self.editing.refresh()
+    @QtCore.Slot(str)
+    def previewNotebook(self, notebook):
+        if self.preview.loadNotebook(notebook):
+            self.switchTab('preview', notebook)
 
-    @Slot()
-    def createFolder(self):
-        pass
+    def closeEvent(self, _):
+        self.cleanClose()
+
+    def cleanClose(self):
+        """Overload the closeEvent to store the geometry"""
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        self.settings.setValue("geometry", self.saveGeometry())
+        self.close()
+
+    def zoomIn(self):
+        """send a zoom-in signal to the current tab"""
+        self.tabs.currentWidget().zoomIn()
+
+    def zoomOut(self):
+        """send a zoom-out signal to the current tab"""
+        self.tabs.currentWidget().zoomOut()
+
+    def resetSize(self):
+        self.tabs.currentWidget().resetSize()
 
 
 def main(args):
+    """Create the application, and execute it"""
     # Initialise the main Qt application
-    application = QApplication(args)
-
-    # Define a logger
-    logger = create_logger('INFO', 'file')
-    # Recover the folder path and the notebooks
-    root, notebooks, folders = conf.initialise(logger)
-
-    # Create an instance of the Information class to store all this.
-    info = conf.Information(logger, root, notebooks, folders)
+    application = QtGui.QApplication(args)
 
     # Define the main window
-    main_window = NoteOrganiser(info)
+    NoteOrganiser()
 
     # Run
     sys.exit(application.exec_())

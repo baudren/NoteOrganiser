@@ -1,11 +1,11 @@
 body{
   font-famliy: Arial, sans-serif;
+  font-size: 14pt;
   width: 80%;
   position: relative;
   margin-left: auto;
   margin-right: auto;   
   margin-top: 1em;
-  /*background-color: #fdf6e3;*/
   background-color: #fef9ea;
   color: #657b83;
 }
@@ -28,7 +28,6 @@ ol, ul, dl {
 
 /*title for definition lists*/
 dt {
-  /*background-color: #93a1a1;*/
   background-color: #eee8d5;
   color: #586e75;
   margin-left: 2em;
@@ -47,22 +46,12 @@ p.first{
 
 h1, h2, h3, h4, h5, h6 {
   font-family: Helvetica, Arial, sans-serif;
-  /*border: thin solid black;*/
-  /*This makes the borders rounded on Mozilla, which pleases me*/
-  /*-moz-border-radius: 8px;*/
-  /*padding-top: 4px;*/
-  /*margin-top: 50px;*/
-  /*font-size: 150%;*/
 }
 
 h1 {
   text-align: center;
-  /*background-color: #444499;*/
   background-color: #002b36;
-  /*color: #eeeeee;*/
-  /*color: #839496;*/
   color: #cb4b16;
-  /*color: #dc322f; */
   border: thick solid black;
   -moz-border-radius: 20px;
   margin-bottom: 20px;
@@ -88,12 +77,11 @@ table.docutils {
   margin-left: 4em;
 }
 
-/*pre.code, pre.math {*/
-  /*padding-left: 4em;*/
-/*}*/
-
 pre {
-  padding-left: 4em;
+  background-color: #eee8d5;
+  padding-left: 2em;
+  margin-left: 2em;
+  overflow-x: auto;
 }
 
 pre.warning, pre.definition, pre.information {
@@ -125,6 +113,7 @@ pre.sourceCode.python {
   margin-left: 2em;
 }
 
+
 td.field-body {
   margin-top: 0;
   padding-top: 0;
@@ -134,7 +123,6 @@ div.admonition p.admonition-title {
   text-align: center;
   background-color: #999999;
   display: block;
-  /*margin-left: 2em;*/
 }
 
 div.warning p.admonition-title {
@@ -143,11 +131,9 @@ div.warning p.admonition-title {
   text-align: center;
   background-color: #999999;
   display: block;
-  /*margin-left: 2em;*/
 }
 
 div.warning {
   background-color: #cccccc;
-  /*padding-left: 2em;*/
   margin-left: 2em;
 }

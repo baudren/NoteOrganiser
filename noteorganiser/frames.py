@@ -1,27 +1,39 @@
-import sys
+"""
+.. module:: frames
+    :synopsys: Define all the custom frames
+
+.. moduleauthor:: Benjamin Audren <benjamin.audren@gmail.com>
+"""
+from __future__ import unicode_literals
 import os
 from collections import OrderedDict as od
 import pypandoc as pa
+import six  # Used to replace the od iteritems from py2
+import io
+import traceback  # For failure display
+import time  # for sleep
 
 from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
-from noteorganiser.widgets import Shelves, TextEditor
-from noteorganiser.popups import NewEntry
+from .flowlayout import FlowLayout
+
+from subprocess import Popen
+
+# Local imports
+from .popups import NewEntry, NewNotebook, NewFolder
 import noteorganiser.text_processing as tp
-from noteorganiser.constants import EXTENSION
-
-
-class ExampleFrame(QtGui.QFrame):
-    def __init__(self):
-        QtGui.QFrame.__init__(self)
-        self.show()
+from .constants import EXTENSION
+from .configuration import search_folder_recursively
+from .syntax import ModifiedMarkdownHighlighter
+from .widgets import PicButton, VerticalScrollArea
 
 
 class CustomFrame(QtGui.QFrame):
     """
     Base class for all three tabbed frames
+
     """
     def __init__(self, parent=None):
         """ Create the basic layout """
@@ -40,9 +52,15 @@ class CustomFrame(QtGui.QFrame):
         self.initUI()
 
     def initUI(self):
+        """
+        This will be called on creation
+
+        A daughter class should implement this function
+        """
         raise NotImplementedError
 
     def clearUI(self):
+        """ Common method for recursively cleaning layouts """
         while self.layout().count():
             item = self.layout().takeAt(0)
             if isinstance(item, QtGui.QLayout):
@@ -57,6 +75,7 @@ class CustomFrame(QtGui.QFrame):
                     pass
 
     def clearLayout(self, layout):
+        """ Submethod to help cleaning the UI before redrawing """
         if layout is not None:
             while layout.count():
                 item = layout.takeAt(0)
@@ -65,6 +84,15 @@ class CustomFrame(QtGui.QFrame):
                     widget.deleteLater()
                 else:
                     self.clearLayout(item.layout())
+
+    def zoomIn(self):
+        raise NotImplementedError
+
+    def zoomOut(self):
+        raise NotImplementedError
+
+    def resetSize(self):
+        raise NotImplementedError
 
 
 class Library(CustomFrame):
@@ -75,39 +103,26 @@ class Library(CustomFrame):
      _________  _________  _________
     / Library \/ Editing \/ Preview \
     |          ----------------------------------
-    |                              |            |
-    |   notebook_1     notebook_2  | [+] new N  |
-    | ------------------------------ [+] new F  |
-    |                              | [-] delete |
+    |                              | global tag |
+    |   notebook_1     notebook_2  | another tag|
+    | ------------------------------ tag taggy  |
+    |                              | taggy tag  |
     |   notebook_3                 |            |
+    |                              |            |
+    | [up] [new N] [new F]         |            |
     --------------------------------------------|
     """
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
-        # Grid Layout
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
-
-        newNotebookButton = QtGui.QPushButton("&New Notebook")
-        newNotebookButton.clicked.connect(self.parentWidget().createNotebook)
-
-        newFolderButton = QtGui.QPushButton("New &Folder")
-        newFolderButton.clicked.connect(self.parentWidget().createFolder)
-        newFolderButton.setDisabled(True)
-
         # Create the shelves object
         self.shelves = Shelves(self)
-
-        grid.addWidget(self.shelves, 0, 0, 5, 5)
-        grid.addWidget(newNotebookButton, 1, 5)
-        grid.addWidget(newFolderButton, 2, 5)
-
-        self.layout().addLayout(grid)
+        self.layout().addWidget(self.shelves)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
+        """ Refresh all elements of the frame """
         self.shelves.refresh()
 
 
@@ -131,78 +146,128 @@ class Editing(CustomFrame):
     |   \|_________________________|                  |
     ---------------------------------------------------
     """
+    # Launched when the previewer is desired
+    loadNotebook = QtCore.Signal(str)
+
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
 
-        newButton = QtGui.QPushButton("&New entry", self)
-        newButton.clicked.connect(self.newEntry)
+        # Global horizontal layout
+        hbox = QtGui.QHBoxLayout()
 
-        # Edit in an exterior editor
-        editButton = QtGui.QPushButton("&Edit (exterior editor)", self)
+        # New Entry Button to enter a new field in the current notebook
+        self.newEntryButton = QtGui.QPushButton("&New entry", self)
+        self.newEntryButton.clicked.connect(self.newEntry)
 
-        # Launch the previewing
-        previewButton = QtGui.QPushButton("&Preview notebook", self)
-        previewButton.clicked.connect(self.preview)
+        # Edit in an exterior editor TODO
+        self.editButton = QtGui.QPushButton("Edit (e&xterior editor)", self)
+        self.editButton.clicked.connect(self.editExternal)
 
-        # Create the tabbed widgets
+        # Launch the previewing of the current notebook
+        self.previewButton = QtGui.QPushButton("&Preview notebook", self)
+        self.previewButton.clicked.connect(self.preview)
+
+        # Create the tabbed widgets containing the text editors. The tabs will
+        # appear on the left-hand side
         self.tabs = QtGui.QTabWidget(self)
         self.tabs.setTabPosition(QtGui.QTabWidget.West)
 
+        # The loop is over all the notebooks in the **current** folder
         for notebook in self.info.notebooks:
             editor = TextEditor(self)
+            # Set the source of the TextEditor to the desired notebook
             editor.setSource(os.path.join(self.info.level, notebook))
+            # Add the text editor to the tabbed area
+            self.tabs.addTab(editor, os.path.splitext(notebook)[0])
 
-            self.tabs.addTab(editor, notebook.strip(EXTENSION))
-
+        # Create the vertical layout for the right-hand side button
         vbox = QtGui.QVBoxLayout()
 
-        vbox.addWidget(newButton)
-        vbox.addWidget(editButton)
-        vbox.addWidget(previewButton)
+        vbox.addWidget(self.newEntryButton)
+        vbox.addWidget(self.editButton)
+        vbox.addWidget(self.previewButton)
 
-        grid.addWidget(self.tabs, 0, 0)
-        grid.addLayout(vbox, 0, 1)
+        hbox.addWidget(self.tabs)
+        hbox.addLayout(vbox)
 
-        self.layout().addLayout(grid)
+        self.layout().addLayout(hbox)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
-        """Redraw (time consuming...)"""
+        """Redraw the UI (time consuming...)"""
         self.clearUI()
         self.initUI()
 
     def switchNotebook(self, notebook):
         """switching tab to desired notebook"""
-        self.parent.log.info("switching to "+notebook)
+        self.log.info("switching to "+notebook)
         index = self.info.notebooks.index(notebook+EXTENSION)
         self.tabs.setCurrentIndex(index)
 
     def newEntry(self):
-        """Open a form and store the results to the file"""
+        """
+        Open a form and store the results to the file
+
+        .. note::
+            this method does not save the file automatically
+
+        """
         self.popup = NewEntry(self)
+        # This will popup the popup
         ok = self.popup.exec_()
+        # The return code is True if successful
         if ok:
+            # Recover the three fields
             title = self.popup.title
             tags = self.popup.tags
             corpus = self.popup.corpus
 
             # Create the post
             post = tp.create_post_from_entry(title, tags, corpus)
-            # recover the current editor
+            # recover the editor of the current widget, i.e. the open editor
             editor = self.tabs.currentWidget()
             # Append the text
             editor.appendText(post)
 
+    def editExternal(self):
+        """edit active file in external editor"""
+        # get the current file
+        index = self.tabs.currentIndex()
+        notebook = os.path.join(self.info.level, self.info.notebooks[index])
+        # open the file in the external editor set by the user
+        Popen([self.info.externalEditor, notebook])
+
     def preview(self):
-        """Launch the previewing of the current notebook"""
+        """
+        Launch the previewing of the current notebook
+
+        Fires the loadNotebook signal with the desired notebook as an
+        argument.
+        """
         index = self.tabs.currentIndex()
         notebook = self.info.notebooks[index]
         self.log.info('ask to preview notebook %s' % notebook)
-        self.parent.preview.loadNotebook(notebook)
-        self.parent.switchTab('preview', notebook)
+        self.loadNotebook.emit(notebook)
+
+    def zoomIn(self):
+        """
+        So far only applies to the inside editor, and not the global fonts
+
+        """
+        # recover the current editor
+        editor = self.tabs.currentWidget()
+        editor.zoomIn()
+
+    def zoomOut(self):
+        # recover the current editor
+        editor = self.tabs.currentWidget()
+        editor.zoomOut()
+
+    def resetSize(self):
+        # recover the current editor
+        editor = self.tabs.currentWidget()
+        editor.resetSize()
 
 
 class Preview(CustomFrame):
@@ -210,9 +275,8 @@ class Preview(CustomFrame):
     Preview of the markdown in html, with tag selection
 
     The left hand side will be an html window, displaying the whole notebook.
-    On the right, a list of tags will be displayed, as well as a calendar for
-    date selection TODO
-
+    On the right, a list of tags will be displayed.
+    At some point, a calendar for date selection should also be displayed TODO
 
      _________  _________  _________
     / Library \/ Editing \/ Preview \
@@ -224,6 +288,9 @@ class Preview(CustomFrame):
     |    |_________________________| Calendar         |
     ---------------------------------------------------
     """
+    # Launched when the editor is desired after failed conversion
+    loadEditor = QtCore.Signal(str, str)
+
     def initLogic(self):
         """
         Create variables for storing local information
@@ -241,6 +308,11 @@ class Preview(CustomFrame):
         self.extracted_tags = od()
         self.filters = []
 
+        # Shortcuts for resizing
+        acceptShortcut = QtGui.QShortcut(
+            QtGui.QKeySequence(self.tr("Ctrl+k")), self)
+        acceptShortcut.activated.connect(self.zoomIn)
+
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
         self.layout().setDirection(QtGui.QBoxLayout.LeftToRight)
@@ -251,8 +323,9 @@ class Preview(CustomFrame):
         # Set the css file. Note that the path to the css needs to be absolute,
         # somehow...
         path = os.path.abspath(os.path.dirname(__file__))
+        self.css = os.path.join(path, 'assets', 'style', 'default.css')
         self.web.settings().setUserStyleSheetUrl(QtCore.QUrl.fromLocalFile(
-            os.path.join(path, 'assets', 'style', 'default.css')))
+            self.css))
 
         # The 1 stands for a stretch factor, set to 0 by default (seems to be
         # only for QWebView, though...
@@ -272,14 +345,12 @@ class Preview(CustomFrame):
         vbox = QtGui.QVBoxLayout()
         self.tagButtons = []
         if self.extracted_tags:
-            for key, value in self.extracted_tags.iteritems():
+            for key, value in six.iteritems(self.extracted_tags):
                 tag = QtGui.QPushButton(key)
                 tag.setFlat(False)
                 tag.setMinimumSize(100, 40+5*value)
                 tag.setMaximumWidth(165)
                 tag.setCheckable(True)
-                if key in self.filters:
-                    tag.setChecked(True)
                 tag.clicked.connect(self.addFilter)
                 self.tagButtons.append([key, tag])
                 vbox.addWidget(tag)
@@ -293,6 +364,13 @@ class Preview(CustomFrame):
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def addFilter(self):
+        """
+        Filter out/in a certain tag
+
+        From the status of the sender button, the associated tag will be
+        added/removed from the filter.
+
+        """
         sender = self.sender()
         if not sender.isFlat():
             if sender.isChecked():
@@ -304,12 +382,12 @@ class Preview(CustomFrame):
 
             self.log.info("filter %s out of %s" % (
                 ', '.join(self.filters), self.info.current_notebook))
-            url, remaining_tags = self.convert(
+            url, self.remaining_tags = self.convert(
                 os.path.join(self.info.level, self.info.current_notebook),
                 self.filters)
             # Grey out not useful buttons
             for key, button in self.tagButtons:
-                if key in remaining_tags:
+                if key in self.remaining_tags:
                     self.enableButton(button)
                 else:
                     self.disableButton(button)
@@ -318,26 +396,40 @@ class Preview(CustomFrame):
     def setWebpage(self, page):
         self.web.load(QtCore.QUrl(page))
 
-    def loadNotebook(self, notebook, tags=[]):
-        # Check the SHA1 sum to see if it has been computed already TODO
-        # If not, compute it, recovering the list of tags, of dates TODO, and
-        # the straight markdown file
+    def loadNotebook(self, notebook, tags=()):
+        """
+        Load a given markdown file as an html page
+
+        """
+        # TODO the dates should be recovered as well"
         self.initLogic()
         self.info.current_notebook = notebook
         self.log.info("Extracting markdown from %s" % notebook)
 
-        url, tags = self.convert(
-            os.path.join(self.info.level, notebook), tags)
+        try:
+            url, tags = self.convert(
+                os.path.join(self.info.level, notebook), tags)
+        except ValueError:
+            self.log.error("Markdown conversion failed, aborting")
+            return False
+        except SyntaxError:
+            self.log.warning("Modified Markdown syntax error, aborting")
+            return False
 
         self.extracted_tags = tags
         # Finally, set the url of the web viewer to the desired page
         self.clearUI()
         self.initUI()
         self.setWebpage(url)
+        return True
 
     def convert(self, path, tags):
         """
         Convert a notebook to html, with entries corresponding to the tags
+
+        TODO: during the execution of this method, a check should be performed
+        to verify if the file already exists, or maybe inside the convert
+        function.
 
         Returns
         -------
@@ -347,8 +439,33 @@ class Preview(CustomFrame):
             dictionary of the remaining tags (the ones appearing in posts where
             all the selected tags where appearing, for further refinment)
         """
-        markdown, remaining_tags = tp.from_notes_to_markdown(
-            path, input_tags=tags)
+        # If the conversion fails, a popup should appear to inform the user
+        # about it
+        try:
+            markdown, remaining_tags = tp.from_notes_to_markdown(
+                path, input_tags=tags)
+        except (IndexError, UnboundLocalError):
+            self.log.error("Conversion of %s to markdown failed" % path)
+            self.popup = QtGui.QMessageBox(self)
+            self.popup.setIcon(QtGui.QMessageBox.Critical)
+            self.popup.setText(
+                "<b>The conversion to markdown has unexpectedly failed!</b>")
+            self.popup.setInformativeText("%s" % traceback.format_exc())
+            ok = self.popup.exec_()
+            if ok:
+                raise ValueError("The conversion of the notebook failed")
+        except ValueError as e:
+            self.log.warn(
+                "There was an expected error in converting"
+                " %s to markdown" % path)
+            self.popup = QtGui.QMessageBox(self)
+            self.popup.setIcon(QtGui.QMessageBox.Warning)
+            self.popup.setText(
+                "<b>Oups, you (probably) did a syntax error!</b>")
+            self.popup.setInformativeText("%s" % e.message)
+            ok = self.popup.exec_()
+            if ok:
+                raise SyntaxError("There was a syntax error")
 
         # save a temp. The basename will be modified to reflect the selection
         # of tags.
@@ -357,30 +474,378 @@ class Preview(CustomFrame):
             base += '_'+'_'.join(tags)
         temp_path = os.path.join(self.temp_root, base+EXTENSION)
         self.log.debug('Creating temp file %s' % temp_path)
-        with open(temp_path, 'w') as temp:
+        with io.open(temp_path, 'w', encoding='utf-8') as temp:
             temp.write('\n'.join(markdown))
 
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
-        html = pa.convert(temp_path, 'html')
+        html = pa.convert(temp_path, 'html', encoding='utf-8',
+                          extra_args=['--highlight-style', 'pygments', '-s',
+                                      '-c', self.css])
+
+        # Convert the windows ending of lines to simple line breaks (\r\n to
+        # \n)
+        html = html.replace('\r\n', '\n')
 
         # Write the html to a file
         url = os.path.join(self.website_root, base+'.html')
-        with open(url, 'w') as page:
+        with io.open(url, 'w', encoding='utf-8') as page:
             page.write(html)
 
         return url, remaining_tags
 
     def disableButton(self, button):
+        """ TODO: this should also alter the style """
         button.setFlat(True)
         button.setCheckable(False)
 
     def enableButton(self, button):
+        """ TODO: this should also alter the style """
         button.setFlat(False)
         button.setCheckable(True)
 
+    def zoomIn(self):
+        multiplier = self.web.textSizeMultiplier()
+        self.web.setTextSizeMultiplier(multiplier+0.1)
 
-if __name__ == "__main__":
-    application = QtGui.QApplication(sys.argv)
-    example = ExampleFrame()
-    sys.exit(application.exec_())
+    def zoomOut(self):
+        multiplier = self.web.textSizeMultiplier()
+        self.web.setTextSizeMultiplier(multiplier-0.1)
+
+    def resetSize(self):
+        self.web.setTextSizeMultiplier(1)
+
+
+class Shelves(CustomFrame):
+    """
+    Custom display of the notebooks and folder
+
+    """
+    # Fired when a change is made, so that the Editing panel can also adapt
+    refreshSignal = QtCore.Signal()
+    # Fired when a notebook is clicked, to navigate to the editor.
+    # TODO also define as a shift+click to directly open the previewer
+    switchTabSignal = QtCore.Signal(str, str)
+
+    def initUI(self):
+        """Create the physical shelves"""
+        self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
+
+        self.path = os.path.dirname(__file__)
+        self.buttons = []
+
+        # Store the number of objects per line, for faster redrawing on
+        # resizing. Initially set to zero, it will, the first time, be set by
+        # the method createLines, and then be compared to.
+        self.objectsPerLine = 0
+        # Left hand side: Vertical layout for the notebooks and folders
+        scrollArea = VerticalScrollArea(self)
+
+        # Need to create a dummy Widget, because QScrollArea can not accept a
+        # layout, only a Widget
+        dummy = QtGui.QWidget()
+
+        vbox = QtGui.QVBoxLayout()
+        grid = self.createLines()
+
+        vbox.addLayout(grid)
+        vbox.addStretch(1)
+        dummy.setLayout(vbox)
+        scrollArea.setWidget(dummy)
+
+        self.layout().addWidget(scrollArea)
+        # Create the navigation symbols
+        hboxLayout = QtGui.QHBoxLayout()
+
+        # Go up in the directories (disabled if in the root directory)
+        self.upButton = QtGui.QPushButton("&Up")
+        self.upButton.clicked.connect(self.upFolder)
+        if self.info.level == self.info.root:
+            self.upButton.setDisabled(True)
+
+        # Create a new notebook
+        self.newNotebookButton = QtGui.QPushButton("&New Notebook")
+        self.newNotebookButton.clicked.connect(self.createNotebook)
+
+        # Create a new folder
+        self.newFolderButton = QtGui.QPushButton("New &Folder")
+        self.newFolderButton.clicked.connect(self.createFolder)
+
+        hboxLayout.addWidget(self.upButton)
+        hboxLayout.addWidget(self.newNotebookButton)
+        hboxLayout.addWidget(self.newFolderButton)
+        hboxLayout.addStretch(1)
+
+        self.layout().addLayout(hboxLayout)
+
+    def refresh(self):
+        # Redraw the graphical interface.
+        self.clearUI()
+        self.initUI()
+
+        # Broadcast a refreshSignal order
+        self.refreshSignal.emit()
+
+    def createNotebook(self):
+        self.popup = NewNotebook(self)
+        ok = self.popup.exec_()
+        if ok:
+            desired_name = self.info.notebooks[-1]
+            self.log.info(desired_name+' is the desired name')
+            file_name = desired_name
+            # Create a file, containing only the title
+            with io.open(os.path.join(self.info.level, file_name),
+                         'w', encoding='utf-8') as notebook:
+                clean_name = os.path.splitext(desired_name)[0]
+                notebook.write(clean_name.capitalize()+'\n')
+                notebook.write(''.join(['=' for _ in clean_name]))
+                notebook.write('\n\n')
+            # Refresh both the library and Editing tab.
+            self.refresh()
+
+    def createFolder(self):
+        self.popup = NewFolder(self)
+        ok = self.popup.exec_()
+        if ok:
+            desired_name = self.info.folders[-1]
+            self.log.info(desired_name+' is the desired name')
+            folder_name = desired_name
+            # Create the folder
+            try:
+                os.mkdir(os.path.join(self.info.level, folder_name))
+            except OSError:
+                # If it already exists, continue
+                pass
+        # Change the level to the newly created folder, and send a refresh
+        # TODO display a warning that an empty folder will be discared if
+        # browsed out.
+        folder_path = os.path.join(self.info.root, folder_name)
+        self.info.notebooks, self.info.folders = search_folder_recursively(
+            self.log, folder_path, self.info.display_empty)
+        # Update the current level as the folder_path, and refresh the content
+        # of the window
+        self.info.level = folder_path
+        self.refresh()
+
+    def toggleDisplayEmpty(self):
+        self.info.display_empty = not self.info.display_empty
+        # Read again the current folder
+        self.info.notebooks, self.info.folders = search_folder_recursively(
+            self.log, self.info.level, self.info.display_empty)
+        #save settings
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        self.settings.setValue("display_empty", self.info.display_empty)
+        self.refresh()
+
+    @QtCore.Slot(str)
+    def removeNotebook(self, notebook):
+        """
+        Remove the notebook
+
+        """
+        self.log.info(
+            'deleting %s from the shelves' % notebook)
+        path = os.path.join(self.info.level, notebook+EXTENSION)
+
+        # Assert that the file is empty, or ask for confirmation
+        if os.stat(path).st_size != 0:
+            self.reply = QtGui.QMessageBox.question(
+                self, 'Message',
+                "Are you sure you want to delete %s?" % notebook,
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                QtGui.QMessageBox.No)
+        else:
+            self.reply = QtGui.QMessageBox.Yes
+
+        if self.reply == QtGui.QMessageBox.Yes:
+            os.remove(path)
+            # Delete the reference to the notebook
+            index = self.info.notebooks.index(notebook+EXTENSION)
+            self.info.notebooks.pop(index)
+
+            # Refresh the display
+            self.refresh()
+
+        else:
+            self.log.info("Aborting")
+
+    def notebookClicked(self):
+        sender = self.sender()
+        self.log.info('notebook '+sender.label+' button cliked')
+        # Emit a signal asking for changing the tab
+        self.switchTabSignal.emit('editing', sender.label)
+
+    def folderClicked(self):
+        sender = self.sender()
+        self.log.info('folder '+sender.label+' button cliked')
+        folder_path = os.path.join(self.info.root, sender.label)
+        self.info.notebooks, self.info.folders = search_folder_recursively(
+            self.log, folder_path, self.info.display_empty)
+        # Update the current level as the folder_path, and refresh the content
+        # of the window
+        self.info.level = folder_path
+        self.refresh()
+
+    def upFolder(self):
+        folder_path = os.path.dirname(self.info.level)
+        self.info.notebooks, self.info.folders = search_folder_recursively(
+            self.log, folder_path, self.info.display_empty)
+        # Update the current level as the folder_path, and refresh the content
+        # of the window
+        self.info.level = folder_path
+        self.refresh()
+
+    def createLines(self):
+        # Defining the icon size used
+        self.size = 128
+
+        # Create the lines array
+        flow = FlowLayout()
+        for notebook in self.info.notebooks:
+            # distinguish between a notebook and a folder, stored as a tuple.
+            # When encountering a folder, simply put a different image for the
+            # moment.
+
+            button = PicButton(
+                QtGui.QPixmap(
+                    os.path.join(self.path, 'assets',
+                                 'notebook-%i.png' % self.size)),
+                os.path.splitext(notebook)[0], 'notebook', self)
+            button.setMinimumSize(self.size, self.size)
+            button.setMaximumSize(self.size, self.size)
+            button.clicked.connect(self.notebookClicked)
+            button.deleteNotebook.connect(self.removeNotebook)
+            self.buttons.append(button)
+            flow.addWidget(button)
+
+        for folder in self.info.folders:
+            button = PicButton(
+                QtGui.QPixmap(
+                    os.path.join(self.path, 'assets',
+                                 'folder-%i.png' % self.size)),
+                os.path.basename(folder), 'folder', self)
+            button.setMinimumSize(self.size, self.size)
+            button.setMaximumSize(self.size, self.size)
+            button.clicked.connect(self.folderClicked)
+            self.buttons.append(button)
+            flow.addWidget(button)
+
+        self.flow = flow
+        return flow
+
+
+class TextEditor(CustomFrame):
+    """Custom text editor"""
+    defaultFontSize = 14
+
+    def initUI(self):
+        """top menu bar and the text area"""
+        # Menu bar
+        menuBar = QtGui.QHBoxLayout()
+
+        self.saveButton = QtGui.QPushButton("&Save", self)
+        self.saveButton.clicked.connect(self.saveText)
+
+        self.readButton = QtGui.QPushButton("&Reload", self)
+        self.readButton.clicked.connect(self.loadText)
+
+        menuBar.addWidget(self.saveButton)
+        menuBar.addWidget(self.readButton)
+        menuBar.addStretch(1)
+
+        self.layout().addLayout(menuBar)
+
+        # Text
+        self.text = CustomTextEdit(self)
+        self.text.setTabChangesFocus(True)
+
+        # Font
+        self.font = QtGui.QFont()
+        self.font.setFamily("Inconsolata")
+        self.font.setStyleHint(QtGui.QFont.Monospace)
+        self.font.setFixedPitch(True)
+        self.font.setPointSize(self.defaultFontSize)
+
+        self.text.setFont(self.font)
+
+        self.highlighter = ModifiedMarkdownHighlighter(self.text.document())
+
+        # watch notebooks on the filesystem for changes
+        self.fileSystemWatcher = QtCore.QFileSystemWatcher(self)
+
+        self.layout().addWidget(self.text)
+
+    def setSource(self, source):
+        self.log.info("Reading %s" % source)
+        self.source = source
+        self.loadText()
+        self.setupAutoRefresh(source)
+
+    def loadText(self):
+        if self.source:
+            # Store the last cursor position
+            oldCursor = self.text.textCursor()
+            text = io.open(self.source, 'r', encoding='utf-8',
+                           errors='replace').read()
+            self.text.setText(text)
+            self.text.setTextCursor(oldCursor)
+            self.text.ensureCursorVisible()
+            self.text.document().setModified(False)
+
+    def saveText(self):
+        self.log.info("Writing modifications to %s" % self.source)
+        text = self.text.toPlainText()
+        with io.open(self.source, 'w', encoding='utf-8') as file_handle:
+            file_handle.write(text)
+
+    def appendText(self, text):
+        self.text.append('\n'+text)
+        self.saveText()
+
+    def zoomIn(self):
+        size = self.font.pointSize()
+        self.font.setPointSize(size+1)
+        self.text.setFont(self.font)
+
+    def zoomOut(self):
+        size = self.font.pointSize()
+        self.font.setPointSize(size-1)
+        self.text.setFont(self.font)
+
+    def resetSize(self):
+        self.font.setPointSize(self.defaultFontSize)
+        self.text.setFont(self.font)
+
+    def setupAutoRefresh(self, source):
+        """add current file to QFileSystemWatcher and refresh when needed"""
+        self.fileSystemWatcher.addPath(source)
+        self.fileSystemWatcher.fileChanged.connect(
+            self.autoRefresh)
+        self.log.info("added file %s to FileSystemWatcher" % source)
+
+    @QtCore.Slot(str)
+    def autoRefresh(self, path=''):
+        """refresh editor when needed"""
+        # only refresh if wanted and the user didn't modify the text in the
+        # internal editor
+        if self.info.refreshEditor:
+            if not self.text.document().isModified():
+                # wait some time for the change to finish
+                time.sleep(0.1)
+                self.loadText()
+                self.fileSystemWatcher.removePath(path)
+                self.fileSystemWatcher.addPath(path)
+                self.log.info(
+                    'editor source reloaded because the file changed')
+            else:
+                self.log.info(
+                    "reload of editor source skipped because it's modified")
+
+
+class CustomTextEdit(QtGui.QTextEdit):
+
+    def toPlainText(self):
+        text = QtGui.QTextEdit.toPlainText(self)
+        if isinstance(text, bytes):
+            text = str(text)
+        return text
