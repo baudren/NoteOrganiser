@@ -478,10 +478,10 @@ class Preview(CustomFrame):
             temp.write('\n'.join(markdown))
 
         # extra arguments for pandoc
-        extra_args=['--highlight-style', 'pygments', '-s', '-c', self.css]
+        extra_args = ['--highlight-style', 'pygments', '-s', '-c', self.css]
 
         # use TOC if enabled
-        if self.info.use_TOC == True:
+        if self.info.use_TOC:
             extra_args.append('--toc')
 
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and

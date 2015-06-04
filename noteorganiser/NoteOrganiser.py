@@ -103,7 +103,8 @@ class NoteOrganiser(QtGui.QMainWindow):
 
         # Toggle use of Table of Content
         toggleUseTOC = QtGui.QAction('use TOC in output', self)
-        toggleUseTOC.setStatusTip( 'Toggle the usage of Table of Content in HTML-output')
+        toggleUseTOC.setStatusTip(
+            'Toggle the usage of Table of Content in HTML-output')
         toggleUseTOC.setCheckable(True)
         toggleUseTOC.setChecked(self.info.use_TOC)
         toggleUseTOC.triggered.connect(self.toggleUseTOC)
