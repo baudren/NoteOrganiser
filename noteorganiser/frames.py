@@ -521,6 +521,13 @@ class Preview(CustomFrame):
     def resetSize(self):
         self.web.setTextSizeMultiplier(1)
 
+    def reload(self):
+        """
+        recompute and reload current html file
+        TODO: keep currently activated filter
+        """
+        self.loadNotebook(self.info.current_notebook)
+
 
 class Shelves(CustomFrame):
     """
