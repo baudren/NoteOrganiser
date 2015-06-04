@@ -524,9 +524,18 @@ class Preview(CustomFrame):
     def reload(self):
         """
         recompute and reload current html file
-        TODO: keep currently activated filter
+
+        keep currently activated filters
         """
-        self.loadNotebook(self.info.current_notebook)
+        url, self.remaining_tags = self.convert(
+            os.path.join(self.info.level, self.info.current_notebook),
+            self.filters)
+        for key, button in self.tagButtons:
+            if key in self.remaining_tags:
+                self.enableButton(button)
+            else:
+                self.disableButton(button)
+        self.setWebpage(url)
 
 
 class Shelves(CustomFrame):
