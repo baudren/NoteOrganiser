@@ -176,6 +176,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         #save the setting
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
         self.settings.setValue("use_TOC", self.info.use_TOC)
+        self.preview.loadNotebook(self.info.current_notebook)
 
     def initStatusBar(self):
         """Defining the status bar"""
