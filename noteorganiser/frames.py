@@ -527,6 +527,7 @@ class Preview(CustomFrame):
 
         keep currently activated filters
         """
+        self.log.info('reloading the current preview')
         url, self.remaining_tags = self.convert(
             os.path.join(self.info.level, self.info.current_notebook),
             self.filters)
