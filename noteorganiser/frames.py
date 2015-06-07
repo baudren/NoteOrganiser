@@ -396,7 +396,7 @@ class Preview(CustomFrame):
     def setWebpage(self, page):
         self.web.load(QtCore.QUrl(page))
 
-    def loadNotebook(self, notebook, tags=()):
+    def loadNotebook(self, notebook):
         """
         Load a given markdown file as an html page
 
@@ -408,7 +408,7 @@ class Preview(CustomFrame):
 
         try:
             url, tags = self.convert(
-                os.path.join(self.info.level, notebook), tags)
+                os.path.join(self.info.level, notebook), ())
         except ValueError:
             self.log.error("Markdown conversion failed, aborting")
             return False
