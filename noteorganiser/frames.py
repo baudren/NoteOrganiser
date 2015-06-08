@@ -477,11 +477,17 @@ class Preview(CustomFrame):
         with io.open(temp_path, 'w', encoding='utf-8') as temp:
             temp.write('\n'.join(markdown))
 
+        # extra arguments for pandoc
+        extra_args = ['--highlight-style', 'pygments', '-s', '-c', self.css]
+
+        # use TOC if enabled
+        if self.info.use_TOC:
+            extra_args.append('--toc')
+
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
         html = pa.convert(temp_path, 'html', encoding='utf-8',
-                          extra_args=['--highlight-style', 'pygments', '-s',
-                                      '-c', self.css])
+                          extra_args=extra_args)
 
         # Convert the windows ending of lines to simple line breaks (\r\n to
         # \n)
@@ -514,6 +520,23 @@ class Preview(CustomFrame):
 
     def resetSize(self):
         self.web.setTextSizeMultiplier(1)
+
+    def reload(self):
+        """
+        recompute and reload current html file
+
+        keep currently activated filters
+        """
+        self.log.info('reloading the current preview')
+        url, self.remaining_tags = self.convert(
+            os.path.join(self.info.level, self.info.current_notebook),
+            self.filters)
+        for key, button in self.tagButtons:
+            if key in self.remaining_tags:
+                self.enableButton(button)
+            else:
+                self.disableButton(button)
+        self.setWebpage(url)
 
 
 class Shelves(CustomFrame):
