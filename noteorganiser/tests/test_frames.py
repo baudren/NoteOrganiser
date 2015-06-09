@@ -295,7 +295,22 @@ def test_editing(qtbot, parent):
     editing.refresh()
     # There should be only one tab left
     assert editing.tabs.count() == 1
-    # Test zoom-in, zoom-out, resetSize in a meaningful fashion? TODO
+
+    # Check that zoom-in, zoom-out, reset size are implemented
+    editor = editing.tabs.currentWidget()
+    
+    # Fontsize should be bigger
+    editing.zoomIn()
+    assert editor.text.currentFont().pointSize() > editor.defaultFontSize
+
+    # Zoom out twice should get the Point size smaller
+    editing.zoomOut()
+    editing.zoomOut()
+    assert editor.text.currentFont().pointSize() < editor.defaultFontSize
+
+    # Reset should reset it...
+    editing.resetSize()
+    assert editor.text.currentFont().pointSize() == editor.defaultFontSize
 
 
 def test_preview(qtbot, parent):
@@ -334,3 +349,11 @@ def test_preview(qtbot, parent):
     # Unclick both
     qtbot.mouseClick(newFilter[1], QtCore.Qt.LeftButton)
     qtbot.mouseClick(first_button, QtCore.Qt.LeftButton)
+
+    # Test zoom
+    preview.zoomIn()
+    preview.zoomOut()
+    preview.resetSize()
+
+    # Reload should work (how to test that it truly works?)
+    preview.reload()
