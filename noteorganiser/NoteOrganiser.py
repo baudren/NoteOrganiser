@@ -60,7 +60,8 @@ class NoteOrganiser(QtGui.QMainWindow):
 
         # set the window-icon
         path = os.path.abspath(os.path.dirname(__file__))
-        self.setWindowIcon(QtGui.QIcon(os.path.join(path, 'assets', 'notebook-128.png')))
+        self.setWindowIcon(QtGui.QIcon(
+            os.path.join(path, 'assets', 'notebook-128.png')))
 
         # set this to be half-screen, on the left
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
