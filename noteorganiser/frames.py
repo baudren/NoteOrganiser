@@ -245,9 +245,10 @@ class Editing(CustomFrame):
             self.popup = QtGui.QMessageBox(self)
             self.popup.setIcon(QtGui.QMessageBox.Critical)
             self.popup.setWindowTitle('NoteOrganiser')
-            self.popup.setText("The external editor couldn't be opened.")
-            self.popup.setInformativeText(
-                "%s\n\n commandline:\n %s" % (e, self.info.externalEditor))
+            self.popup.setText(
+                "The external editor '%s' couldn't be opened." % (
+                self.info.externalEditor))
+            self.popup.setInformativeText("%s" % e)
             self.popup.exec_()
 
     def preview(self):
