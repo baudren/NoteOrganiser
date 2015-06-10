@@ -236,7 +236,20 @@ class Editing(CustomFrame):
         index = self.tabs.currentIndex()
         notebook = os.path.join(self.info.level, self.info.notebooks[index])
         # open the file in the external editor set by the user
-        Popen([self.info.externalEditor, notebook])
+        # if this fails, show a popup
+        try:
+            Popen([self.info.externalEditor, notebook])
+            self.log.info('external editor opened for notebook %s' % notebook)
+        except OSError as e:
+            self.log.error('Execution of external editor failed: %s' % e)
+            self.popup = QtGui.QMessageBox(self)
+            self.popup.setIcon(QtGui.QMessageBox.Critical)
+            self.popup.setWindowTitle('NoteOrganiser')
+            self.popup.setText(
+                "The external editor '%s' couldn't be opened." % (
+                self.info.externalEditor))
+            self.popup.setInformativeText("%s" % e)
+            self.popup.exec_()
 
     def preview(self):
         """
