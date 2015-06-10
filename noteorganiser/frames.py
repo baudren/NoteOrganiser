@@ -247,7 +247,7 @@ class Editing(CustomFrame):
             self.popup.setWindowTitle('NoteOrganiser')
             self.popup.setText("The external editor couldn't be opened.")
             self.popup.setInformativeText("%s" % e)
-            ok = self.popup.exec_()
+            self.popup.exec_()
 
     def preview(self):
         """
