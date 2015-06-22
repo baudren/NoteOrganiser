@@ -231,6 +231,9 @@ class NoteOrganiser(QtGui.QMainWindow):
 
     @QtCore.Slot(str)
     def previewNotebook(self, notebook):
+        """Preview the desired notebook"""
+        self.editing.switchNotebook(
+            os.path.splitext(os.path.basename(notebook))[0])
         if self.preview.loadNotebook(notebook):
             self.switchTab('preview', notebook)
 
