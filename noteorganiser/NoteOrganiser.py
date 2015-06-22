@@ -217,6 +217,8 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.library.shelves.refreshSignal.connect(self.editing.refresh)
         # * shelves switchTab to the own switchTab method
         self.library.shelves.switchTabSignal.connect(self.switchTab)
+        # * shelves preview signal to previewNotebook
+        self.library.shelves.previewSignal.connect(self.previewNotebook)
         # * editing preview to preview loadNotebook, and switch the tab
         self.editing.loadNotebook.connect(self.previewNotebook)
 

@@ -7,6 +7,7 @@ from PySide import QtCore
 class PicButton(QtGui.QPushButton):
     """Button with a picture"""
     deleteNotebook = QtCore.Signal(str)
+    previewSignal = QtCore.Signal(str)
 
     def __init__(self, pixmap, text, style, parent=None):
         QtGui.QPushButton.__init__(self, parent)
@@ -27,6 +28,12 @@ class PicButton(QtGui.QPushButton):
         delete.setText("delete")
         delete.triggered.connect(self.removeButton)
         self.addAction(delete)
+
+        # Define behaviour for direct preview
+        preview = QtGui.QAction(self)
+        preview.setText("preview")
+        preview.triggered.connect(self.previewNotebook)
+        self.addAction(preview)
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
@@ -62,6 +69,10 @@ class PicButton(QtGui.QPushButton):
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
         self.deleteNotebook.emit(self.label)
+
+    def previewNotebook(self):
+        """emmit signal to preview the current notebook"""
+        self.previewSignal.emit(self.label)
 
 
 class VerticalScrollArea(QtGui.QScrollArea):

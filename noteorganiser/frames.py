@@ -562,6 +562,7 @@ class Shelves(CustomFrame):
     # Fired when a notebook is clicked, to navigate to the editor.
     # TODO also define as a shift+click to directly open the previewer
     switchTabSignal = QtCore.Signal(str, str)
+    previewSignal = QtCore.Signal(str)
 
     def initUI(self):
         """Create the physical shelves"""
@@ -751,6 +752,7 @@ class Shelves(CustomFrame):
             button.setMaximumSize(self.size, self.size)
             button.clicked.connect(self.notebookClicked)
             button.deleteNotebook.connect(self.removeNotebook)
+            button.previewSignal.connect(self.previewNotebook)
             self.buttons.append(button)
             flow.addWidget(button)
 
@@ -768,6 +770,13 @@ class Shelves(CustomFrame):
 
         self.flow = flow
         return flow
+
+    @QtCore.Slot(str)
+    def previewNotebook(self, notebook):
+        """emit signal to preview the current notebook"""
+        self.log.info("preview called for notebook %s" % notebook)
+        path = os.path.join(self.info.level, notebook+EXTENSION)
+        self.previewSignal.emit(path)
 
 
 class TextEditor(CustomFrame):
