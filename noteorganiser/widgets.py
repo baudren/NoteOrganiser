@@ -64,7 +64,12 @@ class PicButton(QtGui.QPushButton):
         """Define a behaviour under click"""
         # only fire event, when left button is clicked
         if ev.button() == QtCore.Qt.LeftButton:
-            self.click()
+            # check for shift-key
+            modifiers = QtGui.QApplication.keyboardModifiers()
+            if modifiers == QtCore.Qt.ShiftModifier:
+                self.previewNotebook()
+            else:
+                self.click()
 
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
