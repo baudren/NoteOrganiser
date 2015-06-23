@@ -345,6 +345,16 @@ class Preview(CustomFrame):
         self.layout().addWidget(self.web, 1)
 
         # Right hand side: Vertical layout for the tags inside a QScrollArea
+        # with a refresh button on top
+        rightSide = QtGui.QWidget()
+        rightSide.setLayout(QtGui.QVBoxLayout())
+
+        # refreshButton
+        self.reloadButton = QtGui.QPushButton("&Reload", self)
+        self.reloadButton.clicked.connect(self.reload)
+        rightSide.layout().addWidget(self.reloadButton)
+
+        # ScrollArea
         scrollArea = QtGui.QScrollArea()
         scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         scrollArea.verticalScrollBar().setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -371,7 +381,8 @@ class Preview(CustomFrame):
         dummy.setLayout(vbox)
         scrollArea.setWidget(dummy)
 
-        self.layout().addWidget(scrollArea)
+        rightSide.layout().addWidget(scrollArea)
+        self.layout().addWidget(rightSide)
 
         # Logging
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
