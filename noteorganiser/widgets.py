@@ -22,18 +22,20 @@ class PicButton(QtGui.QPushButton):
         self.default = 9
         self.fontsize = self.default
 
-        # Define behaviour under right click
-        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        delete = QtGui.QAction(self)
-        delete.setText("delete")
-        delete.triggered.connect(self.removeButton)
-        self.addAction(delete)
+        # use these actions only on notebook
+        if self.style == 'notebook':
+            # Define behaviour under right click
+            self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+            delete = QtGui.QAction(self)
+            delete.setText("delete")
+            delete.triggered.connect(self.removeButton)
+            self.addAction(delete)
 
-        # Define behaviour for direct preview
-        preview = QtGui.QAction(self)
-        preview.setText("preview")
-        preview.triggered.connect(self.previewNotebook)
-        self.addAction(preview)
+            # Define behaviour for direct preview
+            preview = QtGui.QAction(self)
+            preview.setText("preview")
+            preview.triggered.connect(self.previewNotebook)
+            self.addAction(preview)
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
