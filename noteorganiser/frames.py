@@ -352,6 +352,7 @@ class Preview(CustomFrame):
         # refreshButton
         self.reloadButton = QtGui.QPushButton("&Reload", self)
         self.reloadButton.clicked.connect(self.reload)
+        self.reloadButton.setFixedHeight(50)
         rightSide.layout().addWidget(self.reloadButton)
 
         # ScrollArea
