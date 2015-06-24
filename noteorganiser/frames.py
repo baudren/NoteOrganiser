@@ -677,10 +677,7 @@ class Shelves(CustomFrame):
 
     @QtCore.Slot(str)
     def removeNotebook(self, notebook):
-        """
-        Remove the notebook
-
-        """
+        """Remove the notebook"""
         self.log.info(
             'deleting %s from the shelves' % notebook)
         path = os.path.join(self.info.level, notebook+EXTENSION)
@@ -709,10 +706,7 @@ class Shelves(CustomFrame):
 
     @QtCore.Slot(str)
     def removeFolder(self, folder):
-        """
-        Remove the folder, with confirmation if non-empty
-
-        """
+        """Remove the folder, with confirmation if non-empty"""
         self.log.info(
             'deleting folder %s from the shelves' % folder)
         path = os.path.join(self.info.level, folder)
