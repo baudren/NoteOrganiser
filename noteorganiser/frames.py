@@ -192,6 +192,24 @@ class Editing(CustomFrame):
             self.toolbar = self.parent.addToolBar('Editing')
             self.toolbar.setVisible(False)
 
+            # Create a new entry - new field in the current notebook
+            self.newEntryAction = QtGui.QAction('&New entry', self)
+            self.newEntryAction.setShortcut('Alt+N')
+            self.newEntryAction.triggered.connect(self.newEntry)
+            self.toolbar.addAction(self.newEntryAction)
+
+            # Edit in an exterior editor
+            self.editAction = QtGui.QAction('Edit (e&xterior editor)', self)
+            self.editAction.setShortcut('Alt+X')
+            self.editAction.triggered.connect(self.editExternal)
+            self.toolbar.addAction(self.editAction)
+
+            # Launch the previewing of the current notebook
+            self.previewAction = QtGui.QAction('&Preview notebook', self)
+            self.previewAction.setShortcut('Alt+P')
+            self.previewAction.triggered.connect(self.preview)
+            self.toolbar.addAction(self.previewAction)
+
         # Global horizontal layout
         hbox = QtGui.QHBoxLayout()
 
