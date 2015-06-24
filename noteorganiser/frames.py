@@ -115,6 +115,10 @@ class Library(CustomFrame):
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
+        # Toolbar on top
+        if not hasattr(self, 'toolbar'):
+            self.toolbar = self.parent.addToolBar('Library')
+
         # Create the shelves object
         self.shelves = Shelves(self)
         self.layout().addWidget(self.shelves)
@@ -151,6 +155,11 @@ class Editing(CustomFrame):
 
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
+
+        # Toolbar on top
+        if not hasattr(self, 'toolbar'):
+            self.toolbar = self.parent.addToolBar('Editing')
+            self.toolbar.setVisible(False)
 
         # Global horizontal layout
         hbox = QtGui.QHBoxLayout()
@@ -331,13 +340,15 @@ class Preview(CustomFrame):
         self.layout().setDirection(QtGui.QBoxLayout.LeftToRight)
 
         # Toolbar on top
-        self.toolbar = self.parent.addToolBar('Preview')
+        if not hasattr(self, 'toolbar'):
+            self.toolbar = self.parent.addToolBar('Preview')
+            self.toolbar.setVisible(False)
 
-        # Reload Action
-        reloadAction = QtGui.QAction('Reload', self)
-        reloadAction.setShortcut('Alt+R')
-        reloadAction.triggered.connect(self.reload)
-        self.toolbar.addAction(reloadAction)
+            # Reload Action
+            reloadAction = QtGui.QAction('Reload', self)
+            reloadAction.setShortcut('Alt+R')
+            reloadAction.triggered.connect(self.reload)
+            self.toolbar.addAction(reloadAction)
 
         # Left hand side: html window
         self.web = QtWebKit.QWebView(self)
