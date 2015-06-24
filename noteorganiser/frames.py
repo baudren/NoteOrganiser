@@ -115,13 +115,31 @@ class Library(CustomFrame):
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
+        # Create the shelves object
+        self.shelves = Shelves(self)
+        self.layout().addWidget(self.shelves)
+
         # Toolbar on top
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Library')
 
-        # Create the shelves object
-        self.shelves = Shelves(self)
-        self.layout().addWidget(self.shelves)
+            # Go up in the directories (disabled if in the root directory)
+            upAction = QtGui.QAction('&Up', self)
+            upAction.setShortcut('Alt+U')
+            upAction.triggered.connect(self.shelves.upFolder)
+            self.toolbar.addAction(upAction)
+
+            # Create a new notebook
+            newNotebookAction = QtGui.QAction('&New Notebook', self)
+            newNotebookAction.setShortcut('Alt+N')
+            newNotebookAction.triggered.connect(self.shelves.createNotebook)
+            self.toolbar.addAction(newNotebookAction)
+
+            # Create a new folder
+            newFolderAction = QtGui.QAction('New &Folder', self)
+            newFolderAction.setShortcut('Alt+F')
+            newFolderAction.triggered.connect(self.shelves.createFolder)
+            self.toolbar.addAction(newFolderAction)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
