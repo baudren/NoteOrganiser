@@ -654,16 +654,16 @@ class Shelves(CustomFrame):
             except OSError:
                 # If it already exists, continue
                 pass
-        # Change the level to the newly created folder, and send a refresh
-        # TODO display a warning that an empty folder will be discared if
-        # browsed out.
-        folder_path = os.path.join(self.info.root, folder_name)
-        self.info.notebooks, self.info.folders = search_folder_recursively(
-            self.log, folder_path, self.info.display_empty)
-        # Update the current level as the folder_path, and refresh the content
-        # of the window
-        self.info.level = folder_path
-        self.refresh()
+            # Change the level to the newly created folder, and send a refresh
+            # TODO display a warning that an empty folder will be discared if
+            # browsed out.
+            folder_path = os.path.join(self.info.root, folder_name)
+            self.info.notebooks, self.info.folders = search_folder_recursively(
+                self.log, folder_path, self.info.display_empty)
+            # Update the current level as the folder_path, and refresh the content
+            # of the window
+            self.info.level = folder_path
+            self.refresh()
 
     def toggleDisplayEmpty(self):
         self.info.display_empty = not self.info.display_empty
