@@ -124,23 +124,23 @@ class Library(CustomFrame):
             self.toolbar = self.parent.addToolBar('Library')
 
             # Go up in the directories (disabled if in the root directory)
-            self.upAction = QtGui.QAction('&Up', self)
-            self.upAction.setShortcut('Alt+U')
+            self.upAction = QtGui.QAction(self)
+            self.upAction.setIconText('&Up')
             self.upAction.triggered.connect(self.shelves.upFolder)
             if self.info.level == self.info.root:
                 self.upAction.setDisabled(True)
             self.toolbar.addAction(self.upAction)
 
             # Create a new notebook
-            self.newNotebookAction = QtGui.QAction('&New Notebook', self)
-            self.newNotebookAction.setShortcut('Alt+N')
+            self.newNotebookAction = QtGui.QAction(self)
+            self.newNotebookAction.setIconText('&New Notebook')
             self.newNotebookAction.triggered.connect(
                 self.shelves.createNotebook)
             self.toolbar.addAction(self.newNotebookAction)
 
             # Create a new folder
-            self.newFolderAction = QtGui.QAction('New &Folder', self)
-            self.newFolderAction.setShortcut('Alt+F')
+            self.newFolderAction = QtGui.QAction(self)
+            self.newFolderAction.setIconText('New &Folder')
             self.newFolderAction.triggered.connect(self.shelves.createFolder)
             self.toolbar.addAction(self.newFolderAction)
 
@@ -193,20 +193,20 @@ class Editing(CustomFrame):
             self.toolbar.setVisible(False)
 
             # Create a new entry - new field in the current notebook
-            self.newEntryAction = QtGui.QAction('&New entry', self)
-            self.newEntryAction.setShortcut('Alt+N')
+            self.newEntryAction = QtGui.QAction(self)
+            self.newEntryAction.setIconText('&New entry')
             self.newEntryAction.triggered.connect(self.newEntry)
             self.toolbar.addAction(self.newEntryAction)
 
             # Edit in an exterior editor
-            self.editAction = QtGui.QAction('Edit (e&xterior editor)', self)
-            self.editAction.setShortcut('Alt+X')
+            self.editAction = QtGui.QAction(self)
+            self.editAction.setIconText('Edit (e&xterior editor)')
             self.editAction.triggered.connect(self.editExternal)
             self.toolbar.addAction(self.editAction)
 
             # Launch the previewing of the current notebook
-            self.previewAction = QtGui.QAction('&Preview notebook', self)
-            self.previewAction.setShortcut('Alt+P')
+            self.previewAction = QtGui.QAction(self)
+            self.previewAction.setIconText('&Preview notebook')
             self.previewAction.triggered.connect(self.preview)
             self.toolbar.addAction(self.previewAction)
 
@@ -373,8 +373,8 @@ class Preview(CustomFrame):
             self.toolbar.setVisible(False)
 
             # Reload Action
-            self.reloadAction = QtGui.QAction('Reload', self)
-            self.reloadAction.setShortcut('Alt+R')
+            self.reloadAction = QtGui.QAction(self)
+            self.reloadAction.setIconText('&Reload')
             self.reloadAction.triggered.connect(self.reload)
             self.toolbar.addAction(self.reloadAction)
 
