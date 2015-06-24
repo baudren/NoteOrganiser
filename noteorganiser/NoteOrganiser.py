@@ -217,6 +217,8 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.library.shelves.refreshSignal.connect(self.editing.refresh)
         # * shelves switchTab to the own switchTab method
         self.library.shelves.switchTabSignal.connect(self.switchTab)
+        # * shelves preview signal to previewNotebook
+        self.library.shelves.previewSignal.connect(self.previewNotebook)
         # * editing preview to preview loadNotebook, and switch the tab
         self.editing.loadNotebook.connect(self.previewNotebook)
 
@@ -229,6 +231,9 @@ class NoteOrganiser(QtGui.QMainWindow):
 
     @QtCore.Slot(str)
     def previewNotebook(self, notebook):
+        """Preview the desired notebook"""
+        self.editing.switchNotebook(
+            os.path.splitext(os.path.basename(notebook))[0])
         if self.preview.loadNotebook(notebook):
             self.switchTab('preview', notebook)
 

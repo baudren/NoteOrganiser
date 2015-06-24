@@ -178,6 +178,18 @@ def test_shelves(qtbot, parent, mocker):
 
     # Create an empty file, and remove it TODO
 
+    # test preview function on shift click
+    # this should show the clicked notebook in the preview-tab
+    new_index = 0
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=100) as right:
+        with qtbot.waitSignal(shelves.previewSignal, timeout=1000) as switch:
+            qtbot.mouseClick(shelves.buttons[new_index], QtCore.Qt.LeftButton,
+                             QtCore.Qt.ShiftModifier)
+        assert switch.signal_triggered, \
+            "shift-clicking on a notebook should trigger a previewSignal"
+    assert not right.signal_triggered, \
+        "shift-clicking should NOT trigger a refreshSignal"
+
 
 def test_text_editor(qtbot, parent):
     text_editor = TextEditor(parent)
