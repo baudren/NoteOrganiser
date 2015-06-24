@@ -213,18 +213,6 @@ class Editing(CustomFrame):
         # Global horizontal layout
         hbox = QtGui.QHBoxLayout()
 
-        # New Entry Button to enter a new field in the current notebook
-        self.newEntryButton = QtGui.QPushButton("&New entry", self)
-        self.newEntryButton.clicked.connect(self.newEntry)
-
-        # Edit in an exterior editor TODO
-        self.editButton = QtGui.QPushButton("Edit (e&xterior editor)", self)
-        self.editButton.clicked.connect(self.editExternal)
-
-        # Launch the previewing of the current notebook
-        self.previewButton = QtGui.QPushButton("&Preview notebook", self)
-        self.previewButton.clicked.connect(self.preview)
-
         # Create the tabbed widgets containing the text editors. The tabs will
         # appear on the left-hand side
         self.tabs = QtGui.QTabWidget(self)
@@ -238,16 +226,7 @@ class Editing(CustomFrame):
             # Add the text editor to the tabbed area
             self.tabs.addTab(editor, os.path.splitext(notebook)[0])
 
-        # Create the vertical layout for the right-hand side button
-        vbox = QtGui.QVBoxLayout()
-
-        vbox.addWidget(self.newEntryButton)
-        vbox.addWidget(self.editButton)
-        vbox.addWidget(self.previewButton)
-
         hbox.addWidget(self.tabs)
-        hbox.addLayout(vbox)
-
         self.layout().addLayout(hbox)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
@@ -659,29 +638,6 @@ class Shelves(CustomFrame):
         scrollArea.setWidget(dummy)
 
         self.layout().addWidget(scrollArea)
-        # Create the navigation symbols
-        hboxLayout = QtGui.QHBoxLayout()
-
-        # Go up in the directories (disabled if in the root directory)
-        self.upButton = QtGui.QPushButton("&Up")
-        self.upButton.clicked.connect(self.upFolder)
-        if self.info.level == self.info.root:
-            self.upButton.setDisabled(True)
-
-        # Create a new notebook
-        self.newNotebookButton = QtGui.QPushButton("&New Notebook")
-        self.newNotebookButton.clicked.connect(self.createNotebook)
-
-        # Create a new folder
-        self.newFolderButton = QtGui.QPushButton("New &Folder")
-        self.newFolderButton.clicked.connect(self.createFolder)
-
-        hboxLayout.addWidget(self.upButton)
-        hboxLayout.addWidget(self.newNotebookButton)
-        hboxLayout.addWidget(self.newFolderButton)
-        hboxLayout.addStretch(1)
-
-        self.layout().addLayout(hboxLayout)
 
     def refresh(self):
         # Redraw the graphical interface.
