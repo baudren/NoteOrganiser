@@ -6,6 +6,7 @@
 """
 from __future__ import unicode_literals
 import os
+import shutil
 from collections import OrderedDict as od
 import pypandoc as pa
 import six  # Used to replace the od iteritems from py2
@@ -706,6 +707,39 @@ class Shelves(CustomFrame):
         else:
             self.log.info("Aborting")
 
+    @QtCore.Slot(str)
+    def removeFolder(self, folder):
+        """
+        Remove the folder, with confirmation if non-empty
+
+        """
+        self.log.info(
+            'deleting folder %s from the shelves' % folder)
+        path = os.path.join(self.info.level, folder)
+
+        # Assert that the folder is empty, or ask for confirmation
+        if not all(os.path.isdir(e) and e[0] == '.' for e in os.listdir(path)):
+            self.reply = QtGui.QMessageBox.question(
+                self, 'Message',
+                "%s still contains notebooks, " % folder +
+                "are you sure you want to delete it?",
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
+                QtGui.QMessageBox.No)
+        else:
+            self.reply = QtGui.QMessageBox.Yes
+
+        if self.reply == QtGui.QMessageBox.Yes:
+            shutil.rmtree(path, ignore_errors=True)
+            # Delete the reference to the notebook
+            index = self.info.folders.index(path)
+            self.info.folders.pop(index)
+
+            # Refresh the display
+            self.refresh()
+
+        else:
+            self.log.info("Aborting")
+
     def notebookClicked(self):
         sender = self.sender()
         self.log.info('notebook '+sender.label+' button cliked')
@@ -742,7 +776,6 @@ class Shelves(CustomFrame):
             # distinguish between a notebook and a folder, stored as a tuple.
             # When encountering a folder, simply put a different image for the
             # moment.
-
             button = PicButton(
                 QtGui.QPixmap(
                     os.path.join(self.path, 'assets',
@@ -751,7 +784,7 @@ class Shelves(CustomFrame):
             button.setMinimumSize(self.size, self.size)
             button.setMaximumSize(self.size, self.size)
             button.clicked.connect(self.notebookClicked)
-            button.deleteNotebook.connect(self.removeNotebook)
+            button.deleteNotebookSignal.connect(self.removeNotebook)
             button.previewSignal.connect(self.previewNotebook)
             self.buttons.append(button)
             flow.addWidget(button)
@@ -765,6 +798,7 @@ class Shelves(CustomFrame):
             button.setMinimumSize(self.size, self.size)
             button.setMaximumSize(self.size, self.size)
             button.clicked.connect(self.folderClicked)
+            button.deleteFolderSignal.connect(self.removeFolder)
             self.buttons.append(button)
             flow.addWidget(button)
 

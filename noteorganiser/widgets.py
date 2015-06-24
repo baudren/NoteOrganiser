@@ -6,7 +6,8 @@ from PySide import QtCore
 
 class PicButton(QtGui.QPushButton):
     """Button with a picture"""
-    deleteNotebook = QtCore.Signal(str)
+    deleteNotebookSignal = QtCore.Signal(str)
+    deleteFolderSignal = QtCore.Signal(str)
     previewSignal = QtCore.Signal(str)
 
     def __init__(self, pixmap, text, style, parent=None):
@@ -22,15 +23,15 @@ class PicButton(QtGui.QPushButton):
         self.default = 9
         self.fontsize = self.default
 
-        # use these actions only on notebook
-        if self.style == 'notebook':
-            # Define behaviour under right click
-            self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-            delete = QtGui.QAction(self)
-            delete.setText("delete")
-            delete.triggered.connect(self.removeButton)
-            self.addAction(delete)
+        # Define behaviour under right click
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        delete = QtGui.QAction(self)
+        delete.setText("delete")
+        delete.triggered.connect(self.removeButton)
+        self.addAction(delete)
 
+        # use the preview action only on notebook
+        if self.style == 'notebook':
             # Define behaviour for direct preview
             preview = QtGui.QAction(self)
             preview.setText("preview")
@@ -75,7 +76,10 @@ class PicButton(QtGui.QPushButton):
 
     def removeButton(self):
         """Delegate to the parent to deal with the situation"""
-        self.deleteNotebook.emit(self.label)
+        if self.style == 'notebook':
+            self.deleteNotebookSignal.emit(self.label)
+        else:
+            self.deleteFolderSignal.emit(self.label)
 
     def previewNotebook(self):
         """emmit signal to preview the current notebook"""
