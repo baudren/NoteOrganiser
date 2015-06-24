@@ -124,28 +124,41 @@ class Library(CustomFrame):
             self.toolbar = self.parent.addToolBar('Library')
 
             # Go up in the directories (disabled if in the root directory)
-            upAction = QtGui.QAction('&Up', self)
-            upAction.setShortcut('Alt+U')
-            upAction.triggered.connect(self.shelves.upFolder)
-            self.toolbar.addAction(upAction)
+            self.upAction = QtGui.QAction('&Up', self)
+            self.upAction.setShortcut('Alt+U')
+            self.upAction.triggered.connect(self.shelves.upFolder)
+            if self.info.level == self.info.root:
+                self.upAction.setDisabled(True)
+            self.toolbar.addAction(self.upAction)
 
             # Create a new notebook
-            newNotebookAction = QtGui.QAction('&New Notebook', self)
-            newNotebookAction.setShortcut('Alt+N')
-            newNotebookAction.triggered.connect(self.shelves.createNotebook)
-            self.toolbar.addAction(newNotebookAction)
+            self.newNotebookAction = QtGui.QAction('&New Notebook', self)
+            self.newNotebookAction.setShortcut('Alt+N')
+            self.newNotebookAction.triggered.connect(
+                self.shelves.createNotebook)
+            self.toolbar.addAction(self.newNotebookAction)
 
             # Create a new folder
-            newFolderAction = QtGui.QAction('New &Folder', self)
-            newFolderAction.setShortcut('Alt+F')
-            newFolderAction.triggered.connect(self.shelves.createFolder)
-            self.toolbar.addAction(newFolderAction)
+            self.newFolderAction = QtGui.QAction('New &Folder', self)
+            self.newFolderAction.setShortcut('Alt+F')
+            self.newFolderAction.triggered.connect(self.shelves.createFolder)
+            self.toolbar.addAction(self.newFolderAction)
+
+        # update state of UpAction when shelves get refreshed
+        self.shelves.refreshSignal.connect(self.updateUpAction)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
         """ Refresh all elements of the frame """
         self.shelves.refresh()
+
+    def updateUpAction(self):
+        """
+        update the state of the toolbar action 'Up'
+        active if not in root
+        """
+        self.upAction.setDisabled(self.info.level == self.info.root)
 
 
 class Editing(CustomFrame):
@@ -363,10 +376,10 @@ class Preview(CustomFrame):
             self.toolbar.setVisible(False)
 
             # Reload Action
-            reloadAction = QtGui.QAction('Reload', self)
-            reloadAction.setShortcut('Alt+R')
-            reloadAction.triggered.connect(self.reload)
-            self.toolbar.addAction(reloadAction)
+            self.reloadAction = QtGui.QAction('Reload', self)
+            self.reloadAction.setShortcut('Alt+R')
+            self.reloadAction.triggered.connect(self.reload)
+            self.toolbar.addAction(self.reloadAction)
 
         # Left hand side: html window
         self.web = QtWebKit.QWebView(self)
