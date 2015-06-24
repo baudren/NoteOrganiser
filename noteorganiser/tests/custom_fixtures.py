@@ -33,7 +33,7 @@ def parent(request, qtbot):
         subfolder)
     # Create a parent window, containing an information instance, and a
     # logger
-    parent = QtGui.QFrame()
+    parent = QtGui.QMainWindow()
     qtbot.addWidget(parent)
     log = create_logger('CRITICAL', 'stream')
     # Create an info instance
