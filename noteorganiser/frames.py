@@ -119,46 +119,11 @@ class Library(CustomFrame):
         self.shelves = Shelves(self)
         self.layout().addWidget(self.shelves)
 
-        # Toolbar on top
-        if not hasattr(self, 'toolbar'):
-            self.toolbar = self.parent.addToolBar('Library')
-
-            # Go up in the directories (disabled if in the root directory)
-            self.upAction = QtGui.QAction(self)
-            self.upAction.setIconText('&Up')
-            self.upAction.triggered.connect(self.shelves.upFolder)
-            if self.info.level == self.info.root:
-                self.upAction.setDisabled(True)
-            self.toolbar.addAction(self.upAction)
-
-            # Create a new notebook
-            self.newNotebookAction = QtGui.QAction(self)
-            self.newNotebookAction.setIconText('&New Notebook')
-            self.newNotebookAction.triggered.connect(
-                self.shelves.createNotebook)
-            self.toolbar.addAction(self.newNotebookAction)
-
-            # Create a new folder
-            self.newFolderAction = QtGui.QAction(self)
-            self.newFolderAction.setIconText('New &Folder')
-            self.newFolderAction.triggered.connect(self.shelves.createFolder)
-            self.toolbar.addAction(self.newFolderAction)
-
-        # update state of UpAction when shelves get refreshed
-        self.shelves.refreshSignal.connect(self.updateUpAction)
-
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def refresh(self):
         """ Refresh all elements of the frame """
         self.shelves.refresh()
-
-    def updateUpAction(self):
-        """
-        update the state of the toolbar action 'Up'
-        active if not in root
-        """
-        self.upAction.setDisabled(self.info.level == self.info.root)
 
 
 class Editing(CustomFrame):
@@ -618,6 +583,34 @@ class Shelves(CustomFrame):
         self.path = os.path.dirname(__file__)
         self.buttons = []
 
+        # Toolbar on top
+        if not hasattr(self, 'toolbar'):
+            self.toolbar = self.parent.parent.addToolBar('Library')
+
+            # Go up in the directories (disabled if in the root directory)
+            self.upAction = QtGui.QAction(self)
+            self.upAction.setIconText('&Up')
+            self.upAction.triggered.connect(self.upFolder)
+            if self.info.level == self.info.root:
+                self.upAction.setDisabled(True)
+            self.toolbar.addAction(self.upAction)
+
+            # Create a new notebook
+            self.newNotebookAction = QtGui.QAction(self)
+            self.newNotebookAction.setIconText('&New Notebook')
+            self.newNotebookAction.triggered.connect(
+                self.createNotebook)
+            self.toolbar.addAction(self.newNotebookAction)
+
+            # Create a new folder
+            self.newFolderAction = QtGui.QAction(self)
+            self.newFolderAction.setIconText('New &Folder')
+            self.newFolderAction.triggered.connect(self.createFolder)
+            self.toolbar.addAction(self.newFolderAction)
+
+        # update state of UpAction when shelves get refreshed
+        self.refreshSignal.connect(self.updateUpAction)
+
         # Store the number of objects per line, for faster redrawing on
         # resizing. Initially set to zero, it will, the first time, be set by
         # the method createLines, and then be compared to.
@@ -793,6 +786,13 @@ class Shelves(CustomFrame):
 
         self.flow = flow
         return flow
+
+    def updateUpAction(self):
+        """
+        update the state of the toolbar action 'Up'
+        active if not in root
+        """
+        self.upAction.setDisabled(self.info.level == self.info.root)
 
 
 class TextEditor(CustomFrame):
