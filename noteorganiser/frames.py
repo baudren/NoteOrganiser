@@ -300,12 +300,12 @@ class Editing(CustomFrame):
         editor.resetSize()
 
     def loadText(self):
-        """ reload the text in the current notebook """
+        """reload the text in the current notebook"""
         notebook = self.tabs.currentWidget()
         notebook.loadText()
 
     def saveText(self):
-        """ save the text in the current notebook """
+        """save the text in the current notebook"""
         notebook = self.tabs.currentWidget()
         notebook.saveText()
 
