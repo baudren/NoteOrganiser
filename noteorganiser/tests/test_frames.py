@@ -195,7 +195,8 @@ def test_shelves(qtbot, parent, mocker):
 
 
 def test_text_editor(qtbot, parent):
-    text_editor = TextEditor(parent)
+    editing = Editing(parent)
+    text_editor = editing.tabs.currentWidget()
     qtbot.addWidget(text_editor)
 
     # Load the file
@@ -233,7 +234,8 @@ def test_text_editor(qtbot, parent):
     # Reload from disk, and check that the last line is gone (i.e., that there
     # is still the "\nLife is beautiful", and not "\nLife is BeautifulLife is
     # beautiful"
-    qtbot.mouseClick(text_editor.readButton, QtCore.Qt.LeftButton)
+    qtbot.mouseClick(editing.toolbar.widgetForAction(editing.readAction),
+                     QtCore.Qt.LeftButton)
     check_final_line("Life is beautiful")
 
     # Try to zoom out, in, and reset, simply testing that the font has been
