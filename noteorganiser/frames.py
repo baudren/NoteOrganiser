@@ -175,6 +175,21 @@ class Editing(CustomFrame):
             self.previewAction.triggered.connect(self.preview)
             self.toolbar.addAction(self.previewAction)
 
+            # separator between general and notebook specific actions
+            self.toolbar.addSeparator()
+
+            # save the Text in the current notebook editor
+            self.saveAction = QtGui.QAction(self)
+            self.saveAction.setIconText('&Save')
+            self.saveAction.triggered.connect(self.saveText)
+            self.toolbar.addAction(self.saveAction)
+
+            # reload the Text in the current notebook editor
+            self.readAction = QtGui.QAction(self)
+            self.readAction.setIconText('&Reload')
+            self.readAction.triggered.connect(self.loadText)
+            self.toolbar.addAction(self.readAction)
+
         # Global horizontal layout
         hbox = QtGui.QHBoxLayout()
 
@@ -283,6 +298,16 @@ class Editing(CustomFrame):
         # recover the current editor
         editor = self.tabs.currentWidget()
         editor.resetSize()
+
+    def loadText(self):
+        """ reload the text in the current notebook """
+        notebook = self.tabs.currentWidget()
+        notebook.loadText()
+
+    def saveText(self):
+        """ save the text in the current notebook """
+        notebook = self.tabs.currentWidget()
+        notebook.saveText()
 
 
 class Preview(CustomFrame):
@@ -802,21 +827,6 @@ class TextEditor(CustomFrame):
 
     def initUI(self):
         """top menu bar and the text area"""
-        # Menu bar
-        menuBar = QtGui.QHBoxLayout()
-
-        self.saveButton = QtGui.QPushButton("&Save", self)
-        self.saveButton.clicked.connect(self.saveText)
-
-        self.readButton = QtGui.QPushButton("&Reload", self)
-        self.readButton.clicked.connect(self.loadText)
-
-        menuBar.addWidget(self.saveButton)
-        menuBar.addWidget(self.readButton)
-        menuBar.addStretch(1)
-
-        self.layout().addLayout(menuBar)
-
         # Text
         self.text = CustomTextEdit(self)
         self.text.setTabChangesFocus(True)
