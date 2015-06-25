@@ -261,9 +261,9 @@ class NoteOrganiser(QtGui.QMainWindow):
         activeTab = self.tabs.tabText(tabIndex)
         # activate, if there's a toolbar in library / editing
         if activeTab == "&Library":
-            self.library.toolbar.setVisible(True)
+            self.library.shelves.toolbar.setVisible(True)
         else:
-            self.library.toolbar.setVisible(False)
+            self.library.shelves.toolbar.setVisible(False)
         if activeTab == "&Editing":
             self.editing.toolbar.setVisible(True)
         else:
