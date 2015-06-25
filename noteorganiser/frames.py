@@ -790,6 +790,7 @@ class Shelves(CustomFrame):
     def updateUpAction(self):
         """
         update the state of the toolbar action 'Up'
+
         active if not in root
         """
         self.upAction.setDisabled(self.info.level == self.info.root)
