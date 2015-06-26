@@ -9,6 +9,7 @@ before_install:
   - sudo apt-get install -y pandoc
 install:
   - pip install PySide --no-index --find-links https://parkin.github.io/python-wheelhouse/;
+  - pip install qtpy
   # Travis CI servers use virtualenvs, so we need to finish the install by the following
   - python ~/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/pyside_postinstall.py -install
   - pip install coveralls
