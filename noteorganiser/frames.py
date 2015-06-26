@@ -157,6 +157,21 @@ class Editing(CustomFrame):
             self.toolbar = self.parent.addToolBar('Editing')
             self.toolbar.setVisible(False)
 
+            # save the Text in the current notebook editor
+            self.saveAction = QtGui.QAction(self)
+            self.saveAction.setIconText('&Save')
+            self.saveAction.triggered.connect(self.saveText)
+            self.toolbar.addAction(self.saveAction)
+
+            # reload the Text in the current notebook editor
+            self.readAction = QtGui.QAction(self)
+            self.readAction.setIconText('&Reload')
+            self.readAction.triggered.connect(self.loadText)
+            self.toolbar.addAction(self.readAction)
+
+            # separator between general and notebook specific actions
+            self.toolbar.addSeparator()
+
             # Create a new entry - new field in the current notebook
             self.newEntryAction = QtGui.QAction(self)
             self.newEntryAction.setIconText('&New entry')
@@ -174,21 +189,6 @@ class Editing(CustomFrame):
             self.previewAction.setIconText('&Preview notebook')
             self.previewAction.triggered.connect(self.preview)
             self.toolbar.addAction(self.previewAction)
-
-            # separator between general and notebook specific actions
-            self.toolbar.addSeparator()
-
-            # save the Text in the current notebook editor
-            self.saveAction = QtGui.QAction(self)
-            self.saveAction.setIconText('&Save')
-            self.saveAction.triggered.connect(self.saveText)
-            self.toolbar.addAction(self.saveAction)
-
-            # reload the Text in the current notebook editor
-            self.readAction = QtGui.QAction(self)
-            self.readAction.setIconText('&Reload')
-            self.readAction.triggered.connect(self.loadText)
-            self.toolbar.addAction(self.readAction)
 
         # Global horizontal layout
         hbox = QtGui.QHBoxLayout()
