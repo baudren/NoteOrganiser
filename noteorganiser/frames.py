@@ -63,7 +63,7 @@ class CustomFrame(QtGui.QFrame):
         """
         This will initialize a toolbar in the parent window
 
-        a daughter class should implement this function.
+        a daughter class should implement this function if it needs a toolbar.
 
         If this toolbar should only be visible, when the view is active,
         connect to tabs.currentChanged()
@@ -206,8 +206,6 @@ class Editing(CustomFrame):
 
     def initToolBar(self):
         """initialize the toolbar for this view"""
-
-        # Toolbar on top
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Editing')
             self.toolbar.setVisible(False)
@@ -442,7 +440,6 @@ class Preview(CustomFrame):
 
     def initToolBar(self):
         """initialize the toolbar for this view"""
-        # Toolbar on top
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Preview')
             self.toolbar.setVisible(False)
@@ -676,7 +673,6 @@ class Shelves(CustomFrame):
 
     def initToolBar(self):
         """initialize the toolbar for this view"""
-        # Toolbar on top
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.parent.addToolBar('Library')
 
