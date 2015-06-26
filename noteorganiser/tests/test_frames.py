@@ -1,8 +1,8 @@
 import os
 import shutil
 import datetime
-from PySide import QtGui
-from PySide import QtCore
+from qtpy import QtGui
+from qtpy import QtCore
 import pytest
 
 # Frames to test

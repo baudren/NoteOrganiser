@@ -8,8 +8,8 @@ from __future__ import unicode_literals
 # Main imports
 import sys
 import os
-from PySide import QtGui
-from PySide import QtCore
+from qtpy import QtGui
+from qtpy import QtCore
 
 # Local imports
 from noteorganiser.popups import SetExternalEditor

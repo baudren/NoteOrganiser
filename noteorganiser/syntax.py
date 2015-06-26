@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
-import PySide.QtGui as QtGui
-import PySide.QtCore as QtCore
+import qtpy.QtGui as QtGui
+import qtpy.QtCore as QtCore
 
 
 class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):

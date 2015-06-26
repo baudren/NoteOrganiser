@@ -6,7 +6,7 @@ this class is taken from the pyside examples:
 https://github.com/PySide/Examples/tree/master/examples/layouts
 """
 
-from PySide import QtCore, QtGui
+from qtpy import QtCore, QtGui
 
 
 class FlowLayout(QtGui.QLayout):

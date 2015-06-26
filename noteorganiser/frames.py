@@ -14,9 +14,9 @@ import io
 import traceback  # For failure display
 import time  # for sleep
 
-from PySide import QtGui
-from PySide import QtCore
-from PySide import QtWebKit
+from qtpy import QtGui
+from qtpy import QtCore
+from qtpy import QtWebKit
 
 from .flowlayout import FlowLayout
 

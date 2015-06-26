@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
-from PySide import QtGui
-from PySide import QtCore
+from qtpy import QtGui
+from qtpy import QtCore
 
 
 class PicButton(QtGui.QPushButton):

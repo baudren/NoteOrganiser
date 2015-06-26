@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
-from PySide import QtGui
-from PySide import QtCore
+from qtpy import QtGui
+from qtpy import QtCore
 import os
 
 from .constants import EXTENSION

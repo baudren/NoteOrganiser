@@ -2,7 +2,7 @@ import os
 import shutil
 import datetime
 import pytest
-from PySide import QtGui
+from qtpy import QtGui
 
 from ..logger import create_logger
 from ..configuration import search_folder_recursively

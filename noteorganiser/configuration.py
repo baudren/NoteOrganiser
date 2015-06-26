@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import os
 from noteorganiser.constants import EXTENSION
 
-from PySide import QtCore
+from qtpy import QtCore
 
 def initialise(logger):
     """
