@@ -79,7 +79,7 @@ def test_shelves(qtbot, parent, mocker):
 
     # Checking that the up button is currently inaccessible (we are still in
     # the root folder
-    assert not shelves.toolbar.widgetForAction(shelves.upAction).isEnabled(), \
+    assert not library.toolbar.widgetForAction(library.upAction).isEnabled(), \
         "upButton should be disabled while in root"
 
     # Checking the behaviour when clicking on a folder
@@ -88,20 +88,20 @@ def test_shelves(qtbot, parent, mocker):
         # Check that the info.level has changed properly
         assert shelves.info.level != shelves.info.root, "did not change dir"
         # Check that now, the upButton is enabled
-        assert shelves.toolbar.widgetForAction(shelves.upAction).isEnabled(), \
+        assert library.toolbar.widgetForAction(library.upAction).isEnabled(), \
             "upButton was not enabled"
     assert way_down.signal_triggered, "going down did not send a refreshSignal"
 
     # Go back to the root
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as way_up:
         #qtbot.mouseClick(shelves.upButton, QtCore.Qt.LeftButton)
-        qtbot.mouseClick(shelves.toolbar.widgetForAction(shelves.upAction),
+        qtbot.mouseClick(library.toolbar.widgetForAction(library.upAction),
                          QtCore.Qt.LeftButton)
         assert shelves.info.level == shelves.info.root, \
             "the upButton did not go back up"
         #TODO with toolbar items
         assert not \
-            shelves.toolbar.widgetForAction(shelves.upAction).isEnabled(), \
+            library.toolbar.widgetForAction(library.upAction).isEnabled(), \
             "the upButton was not properly reconnected"
     assert way_up.signal_triggered, "going up did not send a refreshSignal"
 
@@ -141,7 +141,7 @@ def test_shelves(qtbot, parent, mocker):
         # information
         QtCore.QTimer.singleShot(200, interact_newN)
         qtbot.mouseClick(
-            shelves.toolbar.widgetForAction(shelves.newNotebookAction),
+            library.toolbar.widgetForAction(library.newNotebookAction),
             QtCore.Qt.LeftButton)
 
         assert len(shelves.buttons) == 3, "the notebook was not created"
@@ -157,14 +157,14 @@ def test_shelves(qtbot, parent, mocker):
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as newF:
         QtCore.QTimer.singleShot(200, interact_newF)
         qtbot.mouseClick(
-            shelves.toolbar.widgetForAction(shelves.newFolderAction),
+            library.toolbar.widgetForAction(library.newFolderAction),
             QtCore.Qt.LeftButton)
         assert len(shelves.buttons) == 0, \
             "the folder was not created, or the level was not changed"
         # Create a notebook called toto inside the titi folder
         QtCore.QTimer.singleShot(200, interact_newN)
         qtbot.mouseClick(
-            shelves.toolbar.widgetForAction(shelves.newNotebookAction),
+            library.toolbar.widgetForAction(library.newNotebookAction),
             QtCore.Qt.LeftButton)
 
         assert len(shelves.buttons) == 1, "the notebook was not created"
@@ -175,7 +175,7 @@ def test_shelves(qtbot, parent, mocker):
 
     # Go back, and check that creating a new folder that already exists does
     # not overwrite it
-    qtbot.mouseClick(shelves.toolbar.widgetForAction(shelves.upAction),
+    qtbot.mouseClick(library.toolbar.widgetForAction(library.upAction),
                      QtCore.Qt.LeftButton)
 
     def interact_existingF():
@@ -185,7 +185,7 @@ def test_shelves(qtbot, parent, mocker):
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as existingF:
         QtCore.QTimer.singleShot(200, interact_existingF)
         qtbot.mouseClick(
-            shelves.toolbar.widgetForAction(shelves.newFolderAction),
+            library.toolbar.widgetForAction(library.newFolderAction),
             QtCore.Qt.LeftButton)
         assert len(shelves.buttons) == 1, \
             "the existing folder was overwritten"
