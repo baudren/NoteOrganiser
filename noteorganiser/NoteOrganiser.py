@@ -115,6 +115,12 @@ class NoteOrganiser(QtGui.QMainWindow):
         toggleUseTOC.setChecked(self.info.use_TOC)
         toggleUseTOC.triggered.connect(self.toggleUseTOC)
 
+        # Choose the main folder
+        mainFolderAction = QtGui.QAction('change the main directory', self)
+        mainFolderAction.setStatusTip(
+            'Select another folder as the root level for the notebooks')
+        mainFolderAction.triggered.connect(self.chooseMainFolder)
+
         # Zoom-in
         zoomInAction = QtGui.QAction('Zoom-in', self)
         zoomInAction.setShortcut('Ctrl++')
@@ -145,6 +151,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         optionsMenu.addAction(toggleRefreshAction)
         optionsMenu.addAction(externalEditor)
         optionsMenu.addAction(toggleUseTOC)
+        optionsMenu.addAction(mainFolderAction)
 
         # Display menu
         displayMenu = menubar.addMenu('&Display')
@@ -183,6 +190,21 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
         self.settings.setValue("use_TOC", self.info.use_TOC)
         self.preview.reload()
+
+    def chooseMainFolder(self):
+        """Select another folder for the source of notebooks"""
+        # Recover the folder path and the notebooks
+        root, notebooks, folders = conf.initialise(
+            self.log, force_folder_change=True)
+
+        # Create an instance of the Information class to store all this.
+        self.info.root = root
+        self.info.level = root
+        self.info.notebooks = notebooks
+        self.info.folders = folders
+
+        # Refresh the display of the current widget
+        self.tabs.currentWidget().refresh()
 
     def initStatusBar(self):
         """Defining the status bar"""
