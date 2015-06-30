@@ -9,18 +9,44 @@ import os
 from noteorganiser.constants import EXTENSION
 
 from PySide import QtCore
+from PySide import QtGui
 
-def initialise(logger):
+
+def initialise(logger, force_folder_change=False):
     """
     Platform independent recovery of the main folder and notebooks
 
     """
-    # Platform independent recovery of the home directory. It is always put as
-    # a hidden folder, '.noteorganiser', in the unix tradition.
+    # Platform independent recovery of the home directory.
     home = os.path.expanduser("~")
-    main = os.path.join(home, '.noteorganiser')
 
+    # Recover existing settings
     settings = QtCore.QSettings("audren", "NoteOrganiser")
+
+    # Set the location of the output. Default is the home folder, but the user
+    # can choose a cloud-synced folder instead.
+    if settings.contains("home_folder") and not force_folder_change:
+        main = settings.value("home_folder")
+    else:
+        # Bring popup to ask for a folder, with folder navigation
+        dialog = QtGui.QFileDialog()
+        dialog.setFileMode(QtGui.QFileDialog.Directory)
+        dialog.setOption(QtGui.QFileDialog.ShowDirsOnly)
+        text = ""
+        if not force_folder_change:
+            text += "Welcome to Note Organiser! "
+        text += ("Please choose a folder to store your notes. "
+                 "Cancel for default.")
+        if not force_folder_change:
+            main = dialog.getExistingDirectory(
+                None, text, home)
+        else:
+            main = dialog.getExistingDirectory(
+                None, text, settings.value("home_folder"))
+        if not main:
+            main = os.path.join(home, '.noteorganiser')
+        settings.setValue("home_folder", main)
+
     if settings.contains("display_empty"):
         if settings.value("display_empty") == "true":
             display_empty = True
