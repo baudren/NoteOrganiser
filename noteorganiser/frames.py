@@ -60,6 +60,34 @@ class CustomFrame(QtGui.QFrame):
         """
         raise NotImplementedError
 
+    def initToolBar(self):
+        """
+        This will initialize a toolbar in the parent window
+
+        a daughter class should implement this function if it needs a toolbar.
+
+        If this toolbar should only be visible, when the view is active,
+        connect to tabs.currentChanged()
+        Example:
+            @QtCore.Slot(int)
+            def showActiveToolBar(self, tabIndex):
+                activeTab = self.tabs.tabText(tabIndex)
+                # activate, if there's a toolbar in library / editing
+                if activeTab == "&Library":
+                    self.library.shelves.toolbar.setVisible(True)
+                else:
+                    self.library.shelves.toolbar.setVisible(False)
+                if activeTab == "&Editing":
+                    self.editing.toolbar.setVisible(True)
+                else:
+                    self.editing.toolbar.setVisible(False)
+                if activeTab == "Previe&w":
+                    self.preview.toolbar.setVisible(True)
+                else:
+                    self.preview.toolbar.setVisible(False)
+        """
+        raise NotImplementedError
+
     def clearUI(self):
         """ Common method for recursively cleaning layouts """
         while self.layout().count():
@@ -120,7 +148,36 @@ class Library(CustomFrame):
         self.shelves = Shelves(self)
         self.layout().addWidget(self.shelves)
 
+        #toolbar on top
+        self.initToolBar()
+
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
+
+    def initToolBar(self):
+        """initialize the toolbar for this view"""
+        if not hasattr(self, 'toolbar'):
+            self.toolbar = self.parent.addToolBar('Library')
+
+            # Go up in the directories (disabled if in the root directory)
+            self.upAction = QtGui.QAction(self)
+            self.upAction.setIconText('&Up')
+            self.upAction.triggered.connect(self.shelves.upFolder)
+            if self.info.level == self.info.root:
+                self.upAction.setDisabled(True)
+            self.toolbar.addAction(self.upAction)
+
+            # Create a new notebook
+            self.newNotebookAction = QtGui.QAction(self)
+            self.newNotebookAction.setIconText('&New Notebook')
+            self.newNotebookAction.triggered.connect(
+                self.shelves.createNotebook)
+            self.toolbar.addAction(self.newNotebookAction)
+
+            # Create a new folder
+            self.newFolderAction = QtGui.QAction(self)
+            self.newFolderAction.setIconText('New &Folder')
+            self.newFolderAction.triggered.connect(self.shelves.createFolder)
+            self.toolbar.addAction(self.newFolderAction)
 
     def refresh(self):
         """ Refresh all elements of the frame """
@@ -153,20 +210,11 @@ class Editing(CustomFrame):
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
+        #toolbar on top
+        self.initToolBar()
+
         # Global horizontal layout
         hbox = QtGui.QHBoxLayout()
-
-        # New Entry Button to enter a new field in the current notebook
-        self.newEntryButton = QtGui.QPushButton("&New entry", self)
-        self.newEntryButton.clicked.connect(self.newEntry)
-
-        # Edit in an exterior editor TODO
-        self.editButton = QtGui.QPushButton("Edit (e&xterior editor)", self)
-        self.editButton.clicked.connect(self.editExternal)
-
-        # Launch the previewing of the current notebook
-        self.previewButton = QtGui.QPushButton("&Preview notebook", self)
-        self.previewButton.clicked.connect(self.preview)
 
         # Create the tabbed widgets containing the text editors. The tabs will
         # appear on the left-hand side
@@ -181,19 +229,49 @@ class Editing(CustomFrame):
             # Add the text editor to the tabbed area
             self.tabs.addTab(editor, os.path.splitext(notebook)[0])
 
-        # Create the vertical layout for the right-hand side button
-        vbox = QtGui.QVBoxLayout()
-
-        vbox.addWidget(self.newEntryButton)
-        vbox.addWidget(self.editButton)
-        vbox.addWidget(self.previewButton)
-
         hbox.addWidget(self.tabs)
-        hbox.addLayout(vbox)
-
         self.layout().addLayout(hbox)
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
+
+    def initToolBar(self):
+        """initialize the toolbar for this view"""
+        if not hasattr(self, 'toolbar'):
+            self.toolbar = self.parent.addToolBar('Editing')
+            self.toolbar.setVisible(False)
+
+            # save the Text in the current notebook editor
+            self.saveAction = QtGui.QAction(self)
+            self.saveAction.setIconText('&Save')
+            self.saveAction.triggered.connect(self.saveText)
+            self.toolbar.addAction(self.saveAction)
+
+            # reload the Text in the current notebook editor
+            self.readAction = QtGui.QAction(self)
+            self.readAction.setIconText('&Reload')
+            self.readAction.triggered.connect(self.loadText)
+            self.toolbar.addAction(self.readAction)
+
+            # separator between general and notebook specific actions
+            self.toolbar.addSeparator()
+
+            # Create a new entry - new field in the current notebook
+            self.newEntryAction = QtGui.QAction(self)
+            self.newEntryAction.setIconText('&New entry')
+            self.newEntryAction.triggered.connect(self.newEntry)
+            self.toolbar.addAction(self.newEntryAction)
+
+            # Edit in an exterior editor
+            self.editAction = QtGui.QAction(self)
+            self.editAction.setIconText('Edit (e&xterior editor)')
+            self.editAction.triggered.connect(self.editExternal)
+            self.toolbar.addAction(self.editAction)
+
+            # Launch the previewing of the current notebook
+            self.previewAction = QtGui.QAction(self)
+            self.previewAction.setIconText('&Preview notebook')
+            self.previewAction.triggered.connect(self.preview)
+            self.toolbar.addAction(self.previewAction)
 
     def refresh(self):
         """Redraw the UI (time consuming...)"""
@@ -283,6 +361,16 @@ class Editing(CustomFrame):
         editor = self.tabs.currentWidget()
         editor.resetSize()
 
+    def loadText(self):
+        """reload the text in the current notebook"""
+        notebook = self.tabs.currentWidget()
+        notebook.loadText()
+
+    def saveText(self):
+        """save the text in the current notebook"""
+        notebook = self.tabs.currentWidget()
+        notebook.saveText()
+
 
 class Preview(CustomFrame):
     r"""
@@ -331,6 +419,9 @@ class Preview(CustomFrame):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
         self.layout().setDirection(QtGui.QBoxLayout.LeftToRight)
 
+        #toolbar on top
+        self.initToolBar()
+
         # Left hand side: html window
         self.web = QtWebKit.QWebView(self)
 
@@ -376,6 +467,18 @@ class Preview(CustomFrame):
 
         # Logging
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
+
+    def initToolBar(self):
+        """initialize the toolbar for this view"""
+        if not hasattr(self, 'toolbar'):
+            self.toolbar = self.parent.addToolBar('Preview')
+            self.toolbar.setVisible(False)
+
+            # Reload Action
+            self.reloadAction = QtGui.QAction(self)
+            self.reloadAction.setIconText('&Reload')
+            self.reloadAction.triggered.connect(self.reload)
+            self.toolbar.addAction(self.reloadAction)
 
     def addFilter(self):
         """
@@ -572,6 +675,9 @@ class Shelves(CustomFrame):
         self.path = os.path.dirname(__file__)
         self.buttons = []
 
+        # update state of UpAction when shelves get refreshed
+        self.refreshSignal.connect(self.updateUpAction)
+
         # Store the number of objects per line, for faster redrawing on
         # resizing. Initially set to zero, it will, the first time, be set by
         # the method createLines, and then be compared to.
@@ -592,29 +698,6 @@ class Shelves(CustomFrame):
         scrollArea.setWidget(dummy)
 
         self.layout().addWidget(scrollArea)
-        # Create the navigation symbols
-        hboxLayout = QtGui.QHBoxLayout()
-
-        # Go up in the directories (disabled if in the root directory)
-        self.upButton = QtGui.QPushButton("&Up")
-        self.upButton.clicked.connect(self.upFolder)
-        if self.info.level == self.info.root:
-            self.upButton.setDisabled(True)
-
-        # Create a new notebook
-        self.newNotebookButton = QtGui.QPushButton("&New Notebook")
-        self.newNotebookButton.clicked.connect(self.createNotebook)
-
-        # Create a new folder
-        self.newFolderButton = QtGui.QPushButton("New &Folder")
-        self.newFolderButton.clicked.connect(self.createFolder)
-
-        hboxLayout.addWidget(self.upButton)
-        hboxLayout.addWidget(self.newNotebookButton)
-        hboxLayout.addWidget(self.newFolderButton)
-        hboxLayout.addStretch(1)
-
-        self.layout().addLayout(hboxLayout)
 
     def refresh(self):
         # Redraw the graphical interface.
@@ -806,6 +889,14 @@ class Shelves(CustomFrame):
         path = os.path.join(self.info.level, notebook+EXTENSION)
         self.previewSignal.emit(path)
 
+    def updateUpAction(self):
+        """
+        update the state of the toolbar action 'Up'
+
+        active if not in root
+        """
+        self.parent.upAction.setDisabled(self.info.level == self.info.root)
+
 
 class TextEditor(CustomFrame):
     """Custom text editor"""
@@ -813,21 +904,6 @@ class TextEditor(CustomFrame):
 
     def initUI(self):
         """top menu bar and the text area"""
-        # Menu bar
-        menuBar = QtGui.QHBoxLayout()
-
-        self.saveButton = QtGui.QPushButton("&Save", self)
-        self.saveButton.clicked.connect(self.saveText)
-
-        self.readButton = QtGui.QPushButton("&Reload", self)
-        self.readButton.clicked.connect(self.loadText)
-
-        menuBar.addWidget(self.saveButton)
-        menuBar.addWidget(self.readButton)
-        menuBar.addStretch(1)
-
-        self.layout().addLayout(menuBar)
-
         # Text
         self.text = CustomTextEdit(self)
         self.text.setTabChangesFocus(True)

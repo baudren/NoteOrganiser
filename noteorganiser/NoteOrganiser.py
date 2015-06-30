@@ -209,6 +209,9 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.log.info("Setting the central widget")
         self.setCentralWidget(self.tabs)
 
+        # show only the toolbar for the active tab
+        self.tabs.currentChanged.connect(self.showActiveToolBar)
+
     def initLogic(self):
         """Linking signals from widgets to functions"""
         self.state = 'library'
@@ -256,6 +259,24 @@ class NoteOrganiser(QtGui.QMainWindow):
 
     def resetSize(self):
         self.tabs.currentWidget().resetSize()
+
+    @QtCore.Slot(int)
+    def showActiveToolBar(self, tabIndex):
+        """show only the toolbar for the active tab"""
+        activeTab = self.tabs.tabText(tabIndex)
+        # activate, if there's a toolbar in library / editing
+        if activeTab == "&Library":
+            self.library.toolbar.setVisible(True)
+        else:
+            self.library.toolbar.setVisible(False)
+        if activeTab == "&Editing":
+            self.editing.toolbar.setVisible(True)
+        else:
+            self.editing.toolbar.setVisible(False)
+        if activeTab == "Previe&w":
+            self.preview.toolbar.setVisible(True)
+        else:
+            self.preview.toolbar.setVisible(False)
 
 
 def main(args):

@@ -60,7 +60,8 @@ def test_library(qtbot, parent):
 
 def test_shelves(qtbot, parent, mocker):
     # Creating the shelves, and adding them to the bot
-    shelves = Shelves(parent)
+    library = Library(parent)
+    shelves = library.shelves
     qtbot.addWidget(shelves)
 
     # Checking if the buttons list was created, and that it contains only two
@@ -78,7 +79,7 @@ def test_shelves(qtbot, parent, mocker):
 
     # Checking that the up button is currently inaccessible (we are still in
     # the root folder
-    assert not shelves.upButton.isEnabled(), \
+    assert not library.toolbar.widgetForAction(library.upAction).isEnabled(), \
         "upButton should be disabled while in root"
 
     # Checking the behaviour when clicking on a folder
@@ -87,15 +88,20 @@ def test_shelves(qtbot, parent, mocker):
         # Check that the info.level has changed properly
         assert shelves.info.level != shelves.info.root, "did not change dir"
         # Check that now, the upButton is enabled
-        assert shelves.upButton.isEnabled(), "upButton was not enabled"
+        assert library.toolbar.widgetForAction(library.upAction).isEnabled(), \
+            "upButton was not enabled"
     assert way_down.signal_triggered, "going down did not send a refreshSignal"
 
     # Go back to the root
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as way_up:
-        qtbot.mouseClick(shelves.upButton, QtCore.Qt.LeftButton)
+        #qtbot.mouseClick(shelves.upButton, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(library.toolbar.widgetForAction(library.upAction),
+                         QtCore.Qt.LeftButton)
         assert shelves.info.level == shelves.info.root, \
             "the upButton did not go back up"
-        assert not shelves.upButton.isEnabled(), \
+        #TODO with toolbar items
+        assert not \
+            library.toolbar.widgetForAction(library.upAction).isEnabled(), \
             "the upButton was not properly reconnected"
     assert way_up.signal_triggered, "going up did not send a refreshSignal"
 
@@ -134,7 +140,9 @@ def test_shelves(qtbot, parent, mocker):
         # Create a timer, to let the window be created, then fill in the
         # information
         QtCore.QTimer.singleShot(200, interact_newN)
-        qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(
+            library.toolbar.widgetForAction(library.newNotebookAction),
+            QtCore.Qt.LeftButton)
 
         assert len(shelves.buttons) == 3, "the notebook was not created"
         assert shelves.info.notebooks[-1] == 'toto'+EXTENSION, \
@@ -148,12 +156,16 @@ def test_shelves(qtbot, parent, mocker):
 
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as newF:
         QtCore.QTimer.singleShot(200, interact_newF)
-        qtbot.mouseClick(shelves.newFolderButton, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(
+            library.toolbar.widgetForAction(library.newFolderAction),
+            QtCore.Qt.LeftButton)
         assert len(shelves.buttons) == 0, \
             "the folder was not created, or the level was not changed"
         # Create a notebook called toto inside the titi folder
         QtCore.QTimer.singleShot(200, interact_newN)
-        qtbot.mouseClick(shelves.newNotebookButton, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(
+            library.toolbar.widgetForAction(library.newNotebookAction),
+            QtCore.Qt.LeftButton)
 
         assert len(shelves.buttons) == 1, "the notebook was not created"
         assert shelves.info.notebooks == ['toto'+EXTENSION], \
@@ -163,7 +175,8 @@ def test_shelves(qtbot, parent, mocker):
 
     # Go back, and check that creating a new folder that already exists does
     # not overwrite it
-    qtbot.mouseClick(shelves.upButton, QtCore.Qt.LeftButton)
+    qtbot.mouseClick(library.toolbar.widgetForAction(library.upAction),
+                     QtCore.Qt.LeftButton)
 
     def interact_existingF():
         qtbot.keyClicks(shelves.popup.nameLineEdit, 'toto')
@@ -171,7 +184,9 @@ def test_shelves(qtbot, parent, mocker):
 
     with qtbot.waitSignal(shelves.refreshSignal, timeout=1000) as existingF:
         QtCore.QTimer.singleShot(200, interact_existingF)
-        qtbot.mouseClick(shelves.newFolderButton, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(
+            library.toolbar.widgetForAction(library.newFolderAction),
+            QtCore.Qt.LeftButton)
         assert len(shelves.buttons) == 1, \
             "the existing folder was overwritten"
     assert existingF.signal_triggered
@@ -192,7 +207,8 @@ def test_shelves(qtbot, parent, mocker):
 
 
 def test_text_editor(qtbot, parent):
-    text_editor = TextEditor(parent)
+    editing = Editing(parent)
+    text_editor = editing.tabs.currentWidget()
     qtbot.addWidget(text_editor)
 
     # Load the file
@@ -230,7 +246,8 @@ def test_text_editor(qtbot, parent):
     # Reload from disk, and check that the last line is gone (i.e., that there
     # is still the "\nLife is beautiful", and not "\nLife is BeautifulLife is
     # beautiful"
-    qtbot.mouseClick(text_editor.readButton, QtCore.Qt.LeftButton)
+    qtbot.mouseClick(editing.toolbar.widgetForAction(editing.readAction),
+                     QtCore.Qt.LeftButton)
     check_final_line("Life is beautiful")
 
     # Try to zoom out, in, and reset, simply testing that the font has been
@@ -272,7 +289,8 @@ def test_editing(qtbot, parent):
         qtbot.mouseClick(editing.popup.okButton, QtCore.Qt.LeftButton)
 
     QtCore.QTimer.singleShot(200, interact_newEntry)
-    qtbot.mouseClick(editing.newEntryButton, QtCore.Qt.LeftButton)
+    qtbot.mouseClick(editing.toolbar.widgetForAction(editing.newEntryAction),
+                     QtCore.Qt.LeftButton)
 
     # Check that the entry was appended, with the date properly set
     new_text = editing.tabs.currentWidget().text.toPlainText()[
@@ -284,7 +302,9 @@ def test_editing(qtbot, parent):
 
     # Check if preview button works by sending the signal loadNotebook
     with qtbot.waitSignal(editing.loadNotebook, timeout=1000) as preview:
-        qtbot.mouseClick(editing.previewButton, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(
+            editing.toolbar.widgetForAction(editing.previewAction),
+            QtCore.Qt.LeftButton)
 
     assert preview.signal_triggered, \
         "asking for previewing does not send the right signal"
