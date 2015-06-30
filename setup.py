@@ -24,7 +24,9 @@ ASSETS = [('', ['VERSION']),
            [os.path.join(ASSET_FOLDER, 'notebook-128.png'),
             os.path.join(ASSET_FOLDER, 'folder-128.png')]),
           (STYLE_FOLDER,
-           [os.path.join(STYLE_FOLDER, 'default.css')]), ]
+           [os.path.join(STYLE_FOLDER, 'default.css'),
+            os.path.join(STYLE_FOLDER, 'bootstrap.css'),
+            os.path.join(STYLE_FOLDER, 'bootstrap-blog.html')]), ]
 
 setup(name='NoteOrganiser',
       version=VERSION,
