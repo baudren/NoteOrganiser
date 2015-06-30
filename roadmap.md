@@ -5,7 +5,7 @@ Backlog
 - [ ] Document more.
 - [ ] Improve keyboard shortcuts (ctrl instead of alt, etc).
 - [ ] Ensure proper key navigation at all times (sometimes ctrl+tab does not
--     switch between tabs)
+      switch between tabs)
 - [ ] testing the right-click menu on buttons
 - [ ] Allow for a different location of the .noteorganiser folder (on SpiderOak
       instead of home directory, for instance)
@@ -41,6 +41,8 @@ Backlog
 Future work
 ===========
 
+- [ ] have a preview of the entry while typing it
+- [ ] rethink the user experience: library panel? browsing?
 - [ ] colored icons and tags, with colors chosen by the user
 - [ ] support well multi-screen
 - [ ] use only one webpage, and stop displaying members instead of generating all
