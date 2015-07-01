@@ -285,20 +285,11 @@ class NoteOrganiser(QtGui.QMainWindow):
     @QtCore.Slot(int)
     def showActiveToolBar(self, tabIndex):
         """show only the toolbar for the active tab"""
-        activeTab = self.tabs.tabText(tabIndex)
-        # activate, if there's a toolbar in library / editing
-        if activeTab == "&Library":
-            self.library.toolbar.setVisible(True)
-        else:
-            self.library.toolbar.setVisible(False)
-        if activeTab == "&Editing":
-            self.editing.toolbar.setVisible(True)
-        else:
-            self.editing.toolbar.setVisible(False)
-        if activeTab == "Previe&w":
-            self.preview.toolbar.setVisible(True)
-        else:
-            self.preview.toolbar.setVisible(False)
+        getattr(self, self.states[tabIndex]).toolbar.setVisible(True)
+        for index in range(len(self.states)):
+            if index != tabIndex:
+                getattr(self,
+                        self.states[index]).toolbar.setVisible(False)
 
 
 def main(args):
