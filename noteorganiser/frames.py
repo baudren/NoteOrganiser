@@ -431,8 +431,8 @@ class Preview(CustomFrame):
         self.css = os.path.join(path, 'assets', 'style', 'bootstrap.css')
         self.template = os.path.join(
             path, 'assets', 'style', 'bootstrap-blog.html')
-        #self.web.settings().setUserStyleSheetUrl(QtCore.QUrl.fromLocalFile(
-            #self.css))
+        self.web.settings().setUserStyleSheetUrl(QtCore.QUrl.fromLocalFile(
+            self.css))
 
         # The 1 stands for a stretch factor, set to 0 by default (seems to be
         # only for QWebView, though...
