@@ -3,6 +3,7 @@ import shutil
 import datetime
 from qtpy import QtGui
 from qtpy import QtCore
+from qtpy import QtWidgets
 import pytest
 
 # Frames to test
@@ -108,8 +109,8 @@ def test_shelves(qtbot, parent, mocker):
     # Test clicking on the menu, should actually delete the file, and send a
     # refresh signal. TODO. temporary fix: call directly removeNotebook method
     # Mock the question QMessageBox
-    question = mocker.patch.object(QtGui.QMessageBox, 'question',
-                                   return_value=QtGui.QMessageBox.No)
+    question = mocker.patch.object(QtWidgets.QMessageBox, 'question',
+                                   return_value=QtWidgets.QMessageBox.No)
     shelves.removeNotebook('example')
     # Check that nothing happened
     assert len(shelves.buttons) == 3, \
@@ -117,7 +118,7 @@ def test_shelves(qtbot, parent, mocker):
 
     with qtbot.waitSignal(shelves.refreshSignal, timeout=2000) as remove:
         # Reuse the question object because of a Pyside bug under Python 3.3
-        question.return_value = QtGui.QMessageBox.Yes
+        question.return_value = QtWidgets.QMessageBox.Yes
         shelves.removeNotebook('example')
     assert remove.signal_triggered
     # Check that the file was indeed removed

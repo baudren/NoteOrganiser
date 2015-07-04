@@ -2,7 +2,7 @@ import os
 import shutil
 import datetime
 import pytest
-from qtpy import QtGui
+from qtpy import QtWidgets
 
 from ..logger import create_logger
 from ..configuration import search_folder_recursively
@@ -33,7 +33,7 @@ def parent(request, qtbot):
         subfolder)
     # Create a parent window, containing an information instance, and a
     # logger
-    parent = QtGui.QFrame()
+    parent = QtWidgets.QFrame()
     qtbot.addWidget(parent)
     log = create_logger('CRITICAL', 'stream')
     # Create an info instance
