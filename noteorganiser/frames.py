@@ -17,6 +17,7 @@ import time  # for sleep
 from qtpy import QtGui
 from qtpy import QtCore
 from qtpy import QtWebKit
+from qtpy import QtWidgets
 
 from .flowlayout import FlowLayout
 
@@ -31,21 +32,21 @@ from .syntax import ModifiedMarkdownHighlighter
 from .widgets import PicButton, VerticalScrollArea
 
 
-class CustomFrame(QtGui.QFrame):
+class CustomFrame(QtWidgets.QFrame):
     """
     Base class for all three tabbed frames
 
     """
     def __init__(self, parent=None):
         """ Create the basic layout """
-        QtGui.QFrame.__init__(self, parent)
+        QtWidgets.QFrame.__init__(self, parent)
         # Create a shortcut notation for the main information
         self.parent = parent
         self.info = parent.info
         self.log = parent.log
 
         # Create the main layout
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
 
         if hasattr(self, 'initLogic'):
             self.initLogic()
@@ -64,7 +65,7 @@ class CustomFrame(QtGui.QFrame):
         """ Common method for recursively cleaning layouts """
         while self.layout().count():
             item = self.layout().takeAt(0)
-            if isinstance(item, QtGui.QLayout):
+            if isinstance(item, QtWidgets.QLayout):
                 self.clearLayout(item)
                 item.deleteLater()
             else:
@@ -148,30 +149,31 @@ class Editing(CustomFrame):
     ---------------------------------------------------
     """
     # Launched when the previewer is desired
-    loadNotebook = QtCore.Signal(str)
+    loadNotebook = QtCore.pyqtSignal(str)
 
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
         # Global horizontal layout
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
 
         # New Entry Button to enter a new field in the current notebook
-        self.newEntryButton = QtGui.QPushButton("&New entry", self)
+        self.newEntryButton = QtWidgets.QPushButton("&New entry", self)
         self.newEntryButton.clicked.connect(self.newEntry)
 
         # Edit in an exterior editor TODO
-        self.editButton = QtGui.QPushButton("Edit (e&xterior editor)", self)
+        self.editButton = QtWidgets.QPushButton(
+            "Edit (e&xterior editor)", self)
         self.editButton.clicked.connect(self.editExternal)
 
         # Launch the previewing of the current notebook
-        self.previewButton = QtGui.QPushButton("&Preview notebook", self)
+        self.previewButton = QtWidgets.QPushButton("&Preview notebook", self)
         self.previewButton.clicked.connect(self.preview)
 
         # Create the tabbed widgets containing the text editors. The tabs will
         # appear on the left-hand side
-        self.tabs = QtGui.QTabWidget(self)
-        self.tabs.setTabPosition(QtGui.QTabWidget.West)
+        self.tabs = QtWidgets.QTabWidget(self)
+        self.tabs.setTabPosition(QtWidgets.QTabWidget.West)
 
         # The loop is over all the notebooks in the **current** folder
         for notebook in self.info.notebooks:
@@ -182,7 +184,7 @@ class Editing(CustomFrame):
             self.tabs.addTab(editor, os.path.splitext(notebook)[0])
 
         # Create the vertical layout for the right-hand side button
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
 
         vbox.addWidget(self.newEntryButton)
         vbox.addWidget(self.editButton)
@@ -243,8 +245,8 @@ class Editing(CustomFrame):
             self.log.info('external editor opened for notebook %s' % notebook)
         except OSError as e:
             self.log.error('Execution of external editor failed: %s' % e)
-            self.popup = QtGui.QMessageBox(self)
-            self.popup.setIcon(QtGui.QMessageBox.Critical)
+            self.popup = QtWidgets.QMessageBox(self)
+            self.popup.setIcon(QtWidgets.QMessageBox.Critical)
             self.popup.setWindowTitle('NoteOrganiser')
             self.popup.setText(
                 "The external editor '%s' couldn't be opened." % (
@@ -303,7 +305,7 @@ class Preview(CustomFrame):
     ---------------------------------------------------
     """
     # Launched when the editor is desired after failed conversion
-    loadEditor = QtCore.Signal(str, str)
+    loadEditor = QtCore.pyqtSignal(str, str)
 
     def initLogic(self):
         """
@@ -323,13 +325,13 @@ class Preview(CustomFrame):
         self.filters = []
 
         # Shortcuts for resizing
-        acceptShortcut = QtGui.QShortcut(
+        acceptShortcut = QtWidgets.QShortcut(
             QtGui.QKeySequence(self.tr("Ctrl+k")), self)
         acceptShortcut.activated.connect(self.zoomIn)
 
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
-        self.layout().setDirection(QtGui.QBoxLayout.LeftToRight)
+        self.layout().setDirection(QtWidgets.QBoxLayout.LeftToRight)
 
         # Left hand side: html window
         self.web = QtWebKit.QWebView(self)
@@ -346,21 +348,21 @@ class Preview(CustomFrame):
         self.layout().addWidget(self.web, 1)
 
         # Right hand side: Vertical layout for the tags inside a QScrollArea
-        scrollArea = QtGui.QScrollArea()
+        scrollArea = QtWidgets.QScrollArea()
         scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         scrollArea.verticalScrollBar().setFocusPolicy(QtCore.Qt.StrongFocus)
 
         # Need to create a dummy Widget, because QScrollArea can not accept a
         # layout, only a Widget
-        dummy = QtGui.QWidget()
+        dummy = QtWidgets.QWidget()
         # Limit its width
         dummy.setFixedWidth(200)
 
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
         self.tagButtons = []
         if self.extracted_tags:
             for key, value in six.iteritems(self.extracted_tags):
-                tag = QtGui.QPushButton(key)
+                tag = QtWidgets.QPushButton(key)
                 tag.setFlat(False)
                 tag.setMinimumSize(100, 40+5*value)
                 tag.setMaximumWidth(165)
@@ -460,8 +462,8 @@ class Preview(CustomFrame):
                 path, input_tags=tags)
         except (IndexError, UnboundLocalError):
             self.log.error("Conversion of %s to markdown failed" % path)
-            self.popup = QtGui.QMessageBox(self)
-            self.popup.setIcon(QtGui.QMessageBox.Critical)
+            self.popup = QtWidgets.QMessageBox(self)
+            self.popup.setIcon(QtWidgets.QMessageBox.Critical)
             self.popup.setText(
                 "<b>The conversion to markdown has unexpectedly failed!</b>")
             self.popup.setInformativeText("%s" % traceback.format_exc())
@@ -472,8 +474,8 @@ class Preview(CustomFrame):
             self.log.warn(
                 "There was an expected error in converting"
                 " %s to markdown" % path)
-            self.popup = QtGui.QMessageBox(self)
-            self.popup.setIcon(QtGui.QMessageBox.Warning)
+            self.popup = QtWidgets.QMessageBox(self)
+            self.popup.setIcon(QtWidgets.QMessageBox.Warning)
             self.popup.setText(
                 "<b>Oups, you (probably) did a syntax error!</b>")
             self.popup.setInformativeText("%s" % e.message)
@@ -559,15 +561,16 @@ class Shelves(CustomFrame):
 
     """
     # Fired when a change is made, so that the Editing panel can also adapt
-    refreshSignal = QtCore.Signal()
+    refreshSignal = QtCore.pyqtSignal()
     # Fired when a notebook is clicked, to navigate to the editor.
     # TODO also define as a shift+click to directly open the previewer
-    switchTabSignal = QtCore.Signal(str, str)
-    previewSignal = QtCore.Signal(str)
+    switchTabSignal = QtCore.pyqtSignal(str, str)
+    previewSignal = QtCore.pyqtSignal(str)
 
     def initUI(self):
         """Create the physical shelves"""
-        self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
+        self.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Sunken)
 
         self.path = os.path.dirname(__file__)
         self.buttons = []
@@ -581,9 +584,9 @@ class Shelves(CustomFrame):
 
         # Need to create a dummy Widget, because QScrollArea can not accept a
         # layout, only a Widget
-        dummy = QtGui.QWidget()
+        dummy = QtWidgets.QWidget()
 
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
         grid = self.createLines()
 
         vbox.addLayout(grid)
@@ -593,20 +596,20 @@ class Shelves(CustomFrame):
 
         self.layout().addWidget(scrollArea)
         # Create the navigation symbols
-        hboxLayout = QtGui.QHBoxLayout()
+        hboxLayout = QtWidgets.QHBoxLayout()
 
         # Go up in the directories (disabled if in the root directory)
-        self.upButton = QtGui.QPushButton("&Up")
+        self.upButton = QtWidgets.QPushButton("&Up")
         self.upButton.clicked.connect(self.upFolder)
         if self.info.level == self.info.root:
             self.upButton.setDisabled(True)
 
         # Create a new notebook
-        self.newNotebookButton = QtGui.QPushButton("&New Notebook")
+        self.newNotebookButton = QtWidgets.QPushButton("&New Notebook")
         self.newNotebookButton.clicked.connect(self.createNotebook)
 
         # Create a new folder
-        self.newFolderButton = QtGui.QPushButton("New &Folder")
+        self.newFolderButton = QtWidgets.QPushButton("New &Folder")
         self.newFolderButton.clicked.connect(self.createFolder)
 
         hboxLayout.addWidget(self.upButton)
@@ -660,8 +663,8 @@ class Shelves(CustomFrame):
             folder_path = os.path.join(self.info.root, folder_name)
             self.info.notebooks, self.info.folders = search_folder_recursively(
                 self.log, folder_path, self.info.display_empty)
-            # Update the current level as the folder_path, and refresh the content
-            # of the window
+            # Update the current level as the folder_path, and refresh the
+            # content of the window
             self.info.level = folder_path
             self.refresh()
 
@@ -675,7 +678,7 @@ class Shelves(CustomFrame):
         self.settings.setValue("display_empty", self.info.display_empty)
         self.refresh()
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def removeNotebook(self, notebook):
         """Remove the notebook"""
         self.log.info(
@@ -684,15 +687,15 @@ class Shelves(CustomFrame):
 
         # Assert that the file is empty, or ask for confirmation
         if os.stat(path).st_size != 0:
-            self.reply = QtGui.QMessageBox.question(
+            self.reply = QtWidgets.QMessageBox.question(
                 self, 'Message',
                 "Are you sure you want to delete %s?" % notebook,
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
-                QtGui.QMessageBox.No)
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                QtWidgets.QMessageBox.No)
         else:
-            self.reply = QtGui.QMessageBox.Yes
+            self.reply = QtWidgets.QMessageBox.Yes
 
-        if self.reply == QtGui.QMessageBox.Yes:
+        if self.reply == QtWidgets.QMessageBox.Yes:
             os.remove(path)
             # Delete the reference to the notebook
             index = self.info.notebooks.index(notebook+EXTENSION)
@@ -704,7 +707,7 @@ class Shelves(CustomFrame):
         else:
             self.log.info("Aborting")
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def removeFolder(self, folder):
         """Remove the folder, with confirmation if non-empty"""
         self.log.info(
@@ -713,16 +716,16 @@ class Shelves(CustomFrame):
 
         # Assert that the folder is empty, or ask for confirmation
         if not all(os.path.isdir(e) and e[0] == '.' for e in os.listdir(path)):
-            self.reply = QtGui.QMessageBox.question(
+            self.reply = QtWidgets.QMessageBox.question(
                 self, 'Message',
                 "%s still contains notebooks, " % folder +
                 "are you sure you want to delete it?",
-                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No,
-                QtGui.QMessageBox.No)
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                QtWidgets.QMessageBox.No)
         else:
-            self.reply = QtGui.QMessageBox.Yes
+            self.reply = QtWidgets.QMessageBox.Yes
 
-        if self.reply == QtGui.QMessageBox.Yes:
+        if self.reply == QtWidgets.QMessageBox.Yes:
             shutil.rmtree(path, ignore_errors=True)
             # Delete the reference to the notebook
             index = self.info.folders.index(path)
@@ -799,7 +802,7 @@ class Shelves(CustomFrame):
         self.flow = flow
         return flow
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def previewNotebook(self, notebook):
         """emit signal to preview the current notebook"""
         self.log.info("preview called for notebook %s" % notebook)
@@ -814,12 +817,12 @@ class TextEditor(CustomFrame):
     def initUI(self):
         """top menu bar and the text area"""
         # Menu bar
-        menuBar = QtGui.QHBoxLayout()
+        menuBar = QtWidgets.QHBoxLayout()
 
-        self.saveButton = QtGui.QPushButton("&Save", self)
+        self.saveButton = QtWidgets.QPushButton("&Save", self)
         self.saveButton.clicked.connect(self.saveText)
 
-        self.readButton = QtGui.QPushButton("&Reload", self)
+        self.readButton = QtWidgets.QPushButton("&Reload", self)
         self.readButton.clicked.connect(self.loadText)
 
         menuBar.addWidget(self.saveButton)
@@ -896,7 +899,7 @@ class TextEditor(CustomFrame):
             self.autoRefresh)
         self.log.info("added file %s to FileSystemWatcher" % source)
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def autoRefresh(self, path=''):
         """refresh editor when needed"""
         # only refresh if wanted and the user didn't modify the text in the
@@ -915,10 +918,10 @@ class TextEditor(CustomFrame):
                     "reload of editor source skipped because it's modified")
 
 
-class CustomTextEdit(QtGui.QTextEdit):
+class CustomTextEdit(QtWidgets.QTextEdit):
 
     def toPlainText(self):
-        text = QtGui.QTextEdit.toPlainText(self)
+        text = QtWidgets.QTextEdit.toPlainText(self)
         if isinstance(text, bytes):
             text = str(text)
         return text

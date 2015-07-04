@@ -10,6 +10,7 @@ import sys
 import os
 from qtpy import QtGui
 from qtpy import QtCore
+from qtpy import QtWidgets
 
 # Local imports
 from noteorganiser.popups import SetExternalEditor
@@ -18,7 +19,7 @@ from noteorganiser.logger import create_logger
 import noteorganiser.configuration as conf
 
 
-class NoteOrganiser(QtGui.QMainWindow):
+class NoteOrganiser(QtWidgets.QMainWindow):
     """
     Main Program
 
@@ -31,7 +32,7 @@ class NoteOrganiser(QtGui.QMainWindow):
         'preview']
 
     def __init__(self):
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
 
         # Define a logger
         logger = create_logger('INFO', 'file')
@@ -77,13 +78,13 @@ class NoteOrganiser(QtGui.QMainWindow):
         """Defining the menu bar"""
         self.log.info("Creating Menu Bar")
         # Exit
-        exitAction = QtGui.QAction('&Exit', self)
+        exitAction = QtWidgets.QAction('&Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(self.cleanClose)
 
         # Toggle displaying empty folders
-        toggleEmptyAction = QtGui.QAction('display empty folders', self)
+        toggleEmptyAction = QtWidgets.QAction('display empty folders', self)
         toggleEmptyAction.setShortcut('Ctrl+T')
         toggleEmptyAction.setStatusTip('Toggle the display of empty folders')
         toggleEmptyAction.setCheckable(True)
@@ -92,8 +93,8 @@ class NoteOrganiser(QtGui.QMainWindow):
             self.library.shelves.toggleDisplayEmpty)
 
         # Toggle refreshing of editor-page when file changes
-        toggleRefreshAction = QtGui.QAction('automatically refresh editor',
-            self)
+        toggleRefreshAction = QtWidgets.QAction('automatically refresh editor',
+                                                self)
         toggleRefreshAction.setStatusTip(
             'automatically refresh editor when the file changes')
         toggleRefreshAction.setCheckable(True)
@@ -102,13 +103,13 @@ class NoteOrganiser(QtGui.QMainWindow):
             self.toggleRefresh)
 
         # show popup for external editor commandline
-        externalEditor = QtGui.QAction('set external Editor', self)
+        externalEditor = QtWidgets.QAction('set external Editor', self)
         externalEditor.setStatusTip(
             'Set the Commandline for the external Editor')
         externalEditor.triggered.connect(self.setExternalEditor)
 
         # Toggle use of Table of Content
-        toggleUseTOC = QtGui.QAction('use TOC in output', self)
+        toggleUseTOC = QtWidgets.QAction('use TOC in output', self)
         toggleUseTOC.setStatusTip(
             'Toggle the usage of Table of Content in HTML-output')
         toggleUseTOC.setCheckable(True)
@@ -116,19 +117,19 @@ class NoteOrganiser(QtGui.QMainWindow):
         toggleUseTOC.triggered.connect(self.toggleUseTOC)
 
         # Zoom-in
-        zoomInAction = QtGui.QAction('Zoom-in', self)
+        zoomInAction = QtWidgets.QAction('Zoom-in', self)
         zoomInAction.setShortcut('Ctrl++')
         zoomInAction.setStatusTip('Zoom in')
         zoomInAction.triggered.connect(self.zoomIn)
 
         # Zoom-out
-        zoomOutAction = QtGui.QAction('Zoom-out', self)
+        zoomOutAction = QtWidgets.QAction('Zoom-out', self)
         zoomOutAction.setShortcut('Ctrl+-')
         zoomOutAction.setStatusTip('Zoom out')
         zoomOutAction.triggered.connect(self.zoomOut)
 
         # Reset Size
-        resetSizeAction = QtGui.QAction('Reset-size', self)
+        resetSizeAction = QtWidgets.QAction('Reset-size', self)
         resetSizeAction.setShortcut('Ctrl+0')
         resetSizeAction.setStatusTip('Reset size')
         resetSizeAction.triggered.connect(self.resetSize)
@@ -192,7 +193,7 @@ class NoteOrganiser(QtGui.QMainWindow):
     def initWidgets(self):
         """Creating the tabbed widget containing the three main tabs"""
         # Creating the tabbed widget
-        self.tabs = QtGui.QTabWidget(self)
+        self.tabs = QtWidgets.QTabWidget(self)
 
         # Creating the three tabs. Through their parent, they will recover the
         # reference to the list of notebooks.
@@ -222,14 +223,14 @@ class NoteOrganiser(QtGui.QMainWindow):
         # * editing preview to preview loadNotebook, and switch the tab
         self.editing.loadNotebook.connect(self.previewNotebook)
 
-    @QtCore.Slot(str, str)
+    @QtCore.pyqtSlot(str, str)
     def switchTab(self, tab, notebook):
         """Switch Tab to the desired target"""
         self.tabs.setCurrentIndex(self.states.index(tab))
         if tab == 'editing':
             self.editing.switchNotebook(notebook)
 
-    @QtCore.Slot(str)
+    @QtCore.pyqtSlot(str)
     def previewNotebook(self, notebook):
         """Preview the desired notebook"""
         self.editing.switchNotebook(
@@ -261,7 +262,7 @@ class NoteOrganiser(QtGui.QMainWindow):
 def main(args):
     """Create the application, and execute it"""
     # Initialise the main Qt application
-    application = QtGui.QApplication(args)
+    application = QtWidgets.QApplication(args)
 
     # Define the main window
     NoteOrganiser()

@@ -1,19 +1,20 @@
 from __future__ import unicode_literals
 from qtpy import QtGui
 from qtpy import QtCore
+from qtpy import QtWidgets
 import os
 
 from .constants import EXTENSION
 
 
-class Dialog(QtGui.QDialog):
+class Dialog(QtWidgets.QDialog):
     """
     Model for dialogs in Note Organiser (pop-up windows)
 
     """
     def __init__(self, parent=None):
         """Define the shortcuts"""
-        QtGui.QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
         self.parent = parent
         self.info = parent.info
         self.log = parent.log
@@ -63,8 +64,10 @@ class NewNotebook(Dialog):
         self.notebookType = QtGui.QComboBox()
         self.notebookType.addItem("Standard")
 
-        formLayout.addRow(self.translate("Notebook's &name:"), self.nameLineEdit)
-        formLayout.addRow(self.translate("&Notebook's &type:"), self.notebookType)
+        formLayout.addRow(self.translate("Notebook's &name:"),
+                          self.nameLineEdit)
+        formLayout.addRow(self.translate("&Notebook's &type:"),
+                          self.notebookType)
         self.layout().addLayout(formLayout)
 
         hboxLayout = QtGui.QHBoxLayout()

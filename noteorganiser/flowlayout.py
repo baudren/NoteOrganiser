@@ -6,15 +6,15 @@ this class is taken from the pyside examples:
 https://github.com/PySide/Examples/tree/master/examples/layouts
 """
 
-from qtpy import QtCore, QtGui
+from qtpy import QtCore, QtGui, QtWidgets
 
 
-class FlowLayout(QtGui.QLayout):
+class FlowLayout(QtWidgets.QLayout):
     """Flow Layout"""
 
     def __init__(self, parent=None, margin=0, spacing=-1):
 
-        QtGui.QLayout.__init__(self, parent)
+        QtWidgets.QLayout.__init__(self, parent)
 
         if parent is not None:
             self.setMargin(margin)

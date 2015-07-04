@@ -2,16 +2,17 @@ from __future__ import unicode_literals
 
 from qtpy import QtGui
 from qtpy import QtCore
+from qtpy import QtWidgets
 
 
-class PicButton(QtGui.QPushButton):
+class PicButton(QtWidgets.QPushButton):
     """Button with a picture"""
-    deleteNotebookSignal = QtCore.Signal(str)
-    deleteFolderSignal = QtCore.Signal(str)
-    previewSignal = QtCore.Signal(str)
+    deleteNotebookSignal = QtCore.pyqtSignal(str)
+    deleteFolderSignal = QtCore.pyqtSignal(str)
+    previewSignal = QtCore.pyqtSignal(str)
 
     def __init__(self, pixmap, text, style, parent=None):
-        QtGui.QPushButton.__init__(self, parent)
+        QtWidgets.QPushButton.__init__(self, parent)
         self.parent = parent
         self.label = str(text)
         # Define the tooltip
@@ -25,7 +26,7 @@ class PicButton(QtGui.QPushButton):
 
         # Define behaviour under right click
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        delete = QtGui.QAction(self)
+        delete = QtWidgets.QAction(self)
         delete.setText("delete")
         delete.triggered.connect(self.removeButton)
         self.addAction(delete)
@@ -33,7 +34,7 @@ class PicButton(QtGui.QPushButton):
         # use the preview action only on notebook
         if self.style == 'notebook':
             # Define behaviour for direct preview
-            preview = QtGui.QAction(self)
+            preview = QtWidgets.QAction(self)
             preview.setText("preview")
             preview.triggered.connect(self.previewNotebook)
             self.addAction(preview)
@@ -58,7 +59,7 @@ class PicButton(QtGui.QPushButton):
             painter.rotate(-90)
         elif self.style == 'folder':
             painter.translate(10, 100+self.default-self.fontsize)
-        painter.drawText(event.rect(), elided)
+        painter.drawText(event.rect(), QtCore.Qt.AlignLeft, elided)
 
     def sizeHint(self):
         return self.pixmap.size()
@@ -68,7 +69,7 @@ class PicButton(QtGui.QPushButton):
         # only fire event, when left button is clicked
         if ev.button() == QtCore.Qt.LeftButton:
             # check for shift-key
-            modifiers = QtGui.QApplication.keyboardModifiers()
+            modifiers = QtWidgets.QApplication.keyboardModifiers()
             if modifiers == QtCore.Qt.ShiftModifier:
                 self.previewNotebook()
             else:
@@ -86,11 +87,11 @@ class PicButton(QtGui.QPushButton):
         self.previewSignal.emit(self.label)
 
 
-class VerticalScrollArea(QtGui.QScrollArea):
+class VerticalScrollArea(QtWidgets.QScrollArea):
     """Implementation of a purely vertical scroll area"""
 
     def __init__(self, parent=None):
-        QtGui.QScrollArea.__init__(self, parent)
+        QtWidgets.QScrollArea.__init__(self, parent)
         self.setWidgetResizable(True)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
@@ -104,4 +105,4 @@ class VerticalScrollArea(QtGui.QScrollArea):
             self.setMinimumWidth(
                 self.widget().minimumSizeHint().width() +
                 self.verticalScrollBar().width())
-        return QtGui.QScrollArea.eventFilter(self, item, event)
+        return QtWidgets.QScrollArea.eventFilter(self, item, event)
