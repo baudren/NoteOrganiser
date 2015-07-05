@@ -7,9 +7,9 @@ from qtpy import QtWidgets
 
 class PicButton(QtWidgets.QPushButton):
     """Button with a picture"""
-    deleteNotebookSignal = QtCore.pyqtSignal(str)
-    deleteFolderSignal = QtCore.pyqtSignal(str)
-    previewSignal = QtCore.pyqtSignal(str)
+    deleteNotebookSignal = QtCore.Signal(str)
+    deleteFolderSignal = QtCore.Signal(str)
+    previewSignal = QtCore.Signal(str)
 
     def __init__(self, pixmap, text, style, parent=None):
         QtWidgets.QPushButton.__init__(self, parent)

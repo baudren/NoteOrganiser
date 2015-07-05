@@ -149,7 +149,7 @@ class Editing(CustomFrame):
     ---------------------------------------------------
     """
     # Launched when the previewer is desired
-    loadNotebook = QtCore.pyqtSignal(str)
+    loadNotebook = QtCore.Signal(str)
 
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
@@ -305,7 +305,7 @@ class Preview(CustomFrame):
     ---------------------------------------------------
     """
     # Launched when the editor is desired after failed conversion
-    loadEditor = QtCore.pyqtSignal(str, str)
+    loadEditor = QtCore.Signal(str, str)
 
     def initLogic(self):
         """
@@ -561,11 +561,11 @@ class Shelves(CustomFrame):
 
     """
     # Fired when a change is made, so that the Editing panel can also adapt
-    refreshSignal = QtCore.pyqtSignal()
+    refreshSignal = QtCore.Signal()
     # Fired when a notebook is clicked, to navigate to the editor.
     # TODO also define as a shift+click to directly open the previewer
-    switchTabSignal = QtCore.pyqtSignal(str, str)
-    previewSignal = QtCore.pyqtSignal(str)
+    switchTabSignal = QtCore.Signal(str, str)
+    previewSignal = QtCore.Signal(str)
 
     def initUI(self):
         """Create the physical shelves"""
@@ -678,7 +678,7 @@ class Shelves(CustomFrame):
         self.settings.setValue("display_empty", self.info.display_empty)
         self.refresh()
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def removeNotebook(self, notebook):
         """Remove the notebook"""
         self.log.info(
@@ -707,7 +707,7 @@ class Shelves(CustomFrame):
         else:
             self.log.info("Aborting")
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def removeFolder(self, folder):
         """Remove the folder, with confirmation if non-empty"""
         self.log.info(
@@ -802,7 +802,7 @@ class Shelves(CustomFrame):
         self.flow = flow
         return flow
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def previewNotebook(self, notebook):
         """emit signal to preview the current notebook"""
         self.log.info("preview called for notebook %s" % notebook)
@@ -899,7 +899,7 @@ class TextEditor(CustomFrame):
             self.autoRefresh)
         self.log.info("added file %s to FileSystemWatcher" % source)
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def autoRefresh(self, path=''):
         """refresh editor when needed"""
         # only refresh if wanted and the user didn't modify the text in the

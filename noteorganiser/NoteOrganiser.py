@@ -223,14 +223,14 @@ class NoteOrganiser(QtWidgets.QMainWindow):
         # * editing preview to preview loadNotebook, and switch the tab
         self.editing.loadNotebook.connect(self.previewNotebook)
 
-    @QtCore.pyqtSlot(str, str)
+    @QtCore.Slot(str, str)
     def switchTab(self, tab, notebook):
         """Switch Tab to the desired target"""
         self.tabs.setCurrentIndex(self.states.index(tab))
         if tab == 'editing':
             self.editing.switchNotebook(notebook)
 
-    @QtCore.pyqtSlot(str)
+    @QtCore.Slot(str)
     def previewNotebook(self, notebook):
         """Preview the desired notebook"""
         self.editing.switchNotebook(
