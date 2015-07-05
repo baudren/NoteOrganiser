@@ -311,7 +311,7 @@ def test_editing(qtbot, parent):
 
     # Check that zoom-in, zoom-out, reset size are implemented
     editor = editing.tabs.currentWidget()
-    
+
     # Fontsize should be bigger
     editing.zoomIn()
     assert editor.text.currentFont().pointSize() > editor.defaultFontSize
@@ -335,7 +335,7 @@ def test_preview(qtbot, parent):
 
     # assert tagButtons contains six elements
     assert len(preview.tagButtons) == 6
-    assert isinstance(preview.tagButtons[0][1], QtGui.QPushButton)
+    assert isinstance(preview.tagButtons[0][1], QtWidgets.QPushButton)
 
     # Click on the first tag button
     first_key, first_button = preview.tagButtons[0]

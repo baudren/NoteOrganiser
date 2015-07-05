@@ -20,12 +20,12 @@ class Dialog(QtWidgets.QDialog):
         self.log = parent.log
 
         # Define Ctrl+W to close it, and overwrite Esc
-        QtGui.QShortcut(QtGui.QKeySequence('Ctrl+W'),
-                        self, self.clean_reject)
-        QtGui.QShortcut(QtGui.QKeySequence('Esc'),
-                        self, self.clean_reject)
+        QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+W'),
+                            self, self.clean_reject)
+        QtWidgets.QShortcut(QtGui.QKeySequence('Esc'),
+                            self, self.clean_reject)
 
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
 
     def clean_accept(self):
         """Logging the closing of the popup"""
@@ -58,10 +58,10 @@ class NewNotebook(Dialog):
         # Define the fields:
         # Name (text field)
         # type (so far, standard)
-        formLayout = QtGui.QFormLayout()
-        self.nameLineEdit = QtGui.QLineEdit()
+        formLayout = QtWidgets.QFormLayout()
+        self.nameLineEdit = QtWidgets.QLineEdit()
         # Query the type of notebook
-        self.notebookType = QtGui.QComboBox()
+        self.notebookType = QtWidgets.QComboBox()
         self.notebookType.addItem("Standard")
 
         formLayout.addRow(self.translate("Notebook's &name:"),
@@ -70,19 +70,19 @@ class NewNotebook(Dialog):
                           self.notebookType)
         self.layout().addLayout(formLayout)
 
-        hboxLayout = QtGui.QHBoxLayout()
+        hboxLayout = QtWidgets.QHBoxLayout()
 
         # Add the "Create" button, as a confirmation, and the "Cancel" one
-        self.createButton = QtGui.QPushButton("&Create")
+        self.createButton = QtWidgets.QPushButton("&Create")
         self.createButton.clicked.connect(self.createNotebook)
-        self.cancelButton = QtGui.QPushButton("C&ancel")
+        self.cancelButton = QtWidgets.QPushButton("C&ancel")
         self.cancelButton.clicked.connect(self.clean_reject)
         hboxLayout.addWidget(self.createButton)
         hboxLayout.addWidget(self.cancelButton)
         self.layout().addLayout(hboxLayout)
 
         # Create a status bar
-        self.statusBar = QtGui.QStatusBar()
+        self.statusBar = QtWidgets.QStatusBar()
         self.layout().addWidget(self.statusBar)
 
     def createNotebook(self):
@@ -116,25 +116,25 @@ class NewFolder(Dialog):
 
         # Define the field:
         # Name
-        formLayout = QtGui.QFormLayout()
-        self.nameLineEdit = QtGui.QLineEdit()
+        formLayout = QtWidgets.QFormLayout()
+        self.nameLineEdit = QtWidgets.QLineEdit()
 
         formLayout.addRow(self.translate("Folder's &name:"), self.nameLineEdit)
         self.layout().addLayout(formLayout)
 
-        hboxLayout = QtGui.QHBoxLayout()
+        hboxLayout = QtWidgets.QHBoxLayout()
 
         # Add the "Create" button, as a confirmation, and the "Cancel" one
-        self.createButton = QtGui.QPushButton("&Create")
+        self.createButton = QtWidgets.QPushButton("&Create")
         self.createButton.clicked.connect(self.createFolder)
-        self.cancelButton = QtGui.QPushButton("C&ancel")
+        self.cancelButton = QtWidgets.QPushButton("C&ancel")
         self.cancelButton.clicked.connect(self.clean_reject)
         hboxLayout.addWidget(self.createButton)
         hboxLayout.addWidget(self.cancelButton)
         self.layout().addLayout(hboxLayout)
 
         # Create a status bar
-        self.statusBar = QtGui.QStatusBar()
+        self.statusBar = QtWidgets.QStatusBar()
         self.layout().addWidget(self.statusBar)
 
     def createFolder(self):
@@ -166,13 +166,13 @@ class NewEntry(Dialog):
         self.setWindowTitle("New entry")
 
         # Define the main window horizontal layout
-        hboxLayout = QtGui.QHBoxLayout()
+        hboxLayout = QtWidgets.QHBoxLayout()
 
         # Define the fields: Name, tags and body
-        formLayout = QtGui.QFormLayout()
-        self.titleLineEdit = QtGui.QLineEdit()
-        self.tagsLineEdit = QtGui.QLineEdit()
-        self.corpusBox = QtGui.QTextEdit()
+        formLayout = QtWidgets.QFormLayout()
+        self.titleLineEdit = QtWidgets.QLineEdit()
+        self.tagsLineEdit = QtWidgets.QLineEdit()
+        self.corpusBox = QtWidgets.QTextEdit()
 
         formLayout.addRow(self.translate("&Title:"), self.titleLineEdit)
         formLayout.addRow(self.translate("Ta&gs:"), self.tagsLineEdit)
@@ -181,15 +181,15 @@ class NewEntry(Dialog):
         hboxLayout.addLayout(formLayout)
 
         # Define the RHS with Ok, Cancel and list of tags TODO)
-        buttonLayout = QtGui.QVBoxLayout()
+        buttonLayout = QtWidgets.QVBoxLayout()
 
-        self.okButton = QtGui.QPushButton("&Ok")
+        self.okButton = QtWidgets.QPushButton("&Ok")
         self.okButton.clicked.connect(self.creating_entry)
-        acceptShortcut = QtGui.QShortcut(
+        acceptShortcut = QtWidgets.QShortcut(
             QtGui.QKeySequence(self.translate("Shift+Enter")), self.corpusBox)
         acceptShortcut.activated.connect(self.creating_entry)
 
-        self.cancelButton = QtGui.QPushButton("&Cancel")
+        self.cancelButton = QtWidgets.QPushButton("&Cancel")
         self.cancelButton.clicked.connect(self.clean_reject)
 
         buttonLayout.addWidget(self.okButton)
@@ -197,9 +197,9 @@ class NewEntry(Dialog):
 
         hboxLayout.addLayout(buttonLayout)
         # Create the status bar
-        self.statusBar = QtGui.QStatusBar(self)
+        self.statusBar = QtWidgets.QStatusBar(self)
         # Create a permanent widget displaying what we are doing
-        statusWidget = QtGui.QLabel("Creating new entry")
+        statusWidget = QtWidgets.QLabel("Creating new entry")
         self.statusBar.addPermanentWidget(statusWidget)
 
         self.layout().addLayout(hboxLayout)
@@ -241,11 +241,11 @@ class SetExternalEditor(Dialog):
         self.setWindowTitle("Set External Editor")
 
         # Define the main window horizontal layout
-        hboxLayout = QtGui.QHBoxLayout()
+        hboxLayout = QtWidgets.QHBoxLayout()
 
         # Define the field
-        formLayout = QtGui.QFormLayout()
-        self.commandlineEdit = QtGui.QLineEdit()
+        formLayout = QtWidgets.QFormLayout()
+        self.commandlineEdit = QtWidgets.QLineEdit()
 
         self.commandlineEdit.setText(self.info.externalEditor)
         formLayout.addRow(self.tr("&external editor:"), self.commandlineEdit)
@@ -253,12 +253,12 @@ class SetExternalEditor(Dialog):
         hboxLayout.addLayout(formLayout)
 
         # Define the RHS with Ok, Cancel and list of tags TODO)
-        buttonLayout = QtGui.QVBoxLayout()
+        buttonLayout = QtWidgets.QVBoxLayout()
 
-        self.okButton = QtGui.QPushButton("&Ok")
+        self.okButton = QtWidgets.QPushButton("&Ok")
         self.okButton.clicked.connect(self.set_commandline)
 
-        self.cancelButton = QtGui.QPushButton("&Cancel")
+        self.cancelButton = QtWidgets.QPushButton("&Cancel")
         self.cancelButton.clicked.connect(self.clean_reject)
 
         buttonLayout.addWidget(self.okButton)
@@ -266,10 +266,10 @@ class SetExternalEditor(Dialog):
 
         hboxLayout.addLayout(buttonLayout)
         # Create the status bar
-        self.statusBar = QtGui.QStatusBar(self)
+        self.statusBar = QtWidgets.QStatusBar(self)
         # Create a permanent widget displaying what we are doing
         statusWidget = \
-            QtGui.QLabel("setting the commandline for the external editor")
+            QtWidgets.QLabel("setting the commandline for the external editor")
         self.statusBar.addPermanentWidget(statusWidget)
 
         self.layout().addLayout(hboxLayout)
