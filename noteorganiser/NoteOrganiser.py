@@ -50,6 +50,26 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.initLogic()
         self.show()
 
+        # Show added the OS title bar, modifying the height of the window. It
+        # is substracted below such that by default, if no previous
+        # configuration was found, the window occupies the whole height.
+        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
+        if self.settings.value("geometry"):
+            self.restoreGeometry(self.settings.value("geometry"))
+        else:
+            # This function returns the available dimension excluding the
+            # taskbar.
+            geometry = QtGui.QApplication.desktop().availableGeometry()
+            # We still have to remove the added height of OS title bar
+            extra_height = self.frameGeometry().height() - self.geometry().height()
+            extra_width = self.frameGeometry().width() - self.geometry().width()
+            self.setGeometry(
+                # TODO the 3./4 is a hack for windows (adds more space to the
+                # top, probably not robust)
+                extra_width/2, extra_height*3./4,
+                (geometry.width()-extra_width)/2.,
+                geometry.height()-extra_height)
+
     def initUI(self):
         """Initialise all the User Interface"""
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
@@ -63,14 +83,6 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.setWindowIcon(QtGui.QIcon(
             os.path.join(path, 'assets', 'notebook-128.png')))
 
-        # set this to be half-screen, on the left
-        self.settings = QtCore.QSettings("audren", "NoteOrganiser")
-        if self.settings.value("geometry"):
-            self.restoreGeometry(self.settings.value("geometry"))
-        else:
-            self.geometry = QtGui.QApplication.desktop().screenGeometry()
-            self.setGeometry(
-                0, 0, self.geometry.width()/2., self.geometry.height())
         self.setWindowTitle('Note Organiser')
 
     def initMenuBar(self):
