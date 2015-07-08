@@ -202,7 +202,7 @@ def post_to_markdown(post):
 
     """
     title = post[0]
-    text = ["", "<div class='blog-post' markdown=1>",
+    text = ["", "<article class='blog-post' markdown=1>",
             "## %s {.blog-post-title}" % title, ""]
 
     tags, post = extract_tags_from_post(post)
@@ -211,7 +211,7 @@ def post_to_markdown(post):
                  "%s" % edit_date, "</p>"])
     corpus = extract_corpus_from_post(post)
     text.extend(corpus)
-    text.extend(["</div>", "", ""])
+    text.extend(["</article>", "", ""])
 
     return text, tags
 
@@ -236,9 +236,9 @@ def from_notes_to_markdown(path, input_tags=None):
     # Create the array to return
     text = io.open(path, 'r', encoding='utf-8', errors='replace').readlines()
     title, posts = extract_title_and_posts_from_text(text)
-    markdown = ["<div class='blog-header'>",
-                "# %s {.blog-title}" % title, "</div>", "",
-                "<div class='row'>", "<div class='col-sm-12 blog-main'>"]
+    markdown = ["<article class='blog-header'>",
+                "# %s {.blog-title}" % title, "</article>", "",
+                "<article class='row'>", "<article class='col-sm-12 blog-main'>"]
     extracted_tags = []
     for post in posts:
         text, tags = post_to_markdown(post)
@@ -247,7 +247,7 @@ def from_notes_to_markdown(path, input_tags=None):
             extracted_tags.extend(tags)
             markdown.extend(text)
 
-    markdown.extend(["</div>", "</div>"])
+    markdown.extend(["</article>", "</article>"])
     cleaned_tags = sort_tags(extracted_tags)
     return markdown, cleaned_tags
 
