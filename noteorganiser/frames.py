@@ -428,7 +428,9 @@ class Preview(CustomFrame):
         # Set the css file. Note that the path to the css needs to be absolute,
         # somehow...
         path = os.path.abspath(os.path.dirname(__file__))
-        self.css = os.path.join(path, 'assets', 'style', 'default.css')
+        self.css = os.path.join(path, 'assets', 'style', 'bootstrap.css')
+        self.template = os.path.join(
+            path, 'assets', 'style', 'bootstrap-blog.html')
         self.web.settings().setUserStyleSheetUrl(QtCore.QUrl.fromLocalFile(
             self.css))
 
@@ -595,7 +597,8 @@ class Preview(CustomFrame):
             temp.write('\n'.join(markdown))
 
         # extra arguments for pandoc
-        extra_args = ['--highlight-style', 'pygments', '-s', '-c', self.css]
+        extra_args = ['--highlight-style', 'pygments', '-s', '-c', self.css,
+                      '--template', self.template]
 
         # use TOC if enabled
         if self.info.use_TOC:
