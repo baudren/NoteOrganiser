@@ -74,12 +74,18 @@ class NewNotebook(Dialog):
         self.createButton.clicked.connect(self.createNotebook)
         self.cancelButton = QtGui.QPushButton("C&ancel")
         self.cancelButton.clicked.connect(self.clean_reject)
+
+        # Add a spacer before so that the button do not stretch
+        hboxLayout.addStretch()
         hboxLayout.addWidget(self.createButton)
         hboxLayout.addWidget(self.cancelButton)
         self.layout().addLayout(hboxLayout)
 
         # Create a status bar
-        self.statusBar = QtGui.QStatusBar()
+        self.statusBar = QtGui.QStatusBar(self)
+        # Create a permanent widget displaying what we are doing
+        statusWidget = QtGui.QLabel("Creating new notebook")
+        self.statusBar.addPermanentWidget(statusWidget)
         self.layout().addWidget(self.statusBar)
 
     def createNotebook(self):
@@ -152,6 +158,7 @@ class NewFolder(Dialog):
 
 
 class NewEntry(Dialog):
+    """Create a new entry in the notebook"""
 
     def __init__(self, parent=None):
         Dialog.__init__(self, parent)
@@ -162,8 +169,8 @@ class NewEntry(Dialog):
 
         self.setWindowTitle("New entry")
 
-        # Define the main window horizontal layout
-        hboxLayout = QtGui.QHBoxLayout()
+        # Define the main window vertical layout
+        vboxLayout = QtGui.QVBoxLayout()
 
         # Define the fields: Name, tags and body
         formLayout = QtGui.QFormLayout()
@@ -175,10 +182,10 @@ class NewEntry(Dialog):
         formLayout.addRow(self.translate("Ta&gs:"), self.tagsLineEdit)
         formLayout.addRow(self.translate("&Body:"), self.corpusBox)
 
-        hboxLayout.addLayout(formLayout)
+        vboxLayout.addLayout(formLayout)
 
         # Define the RHS with Ok, Cancel and list of tags TODO)
-        buttonLayout = QtGui.QVBoxLayout()
+        buttonLayout = QtGui.QHBoxLayout()
 
         self.okButton = QtGui.QPushButton("&Ok")
         self.okButton.clicked.connect(self.creating_entry)
@@ -189,17 +196,18 @@ class NewEntry(Dialog):
         self.cancelButton = QtGui.QPushButton("&Cancel")
         self.cancelButton.clicked.connect(self.clean_reject)
 
+        buttonLayout.addStretch()
         buttonLayout.addWidget(self.okButton)
         buttonLayout.addWidget(self.cancelButton)
 
-        hboxLayout.addLayout(buttonLayout)
+        vboxLayout.addLayout(buttonLayout)
         # Create the status bar
         self.statusBar = QtGui.QStatusBar(self)
         # Create a permanent widget displaying what we are doing
         statusWidget = QtGui.QLabel("Creating new entry")
         self.statusBar.addPermanentWidget(statusWidget)
 
-        self.layout().addLayout(hboxLayout)
+        self.layout().addLayout(vboxLayout)
         self.layout().addWidget(self.statusBar)
 
     def creating_entry(self):
