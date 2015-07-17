@@ -151,6 +151,9 @@ class Library(CustomFrame):
         #toolbar on top
         self.initToolBar()
 
+        #right click in empty space
+        self.initContextMenu()
+
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
 
     def initToolBar(self):
@@ -169,6 +172,7 @@ class Library(CustomFrame):
             # Create a new notebook
             self.newNotebookAction = QtGui.QAction(self)
             self.newNotebookAction.setIconText('&New Notebook')
+            self.newNotebookAction.setText('&New Notebook')
             self.newNotebookAction.triggered.connect(
                 self.shelves.createNotebook)
             self.toolbar.addAction(self.newNotebookAction)
@@ -176,8 +180,20 @@ class Library(CustomFrame):
             # Create a new folder
             self.newFolderAction = QtGui.QAction(self)
             self.newFolderAction.setIconText('New &Folder')
+            self.newFolderAction.setText('New &Folder')
             self.newFolderAction.triggered.connect(self.shelves.createFolder)
             self.toolbar.addAction(self.newFolderAction)
+
+    def initContextMenu(self):
+        """
+        add actions to the context menu of the library itself
+        (the empty space)
+        this reuses the actions from initToolBar()
+        """
+
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.addAction(self.newNotebookAction)
+        self.addAction(self.newFolderAction)
 
     def refresh(self):
         """ Refresh all elements of the frame """
