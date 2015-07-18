@@ -6,10 +6,7 @@ def create_logger(level='DEBUG', handler_type='stream'):
     """Defines a logger with optional level"""
 
     # Recover the associate value to the specified level
-    level_value = 0
-    for elem in dir(logging):
-        if elem.find(level) != -1:
-            exec("level_value = logging.%s" % elem)
+    level_value = getattr(logging, level, 0)
 
     logger = logging.getLogger('simple_example')
     logger.name = "_name_"
