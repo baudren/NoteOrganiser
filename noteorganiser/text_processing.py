@@ -218,7 +218,7 @@ def post_to_markdown(post):
     return text, tags
 
 
-def from_notes_to_markdown(path, input_tags=None):
+def from_notes_to_markdown(path, input_tags=()):
     """
     From a file, given tags, produce an output markdown file.
 

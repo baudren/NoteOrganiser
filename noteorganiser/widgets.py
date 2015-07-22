@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 
+import re
 from PySide import QtGui
 from PySide import QtCore
+
+from .utils import MultiCompleter
 
 
 class PicButton(QtGui.QPushButton):
@@ -152,3 +155,38 @@ class LineEditWithClearButton(QtGui.QLineEdit):
     def showClearButton(self):
         """show the clear button if there's text"""
         self.clearButton.setVisible(len(self.text()))
+
+
+class TagCompletion(QtGui.QLineEdit):
+    """ a QLineEdit with a QCompleter to add tags from the current file """
+
+    def __init__(self, tags, parent=None):
+        QtGui.QLineEdit.__init__(self, parent)
+        self.parent = parent
+        self.initTagCompletion(tags)
+
+    def initTagCompletion(self, tags=[]):
+        """add a multi-item completer to the given widget"""
+
+        self.completer = MultiCompleter(list(tags), self)
+        self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.setCompleter(self.completer)
+        self.returnPressed.connect(self.onReturnPressed)
+
+    def onReturnPressed(self):
+        """ get the first item from the completer """
+
+        self.completer.setCompletionPrefix(self.text())
+        if self.completer.completionModel().rowCount():
+            self.setText(self.completer.currentCompletion())
+
+    def getTextWithNormalizedSeparators(self):
+        """
+        get the text with all separators replaced by separators[0]
+
+        separators[0] is normally ','.
+        This corresponds to the separator used for tags in the markdown files
+        """
+
+        return re.sub(r'[{0}]'.format(''.join(self.completer.separators)),
+                      self.completer.separators[0], self.text())

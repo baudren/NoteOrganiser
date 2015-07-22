@@ -18,7 +18,7 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
-from .flowlayout import FlowLayout
+from .utils import FlowLayout
 from .utils import fuzzySearch
 
 from subprocess import Popen
