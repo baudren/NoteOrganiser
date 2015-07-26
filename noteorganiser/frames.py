@@ -466,6 +466,12 @@ class Preview(CustomFrame):
         dummy.setFixedWidth(200)
 
         vbox = QtGui.QVBoxLayout()
+
+        # search field for the buttons
+        self.searchField = QtGui.QLineEdit()
+        self.searchField.textChanged.connect(self.filterButtons)
+        vbox.addWidget(self.searchField)
+
         self.tagButtons = []
         if self.extracted_tags:
             for key, value in six.iteritems(self.extracted_tags):
@@ -673,6 +679,15 @@ class Preview(CustomFrame):
             else:
                 self.disableButton(button)
         self.setWebpage(url)
+
+    def filterButtons(self, filterText):
+        """
+        filter buttons by the text in the search field
+
+        gets called when the text in the search field changes
+        """
+        for _, button in self.tagButtons:
+            button.setVisible(button.text().startswith(filterText.strip()))
 
 
 class Shelves(CustomFrame):
