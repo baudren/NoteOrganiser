@@ -462,8 +462,6 @@ class Preview(CustomFrame):
         # Need to create a dummy Widget, because QScrollArea can not accept a
         # layout, only a Widget
         dummy = QtGui.QWidget()
-        # Limit its width
-        dummy.setFixedWidth(200)
 
         vbox = QtGui.QVBoxLayout()
         # let size grow AND shrink
@@ -472,6 +470,7 @@ class Preview(CustomFrame):
         # search field for the buttons
         self.searchField = QtGui.QLineEdit()
         self.searchField.textChanged.connect(self.filterButtons)
+        self.searchField.setMaximumWidth(165)
         vbox.addWidget(self.searchField)
 
         self.tagButtons = []
@@ -488,6 +487,8 @@ class Preview(CustomFrame):
         # Adding everything to the scroll area
         dummy.setLayout(vbox)
         scrollArea.setWidget(dummy)
+        # Limit its width
+        dummy.setFixedWidth(200)
 
         self.layout().addWidget(scrollArea)
 
