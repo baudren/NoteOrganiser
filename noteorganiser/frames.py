@@ -466,6 +466,8 @@ class Preview(CustomFrame):
         dummy.setFixedWidth(200)
 
         vbox = QtGui.QVBoxLayout()
+        # let size grow AND shrink
+        vbox.setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
 
         # search field for the buttons
         self.searchField = QtGui.QLineEdit()
@@ -686,8 +688,8 @@ class Preview(CustomFrame):
 
         gets called when the text in the search field changes
         """
-        for _, button in self.tagButtons:
-            button.setVisible(button.text().startswith(filterText.strip()))
+        for key, button in self.tagButtons:
+            button.setVisible(key.startswith(filterText.strip()))
 
 
 class Shelves(CustomFrame):
