@@ -19,6 +19,7 @@ from PySide import QtCore
 from PySide import QtWebKit
 
 from .flowlayout import FlowLayout
+from .utils import fuzzySearch
 
 from subprocess import Popen
 
@@ -690,7 +691,7 @@ class Preview(CustomFrame):
         gets called when the text in the search field changes
         """
         for key, button in self.tagButtons:
-            button.setVisible(key.startswith(filterText.strip().lower()))
+            button.setVisible(fuzzySearch(filterText, key))
 
 
 class Shelves(CustomFrame):

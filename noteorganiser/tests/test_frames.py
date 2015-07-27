@@ -403,7 +403,7 @@ def test_preview(qtbot, parent):
     # filter out all but one
     qtbot.keyClicks(preview.searchField, 'b')
     assert len([key for key, button in preview.tagButtons if
-               button.isVisibleTo(preview)]) == 1
+               button.isVisibleTo(preview)]) == 2
     # filter out all
     qtbot.keyClicks(preview.searchField, 'bbbb')
     assert len([key for key, button in preview.tagButtons if
