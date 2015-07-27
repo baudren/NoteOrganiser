@@ -690,7 +690,7 @@ class Preview(CustomFrame):
         gets called when the text in the search field changes
         """
         for key, button in self.tagButtons:
-            button.setVisible(key.startswith(filterText.strip()))
+            button.setVisible(key.startswith(filterText.strip().lower()))
 
 
 class Shelves(CustomFrame):
