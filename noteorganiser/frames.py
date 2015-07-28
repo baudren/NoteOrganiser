@@ -620,6 +620,9 @@ class Preview(CustomFrame):
         if self.info.use_TOC:
             extra_args.append('--toc')
 
+        # use KaTex
+        extra_args.append('--katex')
+
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html
         html = pa.convert(temp_path, 'html', encoding='utf-8',

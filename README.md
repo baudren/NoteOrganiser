@@ -33,9 +33,9 @@ issue:
 
     python setup.py install --user
 
-when in the main directory. It requires PySide, and pypandoc, which will be
-installed if not present. **Be warned, PySide is a huge install**. Go walk
-outside for a bit.
+when in the main directory. It requires PySide, pandoc (version >= 1.13.2 for
+math support) and pypandoc, which will be installed if not present. **Be
+warned, PySide is a huge install**. Go walk outside for a bit.
 
 To get you started, look at the file `example/example.md`.
 
