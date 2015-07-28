@@ -472,6 +472,7 @@ class Preview(CustomFrame):
         self.searchField = QtGui.QLineEdit()
         self.searchField.textChanged.connect(self.filterButtons)
         self.searchField.returnPressed.connect(self.searchFieldReturn)
+        self.searchField.setPlaceholderText('filter tags')
         self.searchField.setMaximumWidth(165)
         vbox.addWidget(self.searchField)
 
