@@ -471,6 +471,7 @@ class Preview(CustomFrame):
         # search field for the buttons
         self.searchField = QtGui.QLineEdit()
         self.searchField.textChanged.connect(self.filterButtons)
+        self.searchField.returnPressed.connect(self.searchFieldReturn)
         self.searchField.setMaximumWidth(165)
         vbox.addWidget(self.searchField)
 
@@ -692,6 +693,16 @@ class Preview(CustomFrame):
         """
         for key, button in self.tagButtons:
             button.setVisible(fuzzySearch(filterText, key))
+
+    def searchFieldReturn(self):
+        """
+        return key was pressed in the searchField
+
+        hit the first visible tag button
+        """
+        button = [button for _, button in self.tagButtons
+                  if button.isVisible()][0]
+        button.click()
 
 
 class Shelves(CustomFrame):
