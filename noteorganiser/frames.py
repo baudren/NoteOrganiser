@@ -13,6 +13,7 @@ import six  # Used to replace the od iteritems from py2
 import io
 import traceback  # For failure display
 import time  # for sleep
+from distutils.version import StrictVersion
 
 from PySide import QtGui
 from PySide import QtCore
@@ -622,6 +623,20 @@ class Preview(CustomFrame):
 
         # use KaTex
         extra_args.append('--katex')
+
+        # use KaTex
+        if hasattr(pa, 'get_pandoc_version'):
+            version = StrictVersion(pa.get_pandoc_version())
+            if version < StrictVersion('1.13.2'):
+                self.log.warning("Pandoc version %s " % pa.get_pandoc_version(),
+                                 "has no support for KaTeX. Please install"
+                                 " at least version 1.13.2 for math support.")
+            else:
+                extra_args.append('--katex')
+        else:
+            self.log.warning("Pypandoc version is below 0.9.7, and does not "
+                             "allow to check for Pandoc version. Please "
+                             "update it with pip.")
 
         # Apply pandoc to this markdown file, from pypandoc thin wrapper, and
         # recover the html

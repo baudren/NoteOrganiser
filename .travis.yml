@@ -12,7 +12,7 @@ install:
   # Travis CI servers use virtualenvs, so we need to finish the install by the following
   - python ~/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/pyside_postinstall.py -install
   - pip install coveralls
-  - pip install pypandoc
+  - pip install 'pypandoc>=0.9.7'
   - pip install pandocfilters
   - pip install pytest
   - pip install 'pytest-qt>=1.2.1'
