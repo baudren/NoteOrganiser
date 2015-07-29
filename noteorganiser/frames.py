@@ -622,9 +622,6 @@ class Preview(CustomFrame):
             extra_args.append('--toc')
 
         # use KaTex
-        extra_args.append('--katex')
-
-        # use KaTex
         if hasattr(pa, 'get_pandoc_version'):
             version = StrictVersion(pa.get_pandoc_version())
             if version < StrictVersion('1.13.2'):
