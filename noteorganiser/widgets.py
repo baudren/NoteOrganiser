@@ -105,3 +105,50 @@ class VerticalScrollArea(QtGui.QScrollArea):
                 self.widget().minimumSizeHint().width() +
                 self.verticalScrollBar().width())
         return QtGui.QScrollArea.eventFilter(self, item, event)
+
+
+class LineEditWithClearButton(QtGui.QLineEdit):
+    """a line edit widget that shows a clear button if there is text"""
+    buttonClicked = QtCore.Signal(bool)
+
+    def __init__(self, parent=None):
+        super(LineEditWithClearButton, self).__init__(parent)
+
+        self.clearButton = QtGui.QPushButton('x', self)
+        palette = QtGui.QPalette()
+        palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.red)
+        self.clearButton.setPalette(palette)
+        self.clearButton.setStyleSheet('border: 0px;'
+                                       'padding: 0px;'
+                                       'padding-right: 3px;'
+                                       'font-weight: bold;')
+        self.clearButton.setCursor(QtCore.Qt.ArrowCursor)
+        self.clearButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.clearButton.setVisible(False)
+        self.clearButton.clicked.connect(self.clear)
+        self.textChanged.connect(self.showClearButton)
+
+        frameWidth = self.style().pixelMetric(
+            QtGui.QStyle.PM_DefaultFrameWidth)
+        buttonSize = self.clearButton.sizeHint()
+
+        self.setStyleSheet('QLineEdit {padding-right: %dpx; }' %
+                           (buttonSize.width() + frameWidth))
+        self.setMinimumSize(max(self.minimumSizeHint().width(),
+                            buttonSize.width() + frameWidth*2),
+                            max(self.minimumSizeHint().height(),
+                                buttonSize.height() + frameWidth*2))
+
+    def resizeEvent(self, event):
+        """move the clear button with the widget"""
+        buttonSize = self.clearButton.sizeHint()
+        frameWidth = self.style().pixelMetric(
+            QtGui.QStyle.PM_DefaultFrameWidth)
+        self.clearButton.move(self.rect().right() - frameWidth -
+                              buttonSize.width(), (self.rect().bottom() -
+                              buttonSize.height() + 1)/2)
+        super(LineEditWithClearButton, self).resizeEvent(event)
+
+    def showClearButton(self):
+        """show the clear button if there's text"""
+        self.clearButton.setVisible(len(self.text()))

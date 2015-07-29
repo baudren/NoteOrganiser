@@ -29,7 +29,7 @@ import noteorganiser.text_processing as tp
 from .constants import EXTENSION
 from .configuration import search_folder_recursively
 from .syntax import ModifiedMarkdownHighlighter
-from .widgets import PicButton, VerticalScrollArea
+from .widgets import PicButton, VerticalScrollArea, LineEditWithClearButton
 
 
 class CustomFrame(QtGui.QFrame):
@@ -469,7 +469,7 @@ class Preview(CustomFrame):
         vbox.setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
 
         # search field for the buttons
-        self.searchField = QtGui.QLineEdit()
+        self.searchField = LineEditWithClearButton()
         self.searchField.textChanged.connect(self.filterButtons)
         self.searchField.returnPressed.connect(self.searchFieldReturn)
         self.searchField.setPlaceholderText('filter tags')
