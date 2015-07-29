@@ -169,16 +169,27 @@ class NewEntry(Dialog):
         self.setWindowTitle("New entry")
 
         # Define the fields: Name, tags and body
-        formLayout = QtGui.QFormLayout()
+        titleLineLayout = QtGui.QHBoxLayout()
+        self.titleLineLabel = QtGui.QLabel("Title:")
         self.titleLineEdit = QtGui.QLineEdit()
+        titleLineLayout.addWidget(self.titleLineLabel)
+        titleLineLayout.addWidget(self.titleLineEdit)
+
+        tagsLineLayout = QtGui.QHBoxLayout()
+        self.tagsLineLabel = QtGui.QLabel("Tags:")
         self.tagsLineEdit = QtGui.QLineEdit()
+        tagsLineLayout.addWidget(self.tagsLineLabel)
+        tagsLineLayout.addWidget(self.tagsLineEdit)
+
+        corpusBoxLayout = QtGui.QHBoxLayout()
+        self.corpusBoxLabel = QtGui.QLabel("Body:")
         self.corpusBox = QtGui.QTextEdit()
+        corpusBoxLayout.addWidget(self.corpusBoxLabel)
+        corpusBoxLayout.addWidget(self.corpusBox)
 
-        formLayout.addRow(self.translate("&Title:"), self.titleLineEdit)
-        formLayout.addRow(self.translate("Ta&gs:"), self.tagsLineEdit)
-        formLayout.addRow(self.translate("&Body:"), self.corpusBox)
-
-        self.layout().addLayout(formLayout)
+        self.layout().addLayout(titleLineLayout)
+        self.layout().addLayout(tagsLineLayout)
+        self.layout().addLayout(corpusBoxLayout)
 
         # Define the RHS with Ok, Cancel and list of tags TODO)
         buttonLayout = QtGui.QHBoxLayout()
