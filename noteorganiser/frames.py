@@ -19,6 +19,7 @@ from PySide import QtCore
 from PySide import QtWebKit
 
 from .flowlayout import FlowLayout
+from .utils import fuzzySearch
 
 from subprocess import Popen
 
@@ -28,7 +29,7 @@ import noteorganiser.text_processing as tp
 from .constants import EXTENSION
 from .configuration import search_folder_recursively
 from .syntax import ModifiedMarkdownHighlighter
-from .widgets import PicButton, VerticalScrollArea
+from .widgets import PicButton, VerticalScrollArea, LineEditWithClearButton
 
 
 class CustomFrame(QtGui.QFrame):
@@ -462,10 +463,19 @@ class Preview(CustomFrame):
         # Need to create a dummy Widget, because QScrollArea can not accept a
         # layout, only a Widget
         dummy = QtGui.QWidget()
-        # Limit its width
-        dummy.setFixedWidth(200)
 
         vbox = QtGui.QVBoxLayout()
+        # let size grow AND shrink
+        vbox.setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
+
+        # search field for the buttons
+        self.searchField = LineEditWithClearButton()
+        self.searchField.textChanged.connect(self.filterButtons)
+        self.searchField.returnPressed.connect(self.searchFieldReturn)
+        self.searchField.setPlaceholderText('filter tags')
+        self.searchField.setMaximumWidth(165)
+        vbox.addWidget(self.searchField)
+
         self.tagButtons = []
         if self.extracted_tags:
             for key, value in six.iteritems(self.extracted_tags):
@@ -480,6 +490,8 @@ class Preview(CustomFrame):
         # Adding everything to the scroll area
         dummy.setLayout(vbox)
         scrollArea.setWidget(dummy)
+        # Limit its width
+        dummy.setFixedWidth(200)
 
         self.layout().addWidget(scrollArea)
 
@@ -673,6 +685,25 @@ class Preview(CustomFrame):
             else:
                 self.disableButton(button)
         self.setWebpage(url)
+
+    def filterButtons(self, filterText):
+        """
+        filter buttons by the text in the search field
+
+        gets called when the text in the search field changes
+        """
+        for key, button in self.tagButtons:
+            button.setVisible(fuzzySearch(filterText, key))
+
+    def searchFieldReturn(self):
+        """
+        return key was pressed in the searchField
+
+        hit the first visible tag button
+        """
+        button = [button for _, button in self.tagButtons
+                  if button.isVisible()][0]
+        button.click()
 
 
 class Shelves(CustomFrame):

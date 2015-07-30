@@ -330,7 +330,7 @@ def test_editing(qtbot, parent):
 
     # Check that zoom-in, zoom-out, reset size are implemented
     editor = editing.tabs.currentWidget()
-    
+
     # Fontsize should be bigger
     editing.zoomIn()
     assert editor.text.currentFont().pointSize() > editor.defaultFontSize
@@ -389,3 +389,26 @@ def test_preview(qtbot, parent):
 
     # Reload should work (how to test that it truly works?)
     preview.reload()
+
+    # check searchField
+    # isVisibleTo(preview) is needed because qtbot doesn't show the actual
+    # root-widget (here: preview)
+    # so we can check if the widget in question and any parent up to but
+    # excluding the given ancestor are not hidden themselves
+    # see documentation for Pyside.QtGui.QWidget.isVisibleTo(arg__1)
+    #
+    # all buttons should be visible
+    assert len([key for key, button in preview.tagButtons if
+               button.isVisibleTo(preview)]) == 6
+    # filter out all but one
+    qtbot.keyClicks(preview.searchField, 'b')
+    assert len([key for key, button in preview.tagButtons if
+               button.isVisibleTo(preview)]) == 2
+    # filter out all
+    qtbot.keyClicks(preview.searchField, 'bbbb')
+    assert len([key for key, button in preview.tagButtons if
+               button.isVisibleTo(preview)]) == 0
+    # show all again
+    preview.searchField.clear()
+    assert len([key for key, button in preview.tagButtons if
+               button.isVisibleTo(preview)]) == 6
