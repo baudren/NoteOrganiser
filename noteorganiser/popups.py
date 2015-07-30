@@ -171,18 +171,23 @@ class NewEntry(Dialog):
         # Define the fields: Name, tags and body
         titleLineLayout = QtGui.QHBoxLayout()
         self.titleLineLabel = QtGui.QLabel("Title:")
+        self.titleLineLabel.setFixedWidth(40)
         self.titleLineEdit = QtGui.QLineEdit()
         titleLineLayout.addWidget(self.titleLineLabel)
         titleLineLayout.addWidget(self.titleLineEdit)
 
         tagsLineLayout = QtGui.QHBoxLayout()
         self.tagsLineLabel = QtGui.QLabel("Tags:")
+        self.tagsLineLabel.setFixedWidth(40)
         self.tagsLineEdit = QtGui.QLineEdit()
         tagsLineLayout.addWidget(self.tagsLineLabel)
         tagsLineLayout.addWidget(self.tagsLineEdit)
 
         corpusBoxLayout = QtGui.QHBoxLayout()
         self.corpusBoxLabel = QtGui.QLabel("Body:")
+        self.corpusBoxLabel.setFixedWidth(40)
+        self.corpusBoxLabel.setAlignment(
+            QtCore.Qt.AlignTop)
         self.corpusBox = QtGui.QTextEdit()
         corpusBoxLayout.addWidget(self.corpusBoxLabel)
         corpusBoxLayout.addWidget(self.corpusBox)
