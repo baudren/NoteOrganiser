@@ -5,7 +5,6 @@ import shutil
 import datetime
 from PySide import QtGui
 from PySide import QtCore
-import test
 
 #utils to test
 from ..utils import fuzzySearch
