@@ -115,7 +115,7 @@ class LineEditWithClearButton(QtGui.QLineEdit):
     buttonClicked = QtCore.Signal(bool)
 
     def __init__(self, parent=None):
-        super(LineEditWithClearButton, self).__init__(parent)
+        super().__init__(parent)
 
         self.clearButton = QtGui.QPushButton('x', self)
         palette = QtGui.QPalette()
@@ -165,8 +165,10 @@ class TagCompletion(QtGui.QLineEdit):
         self.parent = parent
         self.initTagCompletion(tags)
 
-    def initTagCompletion(self, tags=[]):
+    def initTagCompletion(self, tags=None):
         """add a multi-item completer to the given widget"""
+        if tags is None:
+            tags = []
 
         self.completer = MultiCompleter(list(tags), self)
         self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)

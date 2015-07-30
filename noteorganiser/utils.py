@@ -131,7 +131,7 @@ class FlowLayout(QtGui.QLayout):
         return height
 
     def setGeometry(self, rect):
-        super(FlowLayout, self).setGeometry(rect)
+        super().setGeometry(rect)
         self.doLayout(rect, False)
 
     def sizeHint(self):
