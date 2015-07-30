@@ -180,8 +180,8 @@ class Library(CustomFrame):
 
             # Create a new folder
             self.newFolderAction = QtGui.QAction(self)
-            self.newFolderAction.setIconText('New &Folder')
-            self.newFolderAction.setText('New &Folder')
+            self.newFolderAction.setIconText('New Folde&r')
+            self.newFolderAction.setText('New Folde&r')
             self.newFolderAction.triggered.connect(self.shelves.createFolder)
             self.toolbar.addAction(self.newFolderAction)
 
