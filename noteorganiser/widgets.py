@@ -115,7 +115,7 @@ class LineEditWithClearButton(QtGui.QLineEdit):
     buttonClicked = QtCore.Signal(bool)
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        QtGui.QLineEdit.__init__(self, parent)
 
         self.clearButton = QtGui.QPushButton('x', self)
         palette = QtGui.QPalette()
