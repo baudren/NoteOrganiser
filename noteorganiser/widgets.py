@@ -150,7 +150,7 @@ class LineEditWithClearButton(QtGui.QLineEdit):
         self.clearButton.move(self.rect().right() - frameWidth -
                               buttonSize.width(), (self.rect().bottom() -
                               buttonSize.height() + 1)/2)
-        super(LineEditWithClearButton, self).resizeEvent(event)
+        QtGui.QLineEdit.resizeEvent(self, event)
 
     def showClearButton(self):
         """show the clear button if there's text"""
