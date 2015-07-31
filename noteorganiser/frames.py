@@ -164,6 +164,7 @@ class Library(CustomFrame):
         """initialize the toolbar for this view"""
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Library')
+            self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
 
             # Go up in the directories (disabled if in the root directory)
             upIcon = qtawesome.icon('fa.arrow-up')
@@ -258,6 +259,7 @@ class Editing(CustomFrame):
         """initialize the toolbar for this view"""
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Editing')
+            self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
             self.toolbar.setVisible(False)
 
             # save the Text in the current notebook editor
@@ -508,6 +510,7 @@ class Preview(CustomFrame):
         """initialize the toolbar for this view"""
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Preview')
+            self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
             self.toolbar.setVisible(False)
 
             # Reload Action
