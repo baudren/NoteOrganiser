@@ -285,7 +285,7 @@ class Editing(CustomFrame):
             self.toolbar.addAction(self.newEntryAction)
 
             # Edit in an exterior editor
-            editIcon = qtawesome.icon('fa.plus-square')
+            editIcon = qtawesome.icon('fa.pencil-square-o')
             self.editAction = QtGui.QAction(editIcon,
                                             'Edit (e&xterior editor)', self)
             self.editAction.triggered.connect(self.editExternal)
