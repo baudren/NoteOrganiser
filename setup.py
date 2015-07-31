@@ -37,6 +37,6 @@ setup(name='NoteOrganiser',
       packages=PACKAGES,
       scripts=['noteorganiser/NoteOrganiser.py'],
       install_requires=['pypandoc', 'six', 'PySide>=1.2.2', 'qtawesome',
-                        'pygments'],
+                        'qtpy', 'pygments'],
       data_files=ASSETS,
       )
