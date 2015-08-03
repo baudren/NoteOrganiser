@@ -1,8 +1,12 @@
 from __future__ import unicode_literals
 
 import re
+import os
 from PySide import QtGui
 from PySide import QtCore
+
+os.environ['QT_API'] = 'PySide'
+import qtawesome
 
 from .utils import MultiCompleter
 
@@ -164,16 +168,49 @@ class TagCompletion(QtGui.QLineEdit):
         QtGui.QLineEdit.__init__(self, parent)
         self.parent = parent
         self.initTagCompletion(tags)
+        self.initCompleteButton()
 
     def initTagCompletion(self, tags=None):
         """add a multi-item completer to the given widget"""
         if tags is None:
             tags = []
 
+        tags = sorted(tags)
         self.completer = MultiCompleter(list(tags), self)
         self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
         self.setCompleter(self.completer)
         self.returnPressed.connect(self.onReturnPressed)
+
+    def initCompleteButton(self):
+        """add a little down-arrow to start completion
+        (list all available tags)"""
+        completeIcon = qtawesome.icon('fa.sort-down')
+        self.completeButton = QtGui.QPushButton(completeIcon, '', self)
+        self.completeButton.setStyleSheet('border: 0px;'
+                                          'padding: 0px;')
+        self.completeButton.setCursor(QtCore.Qt.ArrowCursor)
+        self.completeButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.completeButton.clicked.connect(self.onCompletePressed)
+        frameWidth = self.style().pixelMetric(
+            QtGui.QStyle.PM_DefaultFrameWidth)
+        buttonSize = self.completeButton.sizeHint()
+
+        self.setStyleSheet('QLineEdit {padding-right: %dpx; }' %
+                           (buttonSize.width() + frameWidth))
+        self.setMinimumSize(max(self.minimumSizeHint().width(),
+                            buttonSize.width() + frameWidth*2),
+                            max(self.minimumSizeHint().height(),
+                                buttonSize.height() + frameWidth*2))
+
+    def resizeEvent(self, event):
+        """move the clear button with the widget"""
+        buttonSize = self.completeButton.sizeHint()
+        frameWidth = self.style().pixelMetric(
+            QtGui.QStyle.PM_DefaultFrameWidth)
+        self.completeButton.move(self.rect().right() - frameWidth -
+                                 buttonSize.width(), (self.rect().bottom() -
+                                 buttonSize.height() + 1)/2)
+        QtGui.QLineEdit.resizeEvent(self, event)
 
     def onReturnPressed(self):
         """ get the first item from the completer """
@@ -181,6 +218,11 @@ class TagCompletion(QtGui.QLineEdit):
         self.completer.setCompletionPrefix(self.text())
         if self.completer.completionModel().rowCount():
             self.setText(self.completer.currentCompletion())
+
+    def onCompletePressed(self):
+        """Complete Button was pressed: start completion"""
+        self.completer.setCompletionPrefix(self.text())
+        self.completer.complete()
 
     def getTextWithNormalizedSeparators(self):
         """
