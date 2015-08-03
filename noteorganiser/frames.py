@@ -18,6 +18,9 @@ from PySide import QtGui
 from PySide import QtCore
 from PySide import QtWebKit
 
+os.environ['QT_API'] = 'PySide'
+import qtawesome
+
 from .utils import FlowLayout
 from .utils import fuzzySearch
 
@@ -161,27 +164,29 @@ class Library(CustomFrame):
         """initialize the toolbar for this view"""
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Library')
+            self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+            self.toolbar.setIconSize(self.toolbar.iconSize() * 0.7)
 
             # Go up in the directories (disabled if in the root directory)
-            self.upAction = QtGui.QAction(self)
-            self.upAction.setIconText('&Up')
+            upIcon = qtawesome.icon('fa.arrow-up')
+            self.upAction = QtGui.QAction(upIcon, '&Up', self)
             self.upAction.triggered.connect(self.shelves.upFolder)
             if self.info.level == self.info.root:
                 self.upAction.setDisabled(True)
             self.toolbar.addAction(self.upAction)
 
             # Create a new notebook
-            self.newNotebookAction = QtGui.QAction(self)
-            self.newNotebookAction.setIconText('&New Notebook')
-            self.newNotebookAction.setText('&New Notebook')
+            newNotebookIcon = qtawesome.icon('fa.file')
+            self.newNotebookAction = QtGui.QAction(newNotebookIcon,
+                                                   '&New Notebook', self)
             self.newNotebookAction.triggered.connect(
                 self.shelves.createNotebook)
             self.toolbar.addAction(self.newNotebookAction)
 
             # Create a new folder
-            self.newFolderAction = QtGui.QAction(self)
-            self.newFolderAction.setIconText('New Folde&r')
-            self.newFolderAction.setText('New Folde&r')
+            newFolderIcon = qtawesome.icon('fa.folder')
+            self.newFolderAction = QtGui.QAction(newFolderIcon, 'New Folde&r',
+                                                 self)
             self.newFolderAction.triggered.connect(self.shelves.createFolder)
             self.toolbar.addAction(self.newFolderAction)
 
@@ -255,17 +260,19 @@ class Editing(CustomFrame):
         """initialize the toolbar for this view"""
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Editing')
+            self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+            self.toolbar.setIconSize(self.toolbar.iconSize() * 0.7)
             self.toolbar.setVisible(False)
 
             # save the Text in the current notebook editor
-            self.saveAction = QtGui.QAction(self)
-            self.saveAction.setIconText('&Save')
+            saveIcon = qtawesome.icon('fa.floppy-o')
+            self.saveAction = QtGui.QAction(saveIcon, '&Save', self)
             self.saveAction.triggered.connect(self.saveText)
             self.toolbar.addAction(self.saveAction)
 
             # reload the Text in the current notebook editor
-            self.readAction = QtGui.QAction(self)
-            self.readAction.setIconText('&Reload')
+            readIcon = qtawesome.icon('fa.refresh')
+            self.readAction = QtGui.QAction(readIcon, '&Reload', self)
             self.readAction.triggered.connect(self.loadText)
             self.toolbar.addAction(self.readAction)
 
@@ -273,20 +280,23 @@ class Editing(CustomFrame):
             self.toolbar.addSeparator()
 
             # Create a new entry - new field in the current notebook
-            self.newEntryAction = QtGui.QAction(self)
-            self.newEntryAction.setIconText('&New entry')
+            newEntryIcon = qtawesome.icon('fa.plus-square')
+            self.newEntryAction = QtGui.QAction(newEntryIcon, '&New entry',
+                                                self)
             self.newEntryAction.triggered.connect(self.newEntry)
             self.toolbar.addAction(self.newEntryAction)
 
             # Edit in an exterior editor
-            self.editAction = QtGui.QAction(self)
-            self.editAction.setIconText('Edit (e&xterior editor)')
+            editIcon = qtawesome.icon('fa.pencil-square-o')
+            self.editAction = QtGui.QAction(editIcon,
+                                            'Edit (e&xterior editor)', self)
             self.editAction.triggered.connect(self.editExternal)
             self.toolbar.addAction(self.editAction)
 
             # Launch the previewing of the current notebook
-            self.previewAction = QtGui.QAction(self)
-            self.previewAction.setIconText('&Preview notebook')
+            previewIcon = qtawesome.icon('fa.desktop')
+            self.previewAction = QtGui.QAction(previewIcon,
+                                               '&Preview notebook', self)
             self.previewAction.triggered.connect(self.preview)
             self.toolbar.addAction(self.previewAction)
 
@@ -502,11 +512,13 @@ class Preview(CustomFrame):
         """initialize the toolbar for this view"""
         if not hasattr(self, 'toolbar'):
             self.toolbar = self.parent.addToolBar('Preview')
+            self.toolbar.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+            self.toolbar.setIconSize(self.toolbar.iconSize() * 0.7)
             self.toolbar.setVisible(False)
 
             # Reload Action
-            self.reloadAction = QtGui.QAction(self)
-            self.reloadAction.setIconText('&Reload')
+            reloadIcon = qtawesome.icon('fa.refresh')
+            self.reloadAction = QtGui.QAction(reloadIcon, '&Reload', self)
             self.reloadAction.triggered.connect(self.reload)
             self.toolbar.addAction(self.reloadAction)
 
