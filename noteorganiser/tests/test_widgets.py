@@ -25,6 +25,7 @@ def test_LineEditWithClearButton(qtbot, parent):
     assert not len(lineEdit.text())
     assert not lineEdit.clearButton.isVisibleTo(lineEdit)
 
+
 def test_TagCompletion(qtbot, parent):
     tags = ['toto', 'tata']
     tagCompletion = TagCompletion(tags)
@@ -47,28 +48,28 @@ def test_TagCompletion(qtbot, parent):
     # check completion
     qtbot.keyClicks(tagCompletion, 't')
     qtbot.keyPress(tagCompletion, QtCore.Qt.Key_Enter)
-    assert tagCompletion.text() == ' toto'
+    assert tagCompletion.text() == ' tata'
 
     # check second completion after separator
-    qtbot.keyClicks(tagCompletion, ', ta')
+    qtbot.keyClicks(tagCompletion, ', to')
     qtbot.keyPress(tagCompletion, QtCore.Qt.Key_Enter)
-    assert tagCompletion.text() == ' toto, tata'
+    assert tagCompletion.text() == ' tata, toto'
 
     # check other separator
     qtbot.keyClicks(tagCompletion, '; ta')
     qtbot.keyPress(tagCompletion, QtCore.Qt.Key_Enter)
-    assert tagCompletion.text() == ' toto, tata; tata'
+    assert tagCompletion.text() == ' tata, toto; tata'
 
     # check that another press on Return doesn't change the text
     qtbot.keyPress(tagCompletion, QtCore.Qt.Key_Enter)
-    assert tagCompletion.text() == ' toto, tata; tata'
+    assert tagCompletion.text() == ' tata, toto; tata'
 
     # check normalization of separators
     assert tagCompletion.getTextWithNormalizedSeparators() == \
-        ' toto, tata, tata'
+        ' tata, toto, tata'
 
     # check switching of separators
     tagCompletion.completer.setSeparators([';', ','])
     assert tagCompletion.completer.separators == [';', ',']
     assert tagCompletion.getTextWithNormalizedSeparators() == \
-        ' toto; tata; tata'
+        ' tata; toto; tata'
