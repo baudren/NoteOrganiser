@@ -336,7 +336,7 @@ class Editing(CustomFrame):
             # Append the text
             editor.appendText(post)
 
-    def editExternal(self):
+    def editExternal(self): # pragma: no cover
         """edit active file in external editor"""
         # get the current file
         index = self.tabs.currentIndex()
@@ -568,10 +568,10 @@ class Preview(CustomFrame):
         try:
             url, tags = self.convert(
                 os.path.join(self.info.level, notebook), ())
-        except ValueError:
+        except ValueError: # pragma: no cover
             self.log.error("Markdown conversion failed, aborting")
             return False
-        except SyntaxError:
+        except SyntaxError: # pragma: no cover
             self.log.warning("Modified Markdown syntax error, aborting")
             return False
 
@@ -603,7 +603,7 @@ class Preview(CustomFrame):
         try:
             markdown, remaining_tags = tp.from_notes_to_markdown(
                 path, input_tags=tags)
-        except (IndexError, UnboundLocalError):
+        except (IndexError, UnboundLocalError): # pragma: no cover
             self.log.error("Conversion of %s to markdown failed" % path)
             self.popup = QtGui.QMessageBox(self)
             self.popup.setIcon(QtGui.QMessageBox.Critical)
@@ -613,7 +613,7 @@ class Preview(CustomFrame):
             ok = self.popup.exec_()
             if ok:
                 raise ValueError("The conversion of the notebook failed")
-        except ValueError as e:
+        except ValueError as e: # pragma: no cover
             self.log.warn(
                 "There was an expected error in converting"
                 " %s to markdown" % path)
