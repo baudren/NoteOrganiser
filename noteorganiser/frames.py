@@ -494,6 +494,13 @@ class Preview(CustomFrame):
         self.searchField.setMaximumWidth(165)
         vbox.addWidget(self.searchField)
 
+        # create a shortcut to jump into the search field
+        if not hasattr(self, 'searchAction'):
+            self.searchAction = QtGui.QAction(self)
+            self.searchAction.setShortcut('Ctrl+F')
+            self.searchAction.triggered.connect(self.onSearchAction)
+            self.addAction(self.searchAction)
+
         self.tagButtons = []
         if self.extracted_tags:
             for key, value in six.iteritems(self.extracted_tags):
@@ -689,6 +696,10 @@ class Preview(CustomFrame):
 
     def resetSize(self):
         self.web.setTextSizeMultiplier(1)
+
+    def onSearchAction(self):
+        """Search shortcut was pressed. Set focus to the searchfield"""
+        self.searchField.setFocus()
 
     def reload(self):
         """
