@@ -18,3 +18,5 @@ def test_initialisation(qtbot, mocker):
     # Creating a NoteOrganiser and adding it to the bot
     qtbot.addWidget(note)
 
+    # TODO: Setting a command-line editor via the popup and controlling the
+    # result
