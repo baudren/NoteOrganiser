@@ -3,9 +3,6 @@ from setuptools import find_packages
 
 import os
 
-# Recover version from VERSION file
-with open('VERSION', 'r') as version_file:
-    VERSION = version_file.readline()
 
 # Find all packages
 PACKAGES = find_packages()
@@ -29,10 +26,12 @@ ASSETS = [('', ['VERSION']),
             os.path.join(STYLE_FOLDER, 'bootstrap-blog.html')]), ]
 
 setup(name='NoteOrganiser',
-      version=VERSION,
+      version=open('VERSION').read().strip(),
       description='Note Organiser for Scientists',
+      long_description=open('README.md').read(),
       author='Benjamin Audren',
       author_email='benjamin.audren@gmail.com',
+      license='MIT',
       url='https://github.com/baudren/NoteOrganiser',
       packages=PACKAGES,
       scripts=['noteorganiser/NoteOrganiser.py'],
