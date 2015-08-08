@@ -171,6 +171,7 @@ class Library(CustomFrame):
             upIcon = qtawesome.icon('fa.arrow-up')
             self.upAction = QtGui.QAction(upIcon, '&Up', self)
             self.upAction.setIconText('&Up')
+            self.upAction.setShortcut('Ctrl+U')
             self.upAction.triggered.connect(self.shelves.upFolder)
             if self.info.level == self.info.root:
                 self.upAction.setDisabled(True)
@@ -181,6 +182,7 @@ class Library(CustomFrame):
             self.newNotebookAction = QtGui.QAction(newNotebookIcon,
                                                    '&New Notebook', self)
             self.newNotebookAction.setIconText('&New Notebook')
+            self.newNotebookAction.setShortcut('Ctrl+N')
             self.newNotebookAction.triggered.connect(
                 self.shelves.createNotebook)
             self.toolbar.addAction(self.newNotebookAction)
@@ -190,6 +192,8 @@ class Library(CustomFrame):
             self.newFolderAction = QtGui.QAction(newFolderIcon, 'New Folde&r',
                                                  self)
             self.newFolderAction.setIconText('New Folde&r')
+            #collision: Reload
+            #self.newFolderAction.setShortcut('Ctrl+R')
             self.newFolderAction.triggered.connect(self.shelves.createFolder)
             self.toolbar.addAction(self.newFolderAction)
 
@@ -271,6 +275,7 @@ class Editing(CustomFrame):
             saveIcon = qtawesome.icon('fa.floppy-o')
             self.saveAction = QtGui.QAction(saveIcon, '&Save', self)
             self.saveAction.setIconText('&Save')
+            self.saveAction.setShortcut('Ctrl+S')
             self.saveAction.triggered.connect(self.saveText)
             self.toolbar.addAction(self.saveAction)
 
@@ -278,6 +283,7 @@ class Editing(CustomFrame):
             readIcon = qtawesome.icon('fa.refresh')
             self.readAction = QtGui.QAction(readIcon, '&Reload', self)
             self.readAction.setIconText('&Reload')
+            self.readAction.setShortcut('Ctrl+R')
             self.readAction.triggered.connect(self.loadText)
             self.toolbar.addAction(self.readAction)
 
@@ -289,6 +295,7 @@ class Editing(CustomFrame):
             self.newEntryAction = QtGui.QAction(newEntryIcon, '&New entry',
                                                 self)
             self.newEntryAction.setIconText('&New entry')
+            self.newEntryAction.setShortcut('Ctrl+N')
             self.newEntryAction.triggered.connect(self.newEntry)
             self.toolbar.addAction(self.newEntryAction)
 
@@ -297,6 +304,8 @@ class Editing(CustomFrame):
             self.editAction = QtGui.QAction(editIcon,
                                             'Edit (e&xterior editor)', self)
             self.editAction.setIconText('Edit (e&xterior editor)')
+            # collision: Cut
+            #self.editAction.setShortcut('Ctrl+X')
             self.editAction.triggered.connect(self.editExternal)
             self.toolbar.addAction(self.editAction)
 
@@ -305,6 +314,7 @@ class Editing(CustomFrame):
             self.previewAction = QtGui.QAction(previewIcon,
                                                '&Preview notebook', self)
             self.previewAction.setIconText('&Preview notebook')
+            self.previewAction.setShortcut('Ctrl+P')
             self.previewAction.triggered.connect(self.preview)
             self.toolbar.addAction(self.previewAction)
 
@@ -535,6 +545,7 @@ class Preview(CustomFrame):
             reloadIcon = qtawesome.icon('fa.refresh')
             self.reloadAction = QtGui.QAction(reloadIcon, '&Reload', self)
             self.reloadAction.setIconText('&Reload')
+            self.reloadAction.setShortcut('Ctrl+R')
             self.reloadAction.triggered.connect(self.reload)
             self.toolbar.addAction(self.reloadAction)
 
