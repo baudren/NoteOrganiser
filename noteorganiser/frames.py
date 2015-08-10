@@ -192,8 +192,7 @@ class Library(CustomFrame):
             self.newFolderAction = QtGui.QAction(newFolderIcon, 'New Folde&r',
                                                  self)
             self.newFolderAction.setIconText('New Folde&r')
-            #collision: Reload
-            #self.newFolderAction.setShortcut('Ctrl+R')
+            self.newFolderAction.setShortcut('Ctrl+F')
             self.newFolderAction.triggered.connect(self.shelves.createFolder)
             self.toolbar.addAction(self.newFolderAction)
 
@@ -302,10 +301,9 @@ class Editing(CustomFrame):
             # Edit in an exterior editor
             editIcon = qtawesome.icon('fa.pencil-square-o')
             self.editAction = QtGui.QAction(editIcon,
-                                            'Edit (e&xterior editor)', self)
-            self.editAction.setIconText('Edit (e&xterior editor)')
-            # collision: Cut
-            #self.editAction.setShortcut('Ctrl+X')
+                                            'Edi&t (exterior editor)', self)
+            self.editAction.setIconText('Edi&t (exterior editor)')
+            self.editAction.setShortcut('Ctrl+T')
             self.editAction.triggered.connect(self.editExternal)
             self.toolbar.addAction(self.editAction)
 

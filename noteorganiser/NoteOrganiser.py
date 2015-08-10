@@ -97,7 +97,6 @@ class NoteOrganiser(QtGui.QMainWindow):
 
         # Toggle displaying empty folders
         toggleEmptyAction = QtGui.QAction('display empty folders', self)
-        toggleEmptyAction.setShortcut('Ctrl+T')
         toggleEmptyAction.setStatusTip('Toggle the display of empty folders')
         toggleEmptyAction.setCheckable(True)
         toggleEmptyAction.setChecked(self.info.display_empty)
