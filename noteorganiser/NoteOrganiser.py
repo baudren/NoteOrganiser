@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 # Main imports
 import sys
 import os
+import re
 from PySide import QtGui
 from PySide import QtCore
 
@@ -242,15 +243,15 @@ class NoteOrganiser(QtGui.QMainWindow):
         # adding additional shortcuts
         self.libraryShortcut = QtGui.QAction('library', self)
         self.libraryShortcut.setShortcut('Ctrl+L')
-        self.libraryShortcut.triggered.connect(self.setActiveTabLibrary)
+        self.libraryShortcut.triggered.connect(self.setActiveTab)
         self.addAction(self.libraryShortcut)
         self.editingShortcut = QtGui.QAction('editing', self)
         self.editingShortcut.setShortcut('Ctrl+E')
-        self.editingShortcut.triggered.connect(self.setActiveTabEditing)
+        self.editingShortcut.triggered.connect(self.setActiveTab)
         self.addAction(self.editingShortcut)
-        self.previewShortcut = QtGui.QAction('library', self)
+        self.previewShortcut = QtGui.QAction('preview', self)
         self.previewShortcut.setShortcut('Ctrl+W')
-        self.previewShortcut.triggered.connect(self.setActiveTabPreview)
+        self.previewShortcut.triggered.connect(self.setActiveTab)
         self.addAction(self.previewShortcut)
 
         # Set the tabs widget to be the center widget of the main window
@@ -317,29 +318,12 @@ class NoteOrganiser(QtGui.QMainWindow):
                 getattr(self,
                         self.states[index]).toolbar.setVisible(False)
 
-    def setActiveTabLibrary(self):
+    def setActiveTab(self):
         """
-        set the active tab in the tabWidget to Library
-
-        this method is called when the custom shortcut for the tab is used
+        set the active tab in the tabWidget to the widget for which the
+        shortcut was used
         """
-        self.tabs.setCurrentWidget(self.library)
-
-    def setActiveTabEditing(self):
-        """
-        set the active tab in the tabWidget to Editing
-
-        this method is called when the custom shortcut for the tab is used
-        """
-        self.tabs.setCurrentWidget(self.editing)
-
-    def setActiveTabPreview(self):
-        """
-        set the active tab in the tabWidget to Preview
-
-        this method is called when the custom shortcut for the tab is used
-        """
-        self.tabs.setCurrentWidget(self.preview)
+        self.tabs.setCurrentWidget(getattr(self, self.sender().iconText()))
 
 
 def main(args):
