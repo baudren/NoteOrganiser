@@ -239,6 +239,20 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.tabs.addTab(self.editing, "&Editing")
         self.tabs.addTab(self.preview, "Previe&w")
 
+        # adding additional shortcuts
+        self.libraryShortcut = QtGui.QAction('library', self)
+        self.libraryShortcut.setShortcut('Ctrl+L')
+        self.libraryShortcut.triggered.connect(self.setActiveTabLibrary)
+        self.addAction(self.libraryShortcut)
+        self.editingShortcut = QtGui.QAction('editing', self)
+        self.editingShortcut.setShortcut('Ctrl+E')
+        self.editingShortcut.triggered.connect(self.setActiveTabEditing)
+        self.addAction(self.editingShortcut)
+        self.previewShortcut = QtGui.QAction('library', self)
+        self.previewShortcut.setShortcut('Ctrl+W')
+        self.previewShortcut.triggered.connect(self.setActiveTabPreview)
+        self.addAction(self.previewShortcut)
+
         # Set the tabs widget to be the center widget of the main window
         self.log.info("Setting the central widget")
         self.setCentralWidget(self.tabs)
@@ -302,6 +316,30 @@ class NoteOrganiser(QtGui.QMainWindow):
             if index != tabIndex:
                 getattr(self,
                         self.states[index]).toolbar.setVisible(False)
+
+    def setActiveTabLibrary(self):
+        """
+        set the active tab in the tabWidget to Library
+
+        this method is called when the custom shortcut for the tab is used
+        """
+        self.tabs.setCurrentWidget(self.library)
+
+    def setActiveTabEditing(self):
+        """
+        set the active tab in the tabWidget to Editing
+
+        this method is called when the custom shortcut for the tab is used
+        """
+        self.tabs.setCurrentWidget(self.editing)
+
+    def setActiveTabPreview(self):
+        """
+        set the active tab in the tabWidget to Preview
+
+        this method is called when the custom shortcut for the tab is used
+        """
+        self.tabs.setCurrentWidget(self.preview)
 
 
 def main(args):
