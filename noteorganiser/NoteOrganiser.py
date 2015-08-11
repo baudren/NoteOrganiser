@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 # Main imports
 import sys
 import os
+import re
 from PySide import QtGui
 from PySide import QtCore
 
@@ -96,7 +97,6 @@ class NoteOrganiser(QtGui.QMainWindow):
 
         # Toggle displaying empty folders
         toggleEmptyAction = QtGui.QAction('display empty folders', self)
-        toggleEmptyAction.setShortcut('Ctrl+T')
         toggleEmptyAction.setStatusTip('Toggle the display of empty folders')
         toggleEmptyAction.setCheckable(True)
         toggleEmptyAction.setChecked(self.info.display_empty)
@@ -239,6 +239,20 @@ class NoteOrganiser(QtGui.QMainWindow):
         self.tabs.addTab(self.editing, "&Editing")
         self.tabs.addTab(self.preview, "Previe&w")
 
+        # adding additional shortcuts
+        self.libraryShortcut = QtGui.QAction('library', self)
+        self.libraryShortcut.setShortcut('Ctrl+L')
+        self.libraryShortcut.triggered.connect(self.setActiveTab)
+        self.addAction(self.libraryShortcut)
+        self.editingShortcut = QtGui.QAction('editing', self)
+        self.editingShortcut.setShortcut('Ctrl+E')
+        self.editingShortcut.triggered.connect(self.setActiveTab)
+        self.addAction(self.editingShortcut)
+        self.previewShortcut = QtGui.QAction('preview', self)
+        self.previewShortcut.setShortcut('Ctrl+W')
+        self.previewShortcut.triggered.connect(self.setActiveTab)
+        self.addAction(self.previewShortcut)
+
         # Set the tabs widget to be the center widget of the main window
         self.log.info("Setting the central widget")
         self.setCentralWidget(self.tabs)
@@ -302,6 +316,13 @@ class NoteOrganiser(QtGui.QMainWindow):
             if index != tabIndex:
                 getattr(self,
                         self.states[index]).toolbar.setVisible(False)
+
+    def setActiveTab(self):
+        """
+        set the active tab in the tabWidget to the widget for which the
+        shortcut was used
+        """
+        self.tabs.setCurrentWidget(getattr(self, self.sender().iconText()))
 
 
 def main(args):
