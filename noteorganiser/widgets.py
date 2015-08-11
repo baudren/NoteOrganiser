@@ -168,7 +168,7 @@ class TagCompletion(QtGui.QLineEdit):
         QtGui.QLineEdit.__init__(self, parent)
         self.parent = parent
         self.initTagCompletion(tags)
-        self.initCompleteButton()
+        self.initDownButton()
 
     def initTagCompletion(self, tags=None):
         """add a multi-item completer to the given widget"""
@@ -181,19 +181,19 @@ class TagCompletion(QtGui.QLineEdit):
         self.setCompleter(self.completer)
         self.returnPressed.connect(self.onReturnPressed)
 
-    def initCompleteButton(self):
+    def initDownButton(self):
         """add a little down-arrow to start completion
         (list all available tags)"""
-        completeIcon = qtawesome.icon('fa.sort-down')
-        self.completeButton = QtGui.QPushButton(completeIcon, '', self)
-        self.completeButton.setStyleSheet('border: 0px;'
-                                          'padding: 0px;')
-        self.completeButton.setCursor(QtCore.Qt.ArrowCursor)
-        self.completeButton.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.completeButton.clicked.connect(self.onCompletePressed)
+        downIcon = qtawesome.icon('fa.sort-down')
+        self.downButton = QtGui.QPushButton(downIcon, '', self)
+        self.downButton.setStyleSheet('border: 0px;'
+                                      'padding: 0px;')
+        self.downButton.setCursor(QtCore.Qt.ArrowCursor)
+        self.downButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.downButton.clicked.connect(self.onDownPressed)
         frameWidth = self.style().pixelMetric(
             QtGui.QStyle.PM_DefaultFrameWidth)
-        buttonSize = self.completeButton.sizeHint()
+        buttonSize = self.downButton.sizeHint()
 
         self.setStyleSheet('QLineEdit {padding-right: %dpx; }' %
                            (buttonSize.width() + frameWidth))
@@ -203,13 +203,13 @@ class TagCompletion(QtGui.QLineEdit):
                                 buttonSize.height() + frameWidth*2))
 
     def resizeEvent(self, event):
-        """move the clear button with the widget"""
-        buttonSize = self.completeButton.sizeHint()
+        """move the button with the widget"""
+        buttonSize = self.downButton.sizeHint()
         frameWidth = self.style().pixelMetric(
             QtGui.QStyle.PM_DefaultFrameWidth)
-        self.completeButton.move(self.rect().right() - frameWidth -
-                                 buttonSize.width(), (self.rect().bottom() -
-                                 buttonSize.height() + 1)/2)
+        self.downButton.move(self.rect().right() - frameWidth -
+                             buttonSize.width(), (self.rect().bottom() -
+                             buttonSize.height() + 1)/2)
         QtGui.QLineEdit.resizeEvent(self, event)
 
     def onReturnPressed(self):
@@ -219,8 +219,12 @@ class TagCompletion(QtGui.QLineEdit):
         if self.completer.completionModel().rowCount():
             self.setText(self.completer.currentCompletion())
 
-    def onCompletePressed(self):
-        """Complete Button was pressed: start completion"""
+    def onDownPressed(self):
+        """
+        down Button was pressed
+
+        show completion dropdown
+        """
         self.completer.setCompletionPrefix(self.text())
         self.completer.complete()
 
