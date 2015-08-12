@@ -64,6 +64,11 @@ def test_TagCompletion(qtbot, parent):
     qtbot.keyPress(tagCompletion, QtCore.Qt.Key_Enter)
     assert tagCompletion.text() == ' tata, toto; tata'
 
+    # check the down button
+    assert not tagCompletion.completer.popup().isVisible()
+    qtbot.mouseClick(tagCompletion.downButton, QtCore.Qt.LeftButton)
+    assert tagCompletion.completer.popup().isVisible()
+
     # check normalization of separators
     assert tagCompletion.getTextWithNormalizedSeparators() == \
         ' tata, toto, tata'
