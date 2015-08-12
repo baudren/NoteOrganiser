@@ -21,7 +21,7 @@ from PySide import QtWebKit
 os.environ['QT_API'] = 'PySide'
 import qtawesome
 
-from .flowlayout import FlowLayout
+from .utils import FlowLayout
 from .utils import fuzzySearch
 
 from subprocess import Popen
