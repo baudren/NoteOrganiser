@@ -6,6 +6,7 @@ sudo: false
 addons:
   apt:
     packages:
+    - ghc
     - cabal-install
 before_install:
   - cabal update
