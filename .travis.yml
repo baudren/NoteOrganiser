@@ -6,8 +6,11 @@ sudo: false
 addons:
   apt:
     packages:
-    - pandoc
+    - cabal-install
 before_install:
+  - cabal update
+  - cabal install pandoc
+  - export PATH=~/.cabal/bin:$PATH
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 install:
