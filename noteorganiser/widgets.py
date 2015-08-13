@@ -1,7 +1,14 @@
 from __future__ import unicode_literals
 
+import re
+import os
 from PySide import QtGui
 from PySide import QtCore
+
+os.environ['QT_API'] = 'PySide'
+import qtawesome
+
+from .utils import MultiCompleter
 
 
 class PicButton(QtGui.QPushButton):
@@ -105,3 +112,129 @@ class VerticalScrollArea(QtGui.QScrollArea):
                 self.widget().minimumSizeHint().width() +
                 self.verticalScrollBar().width())
         return QtGui.QScrollArea.eventFilter(self, item, event)
+
+
+class LineEditWithClearButton(QtGui.QLineEdit):
+    """a line edit widget that shows a clear button if there is text"""
+    buttonClicked = QtCore.Signal(bool)
+
+    def __init__(self, parent=None):
+        QtGui.QLineEdit.__init__(self, parent)
+
+        self.clearButton = QtGui.QPushButton('x', self)
+        palette = QtGui.QPalette()
+        palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.red)
+        self.clearButton.setPalette(palette)
+        self.clearButton.setStyleSheet('border: 0px;'
+                                       'padding: 0px;'
+                                       'padding-right: 3px;'
+                                       'font-weight: bold;')
+        self.clearButton.setCursor(QtCore.Qt.ArrowCursor)
+        self.clearButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.clearButton.setVisible(False)
+        self.clearButton.clicked.connect(self.clear)
+        self.textChanged.connect(self.showClearButton)
+
+        frameWidth = self.style().pixelMetric(
+            QtGui.QStyle.PM_DefaultFrameWidth)
+        buttonSize = self.clearButton.sizeHint()
+
+        self.setStyleSheet('QLineEdit {padding-right: %dpx; }' %
+                           (buttonSize.width() + frameWidth))
+        self.setMinimumSize(max(self.minimumSizeHint().width(),
+                            buttonSize.width() + frameWidth*2),
+                            max(self.minimumSizeHint().height(),
+                                buttonSize.height() + frameWidth*2))
+
+    def resizeEvent(self, event):
+        """move the clear button with the widget"""
+        buttonSize = self.clearButton.sizeHint()
+        frameWidth = self.style().pixelMetric(
+            QtGui.QStyle.PM_DefaultFrameWidth)
+        self.clearButton.move(self.rect().right() - frameWidth -
+                              buttonSize.width(), (self.rect().bottom() -
+                              buttonSize.height() + 1)/2)
+        QtGui.QLineEdit.resizeEvent(self, event)
+
+    def showClearButton(self):
+        """show the clear button if there's text"""
+        self.clearButton.setVisible(len(self.text()))
+
+
+class TagCompletion(QtGui.QLineEdit):
+    """ a QLineEdit with a QCompleter to add tags from the current file """
+
+    def __init__(self, tags, parent=None):
+        QtGui.QLineEdit.__init__(self, parent)
+        self.parent = parent
+        self.initTagCompletion(tags)
+        self.initDownButton()
+
+    def initTagCompletion(self, tags=None):
+        """add a multi-item completer to the given widget"""
+        if tags is None:
+            tags = []
+
+        tags = sorted(tags)
+        self.completer = MultiCompleter(list(tags), self)
+        self.completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.setCompleter(self.completer)
+        self.returnPressed.connect(self.onReturnPressed)
+
+    def initDownButton(self):
+        """add a little down-arrow to start completion
+        (list all available tags)"""
+        downIcon = qtawesome.icon('fa.sort-down')
+        self.downButton = QtGui.QPushButton(downIcon, '', self)
+        self.downButton.setStyleSheet('border: 0px;'
+                                      'padding: 0px;')
+        self.downButton.setCursor(QtCore.Qt.ArrowCursor)
+        self.downButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.downButton.clicked.connect(self.onDownPressed)
+        frameWidth = self.style().pixelMetric(
+            QtGui.QStyle.PM_DefaultFrameWidth)
+        buttonSize = self.downButton.sizeHint()
+
+        self.setStyleSheet('QLineEdit {padding-right: %dpx; }' %
+                           (buttonSize.width() + frameWidth))
+        self.setMinimumSize(max(self.minimumSizeHint().width(),
+                            buttonSize.width() + frameWidth*2),
+                            max(self.minimumSizeHint().height(),
+                                buttonSize.height() + frameWidth*2))
+
+    def resizeEvent(self, event):
+        """move the button with the widget"""
+        buttonSize = self.downButton.sizeHint()
+        frameWidth = self.style().pixelMetric(
+            QtGui.QStyle.PM_DefaultFrameWidth)
+        self.downButton.move(self.rect().right() - frameWidth -
+                             buttonSize.width(), (self.rect().bottom() -
+                             buttonSize.height() + 1)/2)
+        QtGui.QLineEdit.resizeEvent(self, event)
+
+    def onReturnPressed(self):
+        """ get the first item from the completer """
+
+        self.completer.setCompletionPrefix(self.text())
+        if self.completer.completionModel().rowCount():
+            self.setText(self.completer.currentCompletion())
+
+    def onDownPressed(self):
+        """
+        down Button was pressed
+
+        show completion dropdown
+        """
+        self.completer.setCompletionPrefix(self.text())
+        self.completer.complete()
+
+    def getTextWithNormalizedSeparators(self):
+        """
+        get the text with all separators replaced by separators[0]
+
+        separators[0] is normally ','.
+        This corresponds to the separator used for tags in the markdown files
+        """
+
+        return re.sub(r'[{0}]'.format(''.join(self.completer.separators)),
+                      self.completer.separators[0], self.text())

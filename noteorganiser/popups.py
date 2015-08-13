@@ -4,6 +4,8 @@ from PySide import QtCore
 import os
 
 from .constants import EXTENSION
+from .widgets import TagCompletion
+import noteorganiser.text_processing as tp
 
 
 class Dialog(QtGui.QDialog):
@@ -74,12 +76,15 @@ class NewNotebook(Dialog):
         self.createButton.clicked.connect(self.createNotebook)
         self.cancelButton = QtGui.QPushButton("C&ancel")
         self.cancelButton.clicked.connect(self.clean_reject)
+
+        # Add a spacer before so that the button do not stretch
+        hboxLayout.addStretch()
         hboxLayout.addWidget(self.createButton)
         hboxLayout.addWidget(self.cancelButton)
         self.layout().addLayout(hboxLayout)
 
         # Create a status bar
-        self.statusBar = QtGui.QStatusBar()
+        self.statusBar = QtGui.QStatusBar(self)
         self.layout().addWidget(self.statusBar)
 
     def createNotebook(self):
@@ -119,16 +124,18 @@ class NewFolder(Dialog):
         formLayout.addRow(self.translate("Folder's &name:"), self.nameLineEdit)
         self.layout().addLayout(formLayout)
 
-        hboxLayout = QtGui.QHBoxLayout()
+        buttonLayout = QtGui.QHBoxLayout()
 
         # Add the "Create" button, as a confirmation, and the "Cancel" one
         self.createButton = QtGui.QPushButton("&Create")
         self.createButton.clicked.connect(self.createFolder)
         self.cancelButton = QtGui.QPushButton("C&ancel")
         self.cancelButton.clicked.connect(self.clean_reject)
-        hboxLayout.addWidget(self.createButton)
-        hboxLayout.addWidget(self.cancelButton)
-        self.layout().addLayout(hboxLayout)
+
+        buttonLayout.addStretch()
+        buttonLayout.addWidget(self.createButton)
+        buttonLayout.addWidget(self.cancelButton)
+        self.layout().addLayout(buttonLayout)
 
         # Create a status bar
         self.statusBar = QtGui.QStatusBar()
@@ -152,6 +159,7 @@ class NewFolder(Dialog):
 
 
 class NewEntry(Dialog):
+    """Create a new entry in the notebook"""
 
     def __init__(self, parent=None):
         Dialog.__init__(self, parent)
@@ -162,23 +170,41 @@ class NewEntry(Dialog):
 
         self.setWindowTitle("New entry")
 
-        # Define the main window horizontal layout
-        hboxLayout = QtGui.QHBoxLayout()
-
         # Define the fields: Name, tags and body
-        formLayout = QtGui.QFormLayout()
+        titleLineLayout = QtGui.QHBoxLayout()
+        self.titleLineLabel = QtGui.QLabel("Title:")
+        self.titleLineLabel.setFixedWidth(40)
         self.titleLineEdit = QtGui.QLineEdit()
-        self.tagsLineEdit = QtGui.QLineEdit()
+        titleLineLayout.addWidget(self.titleLineLabel)
+        titleLineLayout.addWidget(self.titleLineEdit)
+
+        # create TagCompletion with tags from current file
+        index = self.parent.tabs.currentIndex()
+        notebook = os.path.join(self.info.level, self.info.notebooks[index])
+        self.log.info("reading tags from %s" % notebook)
+        _, tags = tp.from_notes_to_markdown(notebook)
+        tagsLineLayout = QtGui.QHBoxLayout()
+        self.tagsLineLabel = QtGui.QLabel("Tags:")
+        self.tagsLineLabel.setFixedWidth(40)
+        self.tagsLineEdit = TagCompletion(tags)
+        tagsLineLayout.addWidget(self.tagsLineLabel)
+        tagsLineLayout.addWidget(self.tagsLineEdit)
+
+        corpusBoxLayout = QtGui.QHBoxLayout()
+        self.corpusBoxLabel = QtGui.QLabel("Body:")
+        self.corpusBoxLabel.setFixedWidth(40)
+        self.corpusBoxLabel.setAlignment(
+            QtCore.Qt.AlignTop)
         self.corpusBox = QtGui.QTextEdit()
+        corpusBoxLayout.addWidget(self.corpusBoxLabel)
+        corpusBoxLayout.addWidget(self.corpusBox)
 
-        formLayout.addRow(self.translate("&Title:"), self.titleLineEdit)
-        formLayout.addRow(self.translate("Ta&gs:"), self.tagsLineEdit)
-        formLayout.addRow(self.translate("&Body:"), self.corpusBox)
-
-        hboxLayout.addLayout(formLayout)
+        self.layout().addLayout(titleLineLayout)
+        self.layout().addLayout(tagsLineLayout)
+        self.layout().addLayout(corpusBoxLayout)
 
         # Define the RHS with Ok, Cancel and list of tags TODO)
-        buttonLayout = QtGui.QVBoxLayout()
+        buttonLayout = QtGui.QHBoxLayout()
 
         self.okButton = QtGui.QPushButton("&Ok")
         self.okButton.clicked.connect(self.creating_entry)
@@ -189,18 +215,16 @@ class NewEntry(Dialog):
         self.cancelButton = QtGui.QPushButton("&Cancel")
         self.cancelButton.clicked.connect(self.clean_reject)
 
+        # Add a spacer before so that the buttons do not stretch
+        buttonLayout.addStretch()
         buttonLayout.addWidget(self.okButton)
         buttonLayout.addWidget(self.cancelButton)
 
-        hboxLayout.addLayout(buttonLayout)
+        self.layout().addLayout(buttonLayout)
         # Create the status bar
         self.statusBar = QtGui.QStatusBar(self)
-        # Create a permanent widget displaying what we are doing
-        statusWidget = QtGui.QLabel("Creating new entry")
-        self.statusBar.addPermanentWidget(statusWidget)
-
-        self.layout().addLayout(hboxLayout)
         self.layout().addWidget(self.statusBar)
+        self.titleLineEdit.setFocus()
 
     def creating_entry(self):
         # Check if title is valid (non-empty)
@@ -208,7 +232,7 @@ class NewEntry(Dialog):
         if not title or len(title) < 2:
             self.statusBar.showMessage(self.translate("Invalid title"), 2000)
             return
-        tags = str(self.tagsLineEdit.text())
+        tags = str(self.tagsLineEdit.getTextWithNormalizedSeparators())
         if not tags or len(tags) < 2:
             self.statusBar.showMessage(self.translate("Invalid tags"), 2000)
             return
@@ -258,6 +282,7 @@ class SetExternalEditor(Dialog):
         self.cancelButton = QtGui.QPushButton("&Cancel")
         self.cancelButton.clicked.connect(self.clean_reject)
 
+        buttonLayout.addStretch()
         buttonLayout.addWidget(self.okButton)
         buttonLayout.addWidget(self.cancelButton)
 

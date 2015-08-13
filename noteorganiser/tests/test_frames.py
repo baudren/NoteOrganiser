@@ -38,6 +38,8 @@ def test_custom_frame(qtbot, parent):
         dummy.zoomOut()
     with pytest.raises(NotImplementedError):
         dummy.resetSize()
+    with pytest.raises(NotImplementedError):
+        dummy.initToolBar()
 
 
 def test_library(qtbot, parent):
@@ -148,6 +150,40 @@ def test_shelves(qtbot, parent, mocker):
         assert shelves.info.notebooks[-1] == 'toto'+EXTENSION, \
             "the notebook was not added to the information instance"
     assert newN.signal_triggered
+
+    # Trying to add a notebook with an existing name
+    def interact_existingN():
+        # Create a notebook called toto
+        qtbot.keyClicks(shelves.popup.nameLineEdit, 'toto')
+        qtbot.mouseClick(shelves.popup.createButton, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(shelves.popup.cancelButton, QtCore.Qt.LeftButton)
+
+    # Trying to add a notebook with the same name
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=100) as existingN:
+        QtCore.QTimer.singleShot(200, interact_existingN)
+        qtbot.mouseClick(
+            library.toolbar.widgetForAction(library.newNotebookAction),
+            QtCore.Qt.LeftButton)
+
+        assert len(shelves.buttons) == 3, "Same names are not checked"
+    assert not existingN.signal_triggered
+
+    # Trying to add a notebook with a name too short
+    def interact_tooShortN():
+        # Create a notebook called toto
+        qtbot.keyClicks(shelves.popup.nameLineEdit, 't')
+        qtbot.mouseClick(shelves.popup.createButton, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(shelves.popup.cancelButton, QtCore.Qt.LeftButton)
+
+    # Trying to add a notebook with a too short name
+    with qtbot.waitSignal(shelves.refreshSignal, timeout=100) as tooShortN:
+        QtCore.QTimer.singleShot(200, interact_tooShortN)
+        qtbot.mouseClick(
+            library.toolbar.widgetForAction(library.newNotebookAction),
+            QtCore.Qt.LeftButton)
+
+        assert len(shelves.buttons) == 3, "Too short names are not checked"
+    assert not tooShortN.signal_triggered
 
     # Adding a folder
     def interact_newF():
@@ -330,7 +366,7 @@ def test_editing(qtbot, parent):
 
     # Check that zoom-in, zoom-out, reset size are implemented
     editor = editing.tabs.currentWidget()
-    
+
     # Fontsize should be bigger
     editing.zoomIn()
     assert editor.text.currentFont().pointSize() > editor.defaultFontSize
@@ -389,3 +425,26 @@ def test_preview(qtbot, parent):
 
     # Reload should work (how to test that it truly works?)
     preview.reload()
+
+    # check searchField
+    # isVisibleTo(preview) is needed because qtbot doesn't show the actual
+    # root-widget (here: preview)
+    # so we can check if the widget in question and any parent up to but
+    # excluding the given ancestor are not hidden themselves
+    # see documentation for Pyside.QtGui.QWidget.isVisibleTo(arg__1)
+    #
+    # all buttons should be visible
+    assert len([key for key, button in preview.tagButtons if
+               button.isVisibleTo(preview)]) == 6
+    # filter out all but one
+    qtbot.keyClicks(preview.searchField, 'b')
+    assert len([key for key, button in preview.tagButtons if
+               button.isVisibleTo(preview)]) == 2
+    # filter out all
+    qtbot.keyClicks(preview.searchField, 'bbbb')
+    assert len([key for key, button in preview.tagButtons if
+               button.isVisibleTo(preview)]) == 0
+    # show all again
+    preview.searchField.clear()
+    assert len([key for key, button in preview.tagButtons if
+               button.isVisibleTo(preview)]) == 6

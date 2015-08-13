@@ -208,7 +208,9 @@ def post_to_markdown(post):
     tags, post = extract_tags_from_post(post)
     edit_date, post = extract_date_from_post(post)
     text.extend(["<p class='blog-post-meta'>",
-                 "%s" % edit_date, "</p>"])
+                 "%s:" % edit_date,
+                 "%s" % ", ".join(["**%s**" % tag for tag in tags]),
+                 "</p>"])
     corpus = extract_corpus_from_post(post)
     text.extend(corpus)
     text.extend(["</article>", "", ""])
@@ -216,7 +218,7 @@ def post_to_markdown(post):
     return text, tags
 
 
-def from_notes_to_markdown(path, input_tags=None):
+def from_notes_to_markdown(path, input_tags=()):
     """
     From a file, given tags, produce an output markdown file.
 
