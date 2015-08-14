@@ -13,7 +13,7 @@ import six  # Used to replace the od iteritems from py2
 import io
 import traceback  # For failure display
 import time  # for sleep
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 
 from PySide import QtGui
 from PySide import QtCore
@@ -672,8 +672,8 @@ class Preview(CustomFrame):
 
         # use KaTex
         if hasattr(pa, 'get_pandoc_version'):
-            version = StrictVersion(pa.get_pandoc_version())
-            if version < StrictVersion('1.13.2'):
+            version = LooseVersion(pa.get_pandoc_version())
+            if version < LooseVersion('1.13.2'):
                 self.log.warning("Pandoc version %s " % pa.get_pandoc_version(),
                                  "has no support for KaTeX. Please install"
                                  " at least version 1.13.2 for math support.")
