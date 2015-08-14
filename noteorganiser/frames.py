@@ -679,7 +679,7 @@ class Preview(CustomFrame):
                                  " at least version 1.13.2 for math support.")
             else:
                 extra_args.append('--katex')
-        else:
+        else: # pragma: no cover
             self.log.warning("Pypandoc version is below 0.9.7, and does not "
                              "allow to check for Pandoc version. Please "
                              "update it with pip.")
