@@ -35,7 +35,9 @@ class NoteOrganiser(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
 
         # Define a logger
-        logger = create_logger('INFO', 'file')
+        log_path = os.path.join(
+            os.path.expanduser("~"), '.noteorganiser', 'log')
+        logger = create_logger('INFO', 'file', log_path)
         # Recover the folder path and the notebooks
         root, notebooks, folders = conf.initialise(logger)
 

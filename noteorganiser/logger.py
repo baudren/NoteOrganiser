@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 import logging
 
 
-def create_logger(level='DEBUG', handler_type='stream'):
+def create_logger(level='DEBUG', handler_type='stream', path=''):
     """Defines a logger with optional level"""
 
     # Recover the associate value to the specified level
@@ -16,7 +16,7 @@ def create_logger(level='DEBUG', handler_type='stream'):
     if handler_type == 'stream':
         handler = logging.StreamHandler()
     elif handler_type == 'file':
-        handler = logging.FileHandler('log', mode='w')
+        handler = logging.FileHandler(path, mode='w')
     else:
         handler = logging.NullHandler()
 
