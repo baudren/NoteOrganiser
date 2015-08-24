@@ -36,10 +36,8 @@ from .widgets import PicButton, VerticalScrollArea, LineEditWithClearButton
 
 
 class CustomFrame(QtGui.QFrame):
-    """
-    Base class for all three tabbed frames
+    """Base class for all three tabbed frames"""
 
-    """
     def __init__(self, parent=None):
         """ Create the basic layout """
         QtGui.QFrame.__init__(self, parent)
@@ -152,10 +150,10 @@ class Library(CustomFrame):
         self.shelves = Shelves(self)
         self.layout().addWidget(self.shelves)
 
-        #toolbar on top
+        # toolbar on top
         self.initToolBar()
 
-        #right click in empty space
+        # right click in empty space
         self.initContextMenu()
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
@@ -238,7 +236,7 @@ class Editing(CustomFrame):
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
-        #toolbar on top
+        # toolbar on top
         self.initToolBar()
 
         # Global horizontal layout
@@ -352,7 +350,7 @@ class Editing(CustomFrame):
             # Append the text
             editor.appendText(post)
 
-    def editExternal(self): # pragma: no cover
+    def editExternal(self):  # pragma: no cover
         """edit active file in external editor"""
         # get the current file
         index = self.tabs.currentIndex()
@@ -369,7 +367,7 @@ class Editing(CustomFrame):
             self.popup.setWindowTitle('NoteOrganiser')
             self.popup.setText(
                 "The external editor '%s' couldn't be opened." % (
-                self.info.externalEditor))
+                    self.info.externalEditor))
             self.popup.setInformativeText("%s" % e)
             self.popup.exec_()
 
@@ -462,7 +460,7 @@ class Preview(CustomFrame):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
         self.layout().setDirection(QtGui.QBoxLayout.LeftToRight)
 
-        #toolbar on top
+        # toolbar on top
         self.initToolBar()
 
         # Left hand side: html window
@@ -593,10 +591,10 @@ class Preview(CustomFrame):
         try:
             url, tags = self.convert(
                 os.path.join(self.info.level, notebook), ())
-        except ValueError: # pragma: no cover
+        except ValueError:  # pragma: no cover
             self.log.error("Markdown conversion failed, aborting")
             return False
-        except SyntaxError: # pragma: no cover
+        except SyntaxError:  # pragma: no cover
             self.log.warning("Modified Markdown syntax error, aborting")
             return False
 
@@ -628,7 +626,7 @@ class Preview(CustomFrame):
         try:
             markdown, remaining_tags = tp.from_notes_to_markdown(
                 path, input_tags=tags)
-        except (IndexError, UnboundLocalError): # pragma: no cover
+        except (IndexError, UnboundLocalError):  # pragma: no cover
             self.log.error("Conversion of %s to markdown failed" % path)
             self.popup = QtGui.QMessageBox(self)
             self.popup.setIcon(QtGui.QMessageBox.Critical)
@@ -638,7 +636,7 @@ class Preview(CustomFrame):
             ok = self.popup.exec_()
             if ok:
                 raise ValueError("The conversion of the notebook failed")
-        except ValueError as e: # pragma: no cover
+        except ValueError as e:  # pragma: no cover
             self.log.warn(
                 "There was an expected error in converting"
                 " %s to markdown" % path)
@@ -834,8 +832,8 @@ class Shelves(CustomFrame):
             folder_path = os.path.join(self.info.root, folder_name)
             self.info.notebooks, self.info.folders = search_folder_recursively(
                 self.log, folder_path, self.info.display_empty)
-            # Update the current level as the folder_path, and refresh the content
-            # of the window
+            # Update the current level as the folder_path, and refresh the
+            # content of the window
             self.info.level = folder_path
             self.refresh()
 
@@ -844,7 +842,7 @@ class Shelves(CustomFrame):
         # Read again the current folder
         self.info.notebooks, self.info.folders = search_folder_recursively(
             self.log, self.info.level, self.info.display_empty)
-        #save settings
+        # save settings
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
         self.settings.setValue("display_empty", self.info.display_empty)
         self.refresh()
