@@ -10,6 +10,7 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
 
         # Initialise the highlighting rules
         self.highlightingRules = []
+        self.underliningRules = []
 
         # Date rules
         dateFormat = QtGui.QTextCharFormat()
@@ -42,19 +43,30 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
         tagFormat = QtGui.QTextCharFormat()
         tagFormat.setForeground(QtCore.Qt.darkRed)
         self.highlightingRules.append(
-            (QtCore.QRegExp("^# ((\w(?:[-\w]*\w)?)+)(,\s*(\w(?:[-\w]*\w)?)+)*$"), tagFormat))
+            (QtCore.QRegExp(
+                "^# ((\w(?:[-\w]*\w)?)+)(,\s*(\w(?:[-\w]*\w)?)+)*$"),
+                tagFormat))
 
         # Code blocks (several lines)
         self.blockStartExpression = QtCore.QRegExp("^~~~(\s.*)?$")
         self.blockEndExpression = QtCore.QRegExp("^~~~$")
 
-        # TODO syntax highlighting for titles
         # Main title rule
         self.mainTitleUnderlineExpression = QtCore.QRegExp("^={2,}$")
+        mainTitleFormat = QtGui.QTextCharFormat()
+        mainTitleFormat.setForeground(QtCore.Qt.darkGreen)
         # Sections rule
         self.sectionUnderlineExpression = QtCore.QRegExp("^-{2,}$")
+        sectionFormat = QtGui.QTextCharFormat()
+        sectionFormat.setForeground(QtCore.Qt.darkBlue)
+        self.underliningRules.extend(
+            [(self.mainTitleUnderlineExpression, mainTitleFormat),
+             (self.sectionUnderlineExpression, sectionFormat)])
 
     def highlightBlock(self, text):
+        # Deal first with simple expressions (one line)
+        # Note: the _format syntax is there to avoid naming conflict with the
+        # restricted word `format`.
         for pattern, _format in self.highlightingRules:
             expression = QtCore.QRegExp(pattern)
             index = expression.indexIn(text)
@@ -63,6 +75,7 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
                 self.setFormat(index, length, _format)
                 index = expression.indexIn(text, index + length)
 
+        # Deal with block type highlighting
         self.setCurrentBlockState(0)
         startIndex = 0
         if self.previousBlockState() != 1:
@@ -88,3 +101,27 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
                            self.codeFormat)
             startIndex = self.blockStartExpression.indexIn(
                 text, startIndex + blockLength)
+
+        # Match the underlines
+        if startIndex == -1:  # If outside of a block
+            if self.previousBlockState() != 2:
+                for pattern, _format in self.underliningRules:
+                    expression = QtCore.QRegExp(pattern)
+                    # Match the next line for underlines
+                    index = expression.indexIn(
+                        self.currentBlock().next().text())
+                    if index >= 0:
+                        length = expression.matchedLength()
+                        self.setFormat(index, length, _format)
+                        index = expression.indexIn(text, index + length)
+                        self.setCurrentBlockState(2)
+            # If the title has already been highlighted, the state is '2'
+            else:
+                for pattern, _format in self.underliningRules:
+                    expression = QtCore.QRegExp(pattern)
+                    # Match the next line for underlines
+                    index = expression.indexIn(text)
+                    if index >= 0:
+                        length = expression.matchedLength()
+                        self.setFormat(index, length, _format)
+                        index = expression.indexIn(text, index + length)
