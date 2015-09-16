@@ -111,13 +111,10 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
                     index = expression.indexIn(
                         self.currentBlock().next().text())
                     if index >= 0:
-                        # Also check for the next, next line to be non-empty.
-                        # This should force it to be a title.
-                        if self.currentBlock().next().next().text():
-                            length = expression.matchedLength()
-                            self.setFormat(index, length, _format)
-                            index = expression.indexIn(text, index + length)
-                            self.setCurrentBlockState(2)
+                        length = expression.matchedLength()
+                        self.setFormat(index, length, _format)
+                        index = expression.indexIn(text, index + length)
+                        self.setCurrentBlockState(2)
             # If the title has already been highlighted, the state is '2'
             else:
                 for pattern, _format in self.underliningRules:
