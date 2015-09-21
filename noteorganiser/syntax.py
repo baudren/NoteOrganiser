@@ -44,7 +44,7 @@ class ModifiedMarkdownHighlighter(QtGui.QSyntaxHighlighter):
         tagFormat.setForeground(QtCore.Qt.darkRed)
         self.highlightingRules.append(
             (QtCore.QRegExp(
-                "^#\s?((\w(?:[-\w ]*\w)?)+)(,\s*(\w(?:[-\w ]*\w)?)+)*$"),
+                "^#\s?((\w(?:[-\w .]*\w)?)+)(,\s*(\w(?:[-\w .]*\w)?)+)*$"),
                 tagFormat))
 
         # Code blocks (several lines)
