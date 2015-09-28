@@ -5,8 +5,8 @@ from robot.api import logger
 from PySide import QtGui
 from PySide import QtTest
 
-from keywords import ConfigurationKeywords, LibraryKeywords
-from PysideLibrary import PysideLibrary
+from .keywords import ConfigurationKeywords, LibraryKeywords
+from .PysideLibrary import PysideLibrary
 
 class NoteOrganiserTesting (PysideLibrary, ConfigurationKeywords, LibraryKeywords):
 

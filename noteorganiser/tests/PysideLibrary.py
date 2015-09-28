@@ -13,7 +13,7 @@ class PysideLibrary:
 
     def open_application(self, module, name, *args, **kwargs):
         # Check if the module exists
-        print 'trying to import %s.%s' % (module, name)
+        print('trying to import %s.%s' % (module, name))
 
         module = importlib.import_module(module)
         definition = getattr(module, name)
@@ -25,7 +25,7 @@ class PysideLibrary:
         self.application = application
 
         # Instanciate
-        self._main = definition(*args, **kwargs) 
+        self._main = definition(*args, **kwargs)
 
         # wait for it to appear
         self.waitForWindowShown(self._main)
