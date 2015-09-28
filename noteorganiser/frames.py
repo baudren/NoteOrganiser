@@ -576,7 +576,7 @@ class Preview(CustomFrame):
             self.setWebpage(url)
 
     def setWebpage(self, page):
-        self.web.load(QtCore.QUrl(page))
+        self.web.load(QtCore.QUrl.fromLocalFile(page))
 
     def loadNotebook(self, notebook):
         """
