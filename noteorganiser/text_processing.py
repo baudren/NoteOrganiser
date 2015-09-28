@@ -159,11 +159,18 @@ def extract_title_and_posts_from_text(text):
             title = ' '.join(text[:index]).strip()
             has_title = True
         if re.match('^-{2,}$', line) and line[0] == '-':
-            # find the latest non empty line
-            for backward_index in range(1, 10):
-                if not text[index-backward_index].strip():
-                    post_starting_indices.append(index-backward_index+1)
-                    break
+            # Check that the lines surrounding this line of dashes are
+            # non-empty, otherwise it could be the beginning or end of a table.
+            previous_line = text[index-1].rstrip('\n')
+            if index+1 < len(text)-1:
+                next_line = text[index+1].rstrip('\n')
+                if previous_line and next_line:
+                    # find the latest non empty line
+                    for backward_index in range(1, 10):
+                        if not text[index-backward_index].strip():
+                            post_starting_indices.append(
+                                index-backward_index+1)
+                            break
 
     if not has_title:
         raise MarkdownSyntaxError(
@@ -218,7 +225,7 @@ def post_to_markdown(post):
     return text, tags
 
 
-def from_notes_to_markdown(path, input_tags=None):
+def from_notes_to_markdown(path, input_tags=()):
     """
     From a file, given tags, produce an output markdown file.
 

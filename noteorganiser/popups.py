@@ -4,6 +4,8 @@ from PySide import QtCore
 import os
 
 from .constants import EXTENSION
+from .widgets import TagCompletion
+import noteorganiser.text_processing as tp
 
 
 class Dialog(QtGui.QDialog):
@@ -176,10 +178,15 @@ class NewEntry(Dialog):
         titleLineLayout.addWidget(self.titleLineLabel)
         titleLineLayout.addWidget(self.titleLineEdit)
 
+        # create TagCompletion with tags from current file
+        index = self.parent.tabs.currentIndex()
+        notebook = os.path.join(self.info.level, self.info.notebooks[index])
+        self.log.info("reading tags from %s" % notebook)
+        _, tags = tp.from_notes_to_markdown(notebook)
         tagsLineLayout = QtGui.QHBoxLayout()
         self.tagsLineLabel = QtGui.QLabel("Tags:")
         self.tagsLineLabel.setFixedWidth(40)
-        self.tagsLineEdit = QtGui.QLineEdit()
+        self.tagsLineEdit = TagCompletion(tags)
         tagsLineLayout.addWidget(self.tagsLineLabel)
         tagsLineLayout.addWidget(self.tagsLineEdit)
 
@@ -217,6 +224,7 @@ class NewEntry(Dialog):
         # Create the status bar
         self.statusBar = QtGui.QStatusBar(self)
         self.layout().addWidget(self.statusBar)
+        self.titleLineEdit.setFocus()
 
     def creating_entry(self):
         # Check if title is valid (non-empty)
@@ -224,7 +232,7 @@ class NewEntry(Dialog):
         if not title or len(title) < 2:
             self.statusBar.showMessage(self.translate("Invalid title"), 2000)
             return
-        tags = str(self.tagsLineEdit.text())
+        tags = str(self.tagsLineEdit.getTextWithNormalizedSeparators())
         if not tags or len(tags) < 2:
             self.statusBar.showMessage(self.translate("Invalid tags"), 2000)
             return

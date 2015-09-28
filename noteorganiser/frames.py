@@ -21,7 +21,7 @@ from PySide import QtWebKit
 os.environ['QT_API'] = 'PySide'
 import qtawesome
 
-from .flowlayout import FlowLayout
+from .utils import FlowLayout
 from .utils import fuzzySearch
 
 from subprocess import Popen
@@ -36,10 +36,8 @@ from .widgets import PicButton, VerticalScrollArea, LineEditWithClearButton
 
 
 class CustomFrame(QtGui.QFrame):
-    """
-    Base class for all three tabbed frames
+    """Base class for all three tabbed frames"""
 
-    """
     def __init__(self, parent=None):
         """ Create the basic layout """
         QtGui.QFrame.__init__(self, parent)
@@ -152,10 +150,10 @@ class Library(CustomFrame):
         self.shelves = Shelves(self)
         self.layout().addWidget(self.shelves)
 
-        #toolbar on top
+        # toolbar on top
         self.initToolBar()
 
-        #right click in empty space
+        # right click in empty space
         self.initContextMenu()
 
         self.log.info("Finished UI init of %s" % self.__class__.__name__)
@@ -170,6 +168,8 @@ class Library(CustomFrame):
             # Go up in the directories (disabled if in the root directory)
             upIcon = qtawesome.icon('fa.arrow-up')
             self.upAction = QtGui.QAction(upIcon, '&Up', self)
+            self.upAction.setIconText('&Up')
+            self.upAction.setShortcut('Ctrl+U')
             self.upAction.triggered.connect(self.shelves.upFolder)
             if self.info.level == self.info.root:
                 self.upAction.setDisabled(True)
@@ -179,6 +179,8 @@ class Library(CustomFrame):
             newNotebookIcon = qtawesome.icon('fa.file')
             self.newNotebookAction = QtGui.QAction(newNotebookIcon,
                                                    '&New Notebook', self)
+            self.newNotebookAction.setIconText('&New Notebook')
+            self.newNotebookAction.setShortcut('Ctrl+N')
             self.newNotebookAction.triggered.connect(
                 self.shelves.createNotebook)
             self.toolbar.addAction(self.newNotebookAction)
@@ -187,6 +189,8 @@ class Library(CustomFrame):
             newFolderIcon = qtawesome.icon('fa.folder')
             self.newFolderAction = QtGui.QAction(newFolderIcon, 'New Folde&r',
                                                  self)
+            self.newFolderAction.setIconText('New Folde&r')
+            self.newFolderAction.setShortcut('Ctrl+F')
             self.newFolderAction.triggered.connect(self.shelves.createFolder)
             self.toolbar.addAction(self.newFolderAction)
 
@@ -232,7 +236,7 @@ class Editing(CustomFrame):
     def initUI(self):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
 
-        #toolbar on top
+        # toolbar on top
         self.initToolBar()
 
         # Global horizontal layout
@@ -267,12 +271,16 @@ class Editing(CustomFrame):
             # save the Text in the current notebook editor
             saveIcon = qtawesome.icon('fa.floppy-o')
             self.saveAction = QtGui.QAction(saveIcon, '&Save', self)
+            self.saveAction.setIconText('&Save')
+            self.saveAction.setShortcut('Ctrl+S')
             self.saveAction.triggered.connect(self.saveText)
             self.toolbar.addAction(self.saveAction)
 
             # reload the Text in the current notebook editor
             readIcon = qtawesome.icon('fa.refresh')
             self.readAction = QtGui.QAction(readIcon, '&Reload', self)
+            self.readAction.setIconText('&Reload')
+            self.readAction.setShortcut('Ctrl+R')
             self.readAction.triggered.connect(self.loadText)
             self.toolbar.addAction(self.readAction)
 
@@ -283,13 +291,17 @@ class Editing(CustomFrame):
             newEntryIcon = qtawesome.icon('fa.plus-square')
             self.newEntryAction = QtGui.QAction(newEntryIcon, '&New entry',
                                                 self)
+            self.newEntryAction.setIconText('&New entry')
+            self.newEntryAction.setShortcut('Ctrl+N')
             self.newEntryAction.triggered.connect(self.newEntry)
             self.toolbar.addAction(self.newEntryAction)
 
             # Edit in an exterior editor
             editIcon = qtawesome.icon('fa.pencil-square-o')
             self.editAction = QtGui.QAction(editIcon,
-                                            'Edit (e&xterior editor)', self)
+                                            'Edi&t (exterior editor)', self)
+            self.editAction.setIconText('Edi&t (exterior editor)')
+            self.editAction.setShortcut('Ctrl+T')
             self.editAction.triggered.connect(self.editExternal)
             self.toolbar.addAction(self.editAction)
 
@@ -297,6 +309,8 @@ class Editing(CustomFrame):
             previewIcon = qtawesome.icon('fa.desktop')
             self.previewAction = QtGui.QAction(previewIcon,
                                                '&Preview notebook', self)
+            self.previewAction.setIconText('&Preview notebook')
+            self.previewAction.setShortcut('Ctrl+P')
             self.previewAction.triggered.connect(self.preview)
             self.toolbar.addAction(self.previewAction)
 
@@ -336,7 +350,7 @@ class Editing(CustomFrame):
             # Append the text
             editor.appendText(post)
 
-    def editExternal(self): # pragma: no cover
+    def editExternal(self):  # pragma: no cover
         """edit active file in external editor"""
         # get the current file
         index = self.tabs.currentIndex()
@@ -353,7 +367,7 @@ class Editing(CustomFrame):
             self.popup.setWindowTitle('NoteOrganiser')
             self.popup.setText(
                 "The external editor '%s' couldn't be opened." % (
-                self.info.externalEditor))
+                    self.info.externalEditor))
             self.popup.setInformativeText("%s" % e)
             self.popup.exec_()
 
@@ -446,7 +460,7 @@ class Preview(CustomFrame):
         self.log.info("Starting UI init of %s" % self.__class__.__name__)
         self.layout().setDirection(QtGui.QBoxLayout.LeftToRight)
 
-        #toolbar on top
+        # toolbar on top
         self.initToolBar()
 
         # Left hand side: html window
@@ -486,6 +500,13 @@ class Preview(CustomFrame):
         self.searchField.setMaximumWidth(165)
         vbox.addWidget(self.searchField)
 
+        # create a shortcut to jump into the search field
+        if not hasattr(self, 'searchAction'):
+            self.searchAction = QtGui.QAction(self)
+            self.searchAction.setShortcut('Ctrl+F')
+            self.searchAction.triggered.connect(self.onSearchAction)
+            self.addAction(self.searchAction)
+
         self.tagButtons = []
         if self.extracted_tags:
             for key, value in six.iteritems(self.extracted_tags):
@@ -519,6 +540,8 @@ class Preview(CustomFrame):
             # Reload Action
             reloadIcon = qtawesome.icon('fa.refresh')
             self.reloadAction = QtGui.QAction(reloadIcon, '&Reload', self)
+            self.reloadAction.setIconText('&Reload')
+            self.reloadAction.setShortcut('Ctrl+R')
             self.reloadAction.triggered.connect(self.reload)
             self.toolbar.addAction(self.reloadAction)
 
@@ -568,10 +591,10 @@ class Preview(CustomFrame):
         try:
             url, tags = self.convert(
                 os.path.join(self.info.level, notebook), ())
-        except ValueError: # pragma: no cover
+        except ValueError:  # pragma: no cover
             self.log.error("Markdown conversion failed, aborting")
             return False
-        except SyntaxError: # pragma: no cover
+        except SyntaxError:  # pragma: no cover
             self.log.warning("Modified Markdown syntax error, aborting")
             return False
 
@@ -603,7 +626,7 @@ class Preview(CustomFrame):
         try:
             markdown, remaining_tags = tp.from_notes_to_markdown(
                 path, input_tags=tags)
-        except (IndexError, UnboundLocalError): # pragma: no cover
+        except (IndexError, UnboundLocalError):  # pragma: no cover
             self.log.error("Conversion of %s to markdown failed" % path)
             self.popup = QtGui.QMessageBox(self)
             self.popup.setIcon(QtGui.QMessageBox.Critical)
@@ -613,7 +636,7 @@ class Preview(CustomFrame):
             ok = self.popup.exec_()
             if ok:
                 raise ValueError("The conversion of the notebook failed")
-        except ValueError as e: # pragma: no cover
+        except ValueError as e:  # pragma: no cover
             self.log.warn(
                 "There was an expected error in converting"
                 " %s to markdown" % path)
@@ -680,6 +703,10 @@ class Preview(CustomFrame):
 
     def resetSize(self):
         self.web.setTextSizeMultiplier(1)
+
+    def onSearchAction(self):
+        """Search shortcut was pressed. Set focus to the searchfield"""
+        self.searchField.setFocus()
 
     def reload(self):
         """
@@ -805,8 +832,8 @@ class Shelves(CustomFrame):
             folder_path = os.path.join(self.info.root, folder_name)
             self.info.notebooks, self.info.folders = search_folder_recursively(
                 self.log, folder_path, self.info.display_empty)
-            # Update the current level as the folder_path, and refresh the content
-            # of the window
+            # Update the current level as the folder_path, and refresh the
+            # content of the window
             self.info.level = folder_path
             self.refresh()
 
@@ -815,7 +842,7 @@ class Shelves(CustomFrame):
         # Read again the current folder
         self.info.notebooks, self.info.folders = search_folder_recursively(
             self.log, self.info.level, self.info.display_empty)
-        #save settings
+        # save settings
         self.settings = QtCore.QSettings("audren", "NoteOrganiser")
         self.settings.setValue("display_empty", self.info.display_empty)
         self.refresh()
