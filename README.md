@@ -91,5 +91,5 @@ under both python 2.7 and 3.3 before submitting, though!
 
 ## Contributors
 
-- Tobias Maier ([@egolus](https://github.com/egolus)), for his help in
-  supporting Windows.
+- Tobias Maier ([@egolus](https://github.com/egolus)), for his many
+  contributions, and help in supporting Windows.
