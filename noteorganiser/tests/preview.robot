@@ -17,7 +17,25 @@ Browse tags from all notebooks
     [Teardown] reduce tags to current notebook
 
 Color a tag
-    TODO
+    Pick color red for tag qml
+    Reopen Note Organiser
+    Tag qml should be of color red
+    [Teardown] pick color default for tag qml
     
 Favorite a tag
-    TODO
+    Ensure no tags are favorite
+    Favorite tag qml 
+    Reopen Note Organiser
+    Tag qml should be the first tag
+    [Teardown] unfavorite tag qml
+
+Filter by relative date
+    Create a random new post
+    Filter posts no older than one day
+    Random new post should be there
+
+Filter by absolute date
+    Open notebook example
+    Preview date selection
+    Adjust year range from 2013 to 2014
+    4 posts should be present
