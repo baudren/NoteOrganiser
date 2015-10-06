@@ -35,5 +35,4 @@ RUN cd qml-material && qmake && make && make install && cd ..
 RUN mkdir noteorganiser
 COPY noteorganiser/ /usr/src/noteorganiser
 
-# RUN the application
-RUN qmlscene noteorganiser/main.qml
+RUN /bin/bash
