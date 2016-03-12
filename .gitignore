@@ -11,3 +11,6 @@ htmlcov/
 
 # Idea hidden folder
 .idea/
+
+# node modules
+node_modules/
