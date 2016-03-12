@@ -1,1 +1,15 @@
-<h1>Hello, world!</h1>
+<html>
+<body> 
+  <h1>Hello World!</h1>
+   We are using Electron 
+   <script> document.write(process.versions['electron']) </script> on 
+   <script> document.write(process.platform) </script>
+   <script type="text/javascript"> 
+      var fs = require('fs');
+      var file = fs.readFileSync('app/package.json'); 
+      document.write(file); 
+   </script>
+
+</body> 
+</html> 
+
