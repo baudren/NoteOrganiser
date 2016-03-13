@@ -5,7 +5,7 @@ import os
 from PySide import QtGui
 from PySide import QtCore
 
-os.environ['QT_API'] = 'PySide'
+os.environ['QT_API'] = 'pyside'
 import qtawesome
 
 from .utils import MultiCompleter
