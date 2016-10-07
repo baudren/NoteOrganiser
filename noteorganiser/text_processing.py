@@ -283,6 +283,15 @@ def create_post_from_entry(title, tags, corpus):
     return ''.join(text)
 
 
+def create_image_markdown(filename):
+    """
+    Create a valid markdown string that presents the image given as a filename
+    """
+
+    text = "![]({0})".format(filename)
+    return text
+
+
 class MarkdownSyntaxError(ValueError):
 
     def __init__(self, message, post):
