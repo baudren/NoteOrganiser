@@ -427,12 +427,12 @@ class Editing(CustomFrame):
         """
         self.popup = QtGui.QFileDialog()
         filename = self.popup.getOpenFileName(self,
-                "select an image", "",
-                "Image Files (*.png *.jpg *.png);;all files (*.*)")
+                "select an image",
+                "",
+                "Image Files (*.png *.jpg *.bmp);;all files (*.*)")
 
         # QFileDialog returns a tuple with filename and used filter
         if filename[0]:
-            print(filename)
             imagemarkdown = tp.create_image_markdown(filename[0])
             editor = self.tabs.currentWidget()
             editor.insertText(imagemarkdown)
