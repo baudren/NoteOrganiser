@@ -429,7 +429,8 @@ class Editing(CustomFrame):
         filename = self.popup.getOpenFileName(self,
                 "select an image",
                 "",
-                "Image Files (*.png *.jpg *.bmp);;all files (*.*)")
+                "Image Files (*.png *.jpg *.bmp *.jpeg *.svg *.gif)" + \
+                ";;all files (*.*)")
 
         # QFileDialog returns a tuple with filename and used filter
         if filename[0]:
