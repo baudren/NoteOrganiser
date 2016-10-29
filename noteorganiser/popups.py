@@ -206,6 +206,9 @@ class NewEntry(Dialog):
         # Define the RHS with Ok, Cancel and list of tags TODO)
         buttonLayout = QtGui.QHBoxLayout()
 
+        self.newImageButton = QtGui.QPushButton("Insert &Image")
+        self.newImageButton.clicked.connect(self.insertImage)
+
         self.okButton = QtGui.QPushButton("&Ok")
         self.okButton.clicked.connect(self.creating_entry)
         acceptShortcut = QtGui.QShortcut(
@@ -217,6 +220,7 @@ class NewEntry(Dialog):
 
         # Add a spacer before so that the buttons do not stretch
         buttonLayout.addStretch()
+        buttonLayout.addWidget(self.newImageButton)
         buttonLayout.addWidget(self.okButton)
         buttonLayout.addWidget(self.cancelButton)
 
@@ -246,6 +250,20 @@ class NewEntry(Dialog):
         self.tags = tags
         self.corpus = corpus
         self.clean_accept()
+
+    def insertImage(self):
+        """ insert an image path as markdown at the current cursor position """
+        self.popup = QtGui.QFileDialog()
+        filename = self.popup.getOpenFileName(self,
+                "select an image",
+                "",
+                "Image Files (*.png *.jpg *.bmp *.jpeg *.svg *.gif)" + \
+                ";;all files (*.*)")
+
+        # QFileDialog returns a tuple with filename and used filter
+        if filename[0]:
+            imagemarkdown = tp.create_image_markdown(filename[0])
+            self.corpusBox.insertPlainText(imagemarkdown)
 
 
 class SetExternalEditor(Dialog):

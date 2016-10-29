@@ -308,7 +308,7 @@ def test_text_editor(qtbot, parent):
     check_font_size(text_editor.defaultFontSize)
 
 
-def test_editing(qtbot, parent):
+def test_editing(qtbot, parent, mocker):
     """Test the editing tab"""
     editing = Editing(parent)
     qtbot.addWidget(editing)
@@ -344,6 +344,26 @@ def test_editing(qtbot, parent):
 
     assert preview.signal_triggered, \
         "asking for previewing does not send the right signal"
+
+
+    # Insert Image
+    before_cancel_text = editing.tabs.currentWidget().text.toPlainText()
+
+    file_dialog = mocker.patch.object(QtGui.QFileDialog, 'getOpenFileName',
+                                 return_value=('', ''))
+    qtbot.mouseClick(editing.toolbar.widgetForAction(editing.imageInsertAction),
+                     QtCore.Qt.LeftButton)
+    after_cancel_text = editing.tabs.currentWidget().text.toPlainText()
+
+    assert after_cancel_text == before_cancel_text, "cancelling insert image did something to the text"
+
+    file_dialog.return_value = ('toto', '')
+    qtbot.mouseClick(editing.toolbar.widgetForAction(editing.imageInsertAction),
+                     QtCore.Qt.LeftButton)
+    after_accept_text = editing.tabs.currentWidget().text.toPlainText()
+
+    assert after_accept_text != after_cancel_text, "image insertion did not add something"
+    assert after_accept_text.find('![](toto)') != -1, "image insertion did not add the right thing"
 
     # Test the tabs (should switch from one notebook to the other)
     # Check that there are two of them

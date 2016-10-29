@@ -314,6 +314,15 @@ class Editing(CustomFrame):
             self.previewAction.triggered.connect(self.preview)
             self.toolbar.addAction(self.previewAction)
 
+            # open file dialog to insert an image path
+            imageInsertIcon = qtawesome.icon('fa.image')
+            self.imageInsertAction = QtGui.QAction(imageInsertIcon,
+                                                   '&Insert Image', self)
+            self.imageInsertAction.setIconText('Insert Image')
+            self.imageInsertAction.setShortcut('Ctrl+I')
+            self.imageInsertAction.triggered.connect(self.insertImage)
+            self.toolbar.addAction(self.imageInsertAction)
+
     def refresh(self):
         """Redraw the UI (time consuming...)"""
         self.clearUI()
@@ -411,6 +420,23 @@ class Editing(CustomFrame):
         """save the text in the current notebook"""
         notebook = self.tabs.currentWidget()
         notebook.saveText()
+
+    def insertImage(self):
+        """
+        Open a file dialog and insert the selected image path as markdown
+        """
+        self.popup = QtGui.QFileDialog()
+        filename = self.popup.getOpenFileName(self,
+                "select an image",
+                "",
+                "Image Files (*.png *.jpg *.bmp *.jpeg *.svg *.gif)" + \
+                ";;all files (*.*)")
+
+        # QFileDialog returns a tuple with filename and used filter
+        if filename[0]:
+            imagemarkdown = tp.create_image_markdown(filename[0])
+            editor = self.tabs.currentWidget()
+            editor.insertText(imagemarkdown)
 
 
 class Preview(CustomFrame):
@@ -1039,6 +1065,9 @@ class TextEditor(CustomFrame):
     def appendText(self, text):
         self.text.append('\n'+text)
         self.saveText()
+
+    def insertText(self, text):
+        self.text.insertPlainText(text)
 
     def zoomIn(self):
         size = self.font.pointSize()
